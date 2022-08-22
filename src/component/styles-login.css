@@ -1,0 +1,296 @@
+body{
+    font-family: 'Roboto', sans-serif; 
+    background-image: linear-gradient(white, #ddd); 
+    background-repeat: no-repeat;
+    background-size:auto; 
+    justify-content: center;
+}
+
+#body-content{
+    display: flex; 
+    margin: auto; 
+    margin-top: 15vh;
+    margin-bottom: 15vh;
+    background-color: #fff; 
+    width: 60vmax; 
+    border-radius: 2px; 
+    align-self: center;
+    height: 70vh;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+  
+@media all and (min-width:321px) and (max-width: 699px) { 
+    #form-btn{ 
+        min-height: 45px; 
+    }
+    
+    #body-content{ 
+        display: flex; 
+        flex-direction: column;  
+        margin: auto;  
+        margin-top: 10vh; 
+        margin-bottom: 15vh; 
+        background-color: #fff;  
+        width: 45vmax;  
+        border-radius: 2px;  
+        align-self: center; 
+        height: 70vh; 
+        box-shadow: 0 10px 20px #fff, 0 6px 6px #fff; 
+    } 
+
+   
+  }
+
+  
+
+#div-img{
+    display: flex; 
+    flex: 1; 
+    background-color: rgb(0 113 206); 
+    justify-content: center; 
+    padding: 2vmax;
+}
+
+#div-img img{
+    content: url("./favicon.svg");
+}
+
+#div-form{
+    display: flex; 
+    flex: 1; 
+    flex-direction: column; 
+    padding: 2vmax; 
+    justify-content: center;
+}
+
+#div-form span{
+    margin-bottom: .5vmax; 
+    font-size: 14px; 
+    font-weight: bold;
+}
+
+#div-form input{
+    height: 2vmax; 
+    margin-bottom: 3vmax;
+}
+
+#form-btn{
+    border: none; 
+    height: 3vmax; 
+    border-radius: 5px; 
+    align-self: center; 
+    margin-top: 2vmax;
+    transition: background-color .15s;
+    background-color: #e0e1e2;
+}
+
+#form-btn:hover{
+    background-color: #cacbcd;
+    cursor: pointer;
+}
+
+
+#sidepanel{
+    display: flex;
+    font-family: 'Roboto', sans-serif; 
+    font-size: 12px;
+    flex-direction: column;
+    background-color: #0071ce;
+    /* max-height: 100vh; */
+    height: 100vh;
+    width: 15vmax;
+    padding: 0 .3vmax;
+    position: sticky;
+    top: 0;
+}
+
+#sidebtn{
+    color: white;
+    transition: background-color .2s;
+    border-bottom: 2px solid whot;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    font-size: 12px;
+    text-align: center;
+    height: auto;
+    justify-content: center;
+    padding: 1vmin 0px;
+    align-items: center;
+}
+
+#sidebtn span{
+    flex: 1;
+}
+
+#sidepanel div:hover{
+    background-color: #001f6b;
+    cursor: pointer;
+}
+
+#sidepanel-logo{
+    content: url("../resources/favicon.svg");
+    max-height: 150px; 
+    max-width: 150px; 
+    align-self: center;
+    padding-top: 1vh;
+    padding-left: 1vh;
+    margin-left: 25%;
+}
+
+#sideimg1{
+    content: url("../resources/account_circle_white_24dp.svg");
+    height: 26px;
+}
+
+#sideimg2{
+    content: url("../resources/request_page_white_24dp.svg");
+    height: 26px;
+}
+
+#sideimgchek{
+    content: url("../resources/fact_check_white_24dp.svg");
+    height: 26px;
+}
+#sideimg3{
+    content: url("../resources/add.svg");
+    height: 26px;
+}
+
+#sidebtnequipos{
+    content: url("../resources/laptopicon.png");
+    height: 26px;
+    width: 26px;
+}
+
+#sidebtnaccesos{
+    content: url("../resources/accesos.png");
+    height: 26px;
+    width: 26px;
+}
+
+#sideimg4{
+    content: url("../resources/request_page_white_24dp.svg");
+    height: 26px;
+}
+
+#sideimggrupo{
+    content: url("../resources/grupo.png");
+    height: 26px;
+}
+
+#sideimg5{
+    content: url("../resources/logout.svg");
+    height: 26px;
+}
+
+#sideimg6{
+    content: url("../resources/fact_check_white_24dp.svg");
+    height: 26px;
+}
+
+#sideimg7{
+    content: url("../resources/fact_check_white_24dp.svg");
+    height: 26px;
+}
+
+#sideimg8{
+    content: url("../resources/fact_check_white_24dp.svg");
+    height: 26px;
+}
+
+#sideimg9{
+    content: url("../resources/shopping.svg");
+    height: 26px;
+}
+
+#sideimg10{
+    content: url("../resources/request.svg");
+    height: 26px;
+}
+
+.sideselected{
+    background-color: #001f6b;
+}
+
+#expand{
+    content: url("../resources/expand_more_black_24dp.svg");
+    height: 26px;
+}
+
+
+/* Position and sizing of burger button */
+.bm-burger-button {
+    position: fixed;
+    width: 36px;
+    height: 30px;
+    left: 36px;
+    top: 36px;
+  }
+  
+  /* Color/shape of burger icon bars */
+  .bm-burger-bars {
+    background: #373a47;
+  }
+  
+  /* Color/shape of burger icon bars on hover*/
+  .bm-burger-bars-hover {
+    background: #a90000;
+  }
+  
+  /* Position and sizing of clickable cross button */
+  .bm-cross-button {
+    height: 24px;
+    width: 24px;
+  }
+  
+  /* Color/shape of close button cross */
+  .bm-cross {
+    background: #bdc3c7;
+  }
+  
+  /*
+  Sidebar wrapper styles
+  Note: Beware of modifying this element as it can break the animations - you should not need to touch it in most cases
+  */
+  .bm-menu-wrap {
+    position: fixed;
+    height: 100%;
+  }
+  
+  /* General sidebar styles */
+  .bm-menu {
+    background: #373a47; 
+    font-size: 1.15em;
+  }
+  
+  /* Morph shape necessary with bubble or elastic */
+  .bm-morph-shape {
+    fill: #373a47;
+  }
+  
+  /* Wrapper for item list */
+  .bm-item-list {
+    color: #b8b7ad;
+    padding: 0.0em;
+  }
+  
+  /* Individual item */
+  .bm-item {
+    display: inline-block;
+  }
+  
+  /* Styling of overlay */
+  .bm-overlay {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+
+  #top-menu{
+    display: block;
+    width: 100%;
+    text-align: center;
+    color: white; 
+    font-Size: 12px;
+}
