@@ -59,7 +59,8 @@ function Accesos(props) {
 	const [listap, setListaP] = useState([]);
 	const [listapd, setListaPD] = useState([]);
 	const [listau, setListaU] = useState([]);
-	 
+	
+	const [registros, setRegistros] = useState([]);
    
    
 	useEffect(() => {
@@ -69,7 +70,8 @@ function Accesos(props) {
  
 	async function getAllAccesos() {
 	  var id = "getTodosAccesos";
-	  const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id);  
+	  const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id);
+	  setRegistros(rese.data.length);
 	  setListaP(rese.data);
 	  setListaPD(rese.data);
 	  console.log(rese.data);
@@ -98,6 +100,7 @@ function Accesos(props) {
 		var name = document.getElementById('filtrarporcolab').value;  
 		var result = listapd.filter((x) => (x.name === name)); 
 		setListaP(result);
+		setRegistros(result.length);
 	}
 
 	function openModal() {
@@ -325,6 +328,9 @@ function Accesos(props) {
 							
 						</tr> 
 						))}	
+							<tr>
+							<td colSpan={2}>Registros: {registros}</td>
+						</tr>
 					</table> 
 				</div>
 

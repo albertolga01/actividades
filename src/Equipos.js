@@ -57,6 +57,7 @@ function Equipos(props) {
 	const [listau, setListaU] = useState([]);
 	
 	const [listaver, setListaVer] = useState([]);
+	const [registros, setRegistros] = useState([]);
    
    
 	useEffect(() => {
@@ -70,7 +71,9 @@ function Equipos(props) {
 	  openModalLoad();
 	  const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id);  
 	  closeModalLoad();
+	  setRegistros(rese.data.length);
 	  setListaP(rese.data);
+	  
 	  setListaPD(rese.data);
 	  console.log(rese.data);
   } 
@@ -141,6 +144,7 @@ function Equipos(props) {
 		var name = document.getElementById('filtrarporcolab').value;  
 		var result = listapd.filter((x) => (x.name === name)); 
 		setListaP(result);
+		setRegistros(result.length);
 	}
 
 	 
@@ -305,7 +309,8 @@ function Equipos(props) {
 							<th>Marca</th>
 							<th>Descripción</th>
 							<th>Asignación</th>
-							<th>Responsable</th> 
+							<th>Responsable</th>
+							<th>Departamento</th> 
 							<th>Observaciones</th> 
 							<th>Eliminar</th>
 						</tr>
@@ -317,7 +322,8 @@ function Equipos(props) {
 							<td>{item.marca}</td>
 							<td>{item.descripcion}</td>
 							<td>{formatDate(item.fechaasignacion)}</td>
-							<td>{item.name}</td> 
+							<td>{item.name}</td>
+							<td>{item.nombredepartamento}</td> 
 							<td>{item.observaciones}</td>  
 						 
 							 
@@ -334,6 +340,9 @@ function Equipos(props) {
 							
 						</tr> 
 						))}	
+						<tr>
+							<td colSpan={2}>Registros: {registros}</td>
+						</tr>
 					</table> 
 				</div>
 

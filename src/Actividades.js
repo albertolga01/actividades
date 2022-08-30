@@ -80,6 +80,8 @@ function Actividades(props) {
 	const [modalIsOpenLoad, setIsOpenLoad] = React.useState(false);
 	const [colaboradoresEP, setColaboradoresEP] = useState([]);
 	const [colaboradoresRes, setcolaboradoresRes] = useState([]);
+
+	const [registros, setRegistros] = useState([]);
 	
 	const handleEventClick = ({ event, el }) => { 
 		//var fecha = new Date(event.start);
@@ -331,7 +333,7 @@ async function getAllColaboradoresdelProyecto(){
 		setListaDos(res.data);  
 		var lista = res.data;
 		var listadeproyectos = lista.filter( (ele, ind) => ind === lista.findIndex( elem => elem.proyecto === ele.proyecto))
-   
+		setRegistros(res.data.length);
 		setListaProyectos(listadeproyectos);
 	}
 
@@ -708,6 +710,9 @@ async function actualizarFecha(folio) {
 							
 						</tr> 
 						))}	
+						<tr>
+							<td colSpan={2}>Registros: {registros}</td>
+						</tr>
 					</table> 
 				</div>
 
