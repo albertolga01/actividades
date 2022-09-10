@@ -282,7 +282,7 @@ async function getAllColaboradoresdelProyecto(){
 		let fd = new FormData() 
 		fd.append("id","addActividad") 
 		fd.append("folioproyecto",folioproyecto) 
-		fd.append("actividad",actividad) 
+		fd.append("actividad",actividad.replace('"', '').replace('"', '')) 
 		fd.append("descripcion",descripcion) 
 		fd.append("fechatermino", fechatermino)   
 		fd.append("folioencargado", folioencargado)   
@@ -291,7 +291,6 @@ async function getAllColaboradoresdelProyecto(){
 		closeModalLoad();
 		notify(res.data.trim());
 		
-			
 		} else {
 			notify("No se puede agregar actividad, favor de seleccionar un proyecto y agregar el nombre de la actividad");
 		}

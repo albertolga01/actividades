@@ -53,7 +53,7 @@ function Equipos(props) {
 
 	const [modalIsOpenLoad, setIsOpenLoad] = React.useState(false);
 	const [listap, setListaP] = useState([]);
-	const [listapd, setListaPD] = useState([]);
+	const [listapd, setListaPD] = useState([]); 
 	const [listau, setListaU] = useState([]);
 	
 	const [listaver, setListaVer] = useState([]);
@@ -147,10 +147,7 @@ function Equipos(props) {
 		setRegistros(result.length);
 	}
 
-	 
-
  
-
 	async function postFile(){
 		let fd = new FormData() 
 		fd.append("id", "16")
@@ -294,12 +291,13 @@ function Equipos(props) {
 			<div className="row p-3">
 				 
 			<div>
+				<label>Nombre: </label>&nbsp;&nbsp;
 				<select id="filtrarporcolab" style={{width:'auto', marginTop:'5px'}}  onChange={() => filterName()} >
 							{value.map(item => ( 
 									   <option value={item.name}>{item.name}</option>
 				  
 							  ))}
-							</select>
+							</select> 
 				</div>
 				<div  style={{height:'100%', overflowY: 'scroll', width:'100%'}}>
 					<table id="productstable" style={{width:'100%'}}>
