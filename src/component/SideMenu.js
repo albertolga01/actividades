@@ -112,6 +112,7 @@ export default function SideMenu(props) {
                 onClick: function () { 
                 window.focus(); 
                 this.close(); 
+                
             } 
         });      
     }

@@ -214,12 +214,12 @@ function Equipos(props) {
 	}
 
 	async function getUsuarios(){
-		var id = "2";
+		var id = "getUsuarios";
 		openModalLoad();
-		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id); 
+		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id); 
 		closeModalLoad();
 		//console.log(rese.data);
-		setValue(rese.data);    
+		setValue(res.data);    
 	} 
    
 

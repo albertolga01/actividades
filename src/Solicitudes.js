@@ -440,7 +440,7 @@ async function actualizarFecha(folio) {
 
   }
 	async function getUsuarios(){
-		var id = "2";
+		var id = "getUsuarios";
 		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id); 
 		console.log(rese.data);
 		setValue(rese.data);    
