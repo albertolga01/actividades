@@ -51,6 +51,7 @@ const customStyles = {
   
 
 
+
 function Actividades(props) {
 
 	console.log(props.dptoid);
@@ -73,13 +74,18 @@ function Actividades(props) {
 		return date;
 	}
 
-	
+	const [colaboradores, setColaboradores] =  useState([]);  
 	const [esAdmin, setEsAdmin] = useState([]);
 	const [listap, setListaP] = useState([]);
 	const [listau, setListaU] = useState([]);
 	const [modalIsOpenLoad, setIsOpenLoad] = React.useState(false);
+	const [modalIsOpen1, setIsOpen1] = React.useState(false);
 	const [colaboradoresEP, setColaboradoresEP] = useState([]);
 	const [colaboradoresRes, setcolaboradoresRes] = useState([]);
+	const [nombreproyecto, setNombreproyecto] = useState([]);
+	const [folioProyecto, setfolioProyecto] = useState([]);
+	const [folioActividad, setFolioActividad] = useState([]);
+	
 
 	const [registros, setRegistros] = useState([]);
 	
@@ -93,7 +99,10 @@ function Actividades(props) {
 			toast(message);
 		}
 	
-    
+		function closeModal1() {
+			setIsOpen1(false);
+		  }
+		
 		function openModalLoad() { 
 			setIsOpenLoad(true); 
 			 }  
@@ -283,8 +292,8 @@ async function getAllColaboradoresdelProyecto(){
 		let fd = new FormData() 
 		fd.append("id","addActividad") 
 		fd.append("folioproyecto",folioproyecto) 
-		fd.append("actividad",actividad.replace('"', '').replace('"', '')) 
-		fd.append("descripcion",descripcion) 
+		fd.append("actividad",actividad.replaceAll("'", "´").replaceAll('"', "´´")) 
+		fd.append("descripcion",descripcion.replaceAll("'", "´").replaceAll('"', "´´")) 
 		fd.append("fechatermino", fechatermino)   
 		fd.append("folioencargado", folioencargado)   
 		fd.append("folioresponsable", folioresponsable)   
@@ -499,7 +508,40 @@ async function actualizarFecha(folio) {
 		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id); 
 		//console.log(rese.data);
 		setValue(rese.data);    
-	} 
+	}
+	
+
+	async function actualizarResponsable(proyecto, folioproyecto, folioactividad){
+		setIsOpen1(true);	
+		setNombreproyecto(proyecto); 
+		setfolioProyecto(folioProyecto); 
+		setFolioActividad(folioactividad);
+		setColaboradoresEP([]);
+		var id = "getColabEnProyecto";  
+		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&folio='+folioproyecto);
+		console.log(res.data); 
+		setColaboradoresEP(res.data);
+
+	}
+	async function actualizarResponsable1(){
+ 
+		if(window.confirm('¿Actualizar responsable?')){ 
+			let fd = new FormData() 
+			fd.append("id", "actualizarResponsableActividad")
+			fd.append("userid", document.getElementById("foliocolab").value)
+			fd.append("folioActividad", folioActividad)
+			const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
+			console.log(res.data); 
+			notify(res.data.trim());
+			getActividades();
+			setIsOpen1(false);
+		}    
+
+	}
+
+
+
+	
    
 	
   		// Dynamically create select list
@@ -647,7 +689,9 @@ async function actualizarFecha(folio) {
 					<table id="productstable" style={{width:'100%'}}>
 						<tr> 
 							<th>Folio</th>
-							<th>Responsable</th>
+							<th>Responsable</th> 
+							<th></th>
+							 
 							<th>Proyecto</th>
 							<th>Actividad</th>
 							<th>Descripción</th>
@@ -672,6 +716,11 @@ async function actualizarFecha(folio) {
 							<td  align='center' className='id-orden'>{item.folio}</td>
 						 
 							<td><label onClick={() => Notificar(item.name, item.actividad)}>{item.name}</label></td>
+							{ (item.rol == 2) ? 
+							<td><button  className='btn btn-outline-success btn-sm' onClick={() => actualizarResponsable(item.proyecto, item.folioproyecto, item.folio)}><BsArrowRepeat /></button></td>
+							:<td></td>
+							}
+							
 							<td style={{  boxShadow:'0px 0px 0px 8px '+item.backgroundColor+' inset'}} align='center' ><label>{item.proyecto}</label></td>
 							<td>{item.actividad}</td>
 							<td>{item.descripcion}</td> 
@@ -730,6 +779,38 @@ async function actualizarFecha(folio) {
 						<ThreeDots color="#0071ce" height={80} width={80} /> 
 						</div>  
 				</Modal>
+
+
+
+				<Modal
+				isOpen={modalIsOpen1} 
+				onRequestClose={closeModal1}
+				style={customStyles}
+				contentLabel="Example Modal"
+			>
+				<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'blue'}}>Proyecto </h2>
+				<b><label>{nombreproyecto}</label></b>
+				
+				<div>Actualizar response</div> 
+				 
+				
+			<br></br> 
+
+
+			<select id="foliocolab" style={{ marginTop:'5px', width:'100%'}}>
+					{colaboradoresEP.map(item => ( 
+								<option value={item.userid}>{item.name}</option>
+
+					))}
+					</select>
+			<br></br>
+			<br></br>
+
+				<button onClick={closeModal1} class="btn btn-outline-danger btn-sm ">Cancelar</button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<button  class="btn btn-outline-success btn-sm" onClick={() => actualizarResponsable1()}>Actualizar</button>
+			</Modal>
+
+
 							<h2>Calendario de actividades</h2>
 				<FullCalendar
 				plugins={[ dayGridPlugin ]}
