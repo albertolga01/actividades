@@ -1,16 +1,12 @@
 import React, { useState, useEffect, useSyncExternalStore } from 'react'
-import App from '../App';
-import Requisiciones from '../Requisiciones';
+import App from '../App'; 
 import Proyectos from '../Proyectos';
 import GrupoTrabajo from '../GrupoTrabajo';
 import Actividades from '../Actividades';
-import ActividadesFinalizadas from '../ActividadesFinalizadas';
-import NvaRequisicion from '../Nvarequisicion';
-import Ordenes from '../Ordenes';
+import ActividadesFinalizadas from '../ActividadesFinalizadas'; 
 import ChangePassForm from '../ChangePassForm';
 import Equipos from '../Equipos';
-import Accesos from '../Accesos';
-import OrdPago from '../OrdPago';
+import Accesos from '../Accesos'; 
 import Solicitudes from '../Solicitudes';
 import Push from 'push.js';
 
@@ -59,17 +55,9 @@ export default function SideMenu(props) {
 
         if (selected === '1') {
             return <App tipo={props.tipo} departamento={props.departamento} dptoid={props.dptoid} rzonsocial={props.rzonsocial}/>;
-        } else if (selected === '2') {
-            return <Requisiciones tipo={props.tipo} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
-        } else if (selected === '3') {
-            return <NvaRequisicion tipo={props.tipo} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
-        } else if (selected === '4') {
-            return <Ordenes tipo={props.tipo} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
-        } else if (selected === '5') {
+        }   else if (selected === '5') {
             return <ChangePassForm userid={props.userid}/>;
-        } else if (selected === '6') {
-            return <OrdPago tipo={props.tipo} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
-        } else if (selected === 'Proyectos') {
+        }   else if (selected === 'Proyectos') {
             return <Proyectos tipo={props.tipo} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
         } else if (selected === 'Actividades') {
             return <Actividades tipo={props.tipo} admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;

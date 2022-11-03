@@ -1,16 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import App from '../App';
-import Requisiciones from '../Requisiciones';
+import React, { useState, useEffect } from 'react' 
 import Proyectos from '../Proyectos';
 import GrupoTrabajo from '../GrupoTrabajo';
 import Actividades from '../Actividades';
-import ActividadesFinalizadas from '../ActividadesFinalizadas';
-import NvaRequisicion from '../Nvarequisicion';
-import Ordenes from '../Ordenes';
+import ActividadesFinalizadas from '../ActividadesFinalizadas';  
 import ChangePassForm from '../ChangePassForm';
 import Equipos from '../Equipos';
-import Accesos from '../Accesos';
-import OrdPago from '../OrdPago';
+import Accesos from '../Accesos'; 
 
 import { push as Menu } from 'react-burger-menu'
 

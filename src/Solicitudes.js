@@ -76,14 +76,7 @@ function Solicitudes(props) {
 	const [modalIsOpenLoad, setIsOpenLoad] = React.useState(false);
 	const [colaboradoresEP, setColaboradoresEP] = useState([]);
 	const [colaboradoresRes, setcolaboradoresRes] = useState([]);
-	
-	const handleEventClick = ({ event, el }) => { 
-		//var fecha = new Date(event.start);
-		var fecha = (event.start).toLocaleDateString("es-MX");
-		notify("Actividad: "+ event.title + " " + "Responsable: " + event.id + " Fecha: " + fecha); 
-		console.log(event);
-		};
-	  
+ 
     
 		function openModalLoad() { 
 			setIsOpenLoad(true); 
@@ -253,21 +246,7 @@ function myFunction(item) {
 	}
  
 
-	async function postFile(){
-		let fd = new FormData() 
-		fd.append("id", "16")
-		fd.append("idorden", id)
-		fd.append("tipo", tipo)
-		fd.append("file", document.getElementById("input-cotizacion").files[0]) 
-		
-		const res = await axios.post(process.env.REACT_APP_API_URL,  fd, {
-			headers: {
-				'Content-Type': 'multipart/form-data'
-			}
-		});
- 
-		notify(res.data.trim());
-	}
+	 
 
 	async function getSolicitudes(){    
 		//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
@@ -368,33 +347,7 @@ function myFunction(item) {
 		return diffInDays;
 	 }
 
-	 
-
-
-	function getColor(date){
-		var color = "";  
-	    var dateActividad = date.slice(0, 10);
-		var dateToday = new Date().toISOString().slice(0, 10); 
-		var diffs = diff(dateActividad, dateToday);
-		//var diffs = 0;
-		//alert(diffs);
-		if (diffs >= 0) {
-			//rojo    
-			 color = "rgba(245, 15, 15, 0.71)";
-			 
-		 }else if(diffs >= -3) {  
-			 //naranja 
-	     	 color = "rgba(255, 122, 5, 0.71)";
-				
-		 } else if(diffs >= -7){
-			 // verde
-			 color = "rgba(18, 255, 5, 0.71)";
-		 }else{
-			 color = "";
-		 }
- 			   
-		 return color;
-	}
+ 
 
 	function eliminarActividad(folio){
 		let toSend = new FormData();
@@ -421,24 +374,7 @@ function myFunction(item) {
         // update the state
     this.setState({name: event.target.value});
 } 
-
-
-async function actualizarFecha(folio) {
-	var date = document.getElementById(folio).value;
-	if(window.confirm('Actualizar fecha de actividad con folio: ' + folio + ' al día: ' + date)){ 
-		let fd = new FormData() 
-		fd.append("id", "actualizarFechaActividad")
-		fd.append("folio", folio)
-		fd.append("fecha", date)
-		const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
-		console.log(res.data);
-		notify(res.data.trim());
-		getSolicitudes();
-	}    
-	
-
-
-  }
+ 
 	async function getUsuarios(){
 		var id = "getUsuarios";
 		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id); 
@@ -471,7 +407,8 @@ async function actualizarFecha(folio) {
 
 	return (
 		<div className="container ">
-			<input id='input-cotizacion' type='file' style={{display:'none'}} onChange={()=> postFile()}></input>
+			
+			
 			<div style={{width:'100%'}} align="center">
 			<Nabvar titulo="Solicitudes" departamento={props.rzonsocial} dptoid={props.dptoid}/>    
 			</div>
@@ -664,15 +601,7 @@ async function actualizarFecha(folio) {
 						<ThreeDots color="#0071ce" height={80} width={80} /> 
 						</div>  
 				</Modal>
-			{/*				<h2>Calendario de solicitudes</h2>
-		 	<FullCalendar
-  plugins={[ dayGridPlugin ]}
-  initialView="dayGridMonth"
-  weekends={true}
-  locale={esLocale}
-  events={lista}
-  eventClick={handleEventClick}
-/>*/}	
+			 	
 			</div>
 
 			

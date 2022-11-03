@@ -139,30 +139,7 @@ function Accesos(props) {
 	 
 	}
   
- 
-
-	 
-
-	 
-
- 
-
-	async function postFile(){
-		let fd = new FormData() 
-		fd.append("id", "16")
-		fd.append("idorden", id)
-		fd.append("tipo", tipo)
-		fd.append("file", document.getElementById("input-cotizacion").files[0]) 
-		
-		const res = await axios.post(process.env.REACT_APP_API_URL,  fd, {
-			headers: {
-				'Content-Type': 'multipart/form-data'
-			}
-		});
-
-	//	verRequisicion(id);
-	notify(res.data.trim());
-	}
+  
 
 	async function getEquipos(){    
 		//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
@@ -178,11 +155,7 @@ function Accesos(props) {
 		 
 	}
 
-   
-
-	 
-	 
-
+    
 	function formatDate(date){
 		let index = date.search(" ");
 		date = date.substring(0, index);
@@ -226,8 +199,6 @@ function Accesos(props) {
 
 	return (
 		<div className="container ">
-			<input id='input-cotizacion' type='file' style={{display:'none'}} onChange={()=> postFile()}></input>
-
 			<Nabvar titulo="Accesos" departamento={props.rzonsocial} dptoid={props.dptoid}/>    
 			<div style={{width:'100%'}} align="right">
 			<button style={{ marginRight:'10px',  width:'75px'}} onClick={openModal} class="btn btn-outline-success btn-sm">Nuevo</button><br></br>

@@ -112,7 +112,7 @@ async function getColaboradores(folio) {
 }
 
 async function getTodosColaboradores() {
-	var id = "2";
+	var id = "getAllColaboradores1";
 	
 	const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id);  
 	setListaUT(rese.data); 
@@ -182,28 +182,7 @@ async function getProyectosGrupo(folio) {
 
 
 
-	  async function addActividad(){  
-		var folioproyecto = document.getElementById("folioproyecto").value;
-		var actividad = document.getElementById("actividad").value;
-		var descripcion = document.getElementById("descripcion").value;
-		var fechatermino = document.getElementById("fechatermino").value;
-		var folioencargado = document.getElementById("folioencargado").value;
-		var folioresponsable = document.getElementById("folioresponsable").value;
-		let fd = new FormData() 
-		fd.append("id","addActividad") 
-		fd.append("folioproyecto",folioproyecto) 
-		fd.append("actividad",actividad) 
-		fd.append("descripcion",descripcion) 
-		fd.append("fechatermino", fechatermino)   
-		fd.append("folioencargado", folioencargado)   
-		fd.append("folioresponsable", folioresponsable)   
-		const res = await axios.post(process.env.REACT_APP_API_URL, fd);
-		notify(res.data.trim());
-		getActividades();
-		//verRequisicion(folio);
-	 
-	}
-  
+ 
 
 	async function addGrupo(){  
 		var Encargado = document.getElementById("encargado").value;
@@ -237,54 +216,11 @@ async function getProyectosGrupo(folio) {
 	 
 	}
 
+  
+
  
 
-	async function getCargas(){
-		var id = "getCargas";
-		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id);
-	 
-		setLista(res.data);
-		
-		console.log(res.data);
-	
-	  }
-	async function addCotizacion(cell){ 
-		console.log(cell);
-		id = document.getElementById("folio").value; 
-		tipo = cell;
-
-		if(id != ""){
-			document.getElementById("input-cotizacion").click();
-		}
-	}
-
-	async function postFile(){
-		let fd = new FormData() 
-		fd.append("id", "16")
-		fd.append("idorden", id)
-		fd.append("tipo", tipo)
-		fd.append("file", document.getElementById("input-cotizacion").files[0]) 
-		
-		const res = await axios.post(process.env.REACT_APP_API_URL,  fd, {
-			headers: {
-				'Content-Type': 'multipart/form-data'
-			}
-		});
-
-	//	verRequisicion(id);
-	notify(res.data.trim());
-	}
-
 	async function getActividades(){    
-		//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
-		 
-	/*	var id = "getActividades";
-		var date = document.getElementById("input-fecha").value; 
-		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&date='+date+'&userid='+props.userid);
-		console.log("Actividades"); 
-		console.log(res.data); 
-		var table = document.getElementById('productstable');
-		setLista(res.data); */
 		 
 	}
  
@@ -293,7 +229,7 @@ async function getProyectosGrupo(folio) {
 
 	return (
 		<div className="container ">
-			<input id='input-cotizacion' type='file' style={{display:'none'}} onChange={()=> postFile()}></input>
+			
 			<Nabvar titulo="Grupo de Trabajo" departamento={props.rzonsocial} dptoid={props.dptoid}/>    
 			<div style={{width:'100%'}} align="right">
 			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-success btn-sm">Nuevo Grupo</button><br></br>

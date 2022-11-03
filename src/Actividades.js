@@ -309,21 +309,7 @@ async function getAllColaboradoresdelProyecto(){
 	 
 	}
   
-	async function postFile(){
-		let fd = new FormData() 
-		fd.append("id", "16")
-		fd.append("idorden", id)
-		fd.append("tipo", tipo)
-		fd.append("file", document.getElementById("input-cotizacion").files[0]) 
-		
-		const res = await axios.post(process.env.REACT_APP_API_URL,  fd, {
-			headers: {
-				'Content-Type': 'multipart/form-data'
-			}
-		});
  
-		notify(res.data.trim());
-	}
 
 	async function getActividades(){    
 		//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
@@ -477,7 +463,9 @@ async function actualizarComentarios(folio){
 		let fd = new FormData() 
 		fd.append("id", "actualizarComentarios")
 		fd.append("folio", folio) 
-		fd.append("comentarios", document.getElementById("observacionesActividades"+folio).value) 
+		fd.append("comentarios", document.getElementById("observacionesActividades"+folio).value)
+		fd.append("actividad", document.getElementById("actividad1"+folio).value)
+		fd.append("descripcion", document.getElementById("descripcion1"+folio).value)
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
 		console.log(res.data);
 		notify(res.data.trim());
@@ -549,7 +537,7 @@ async function actualizarFecha(folio) {
 
 	return (
 		<div className="container ">
-			<input id='input-cotizacion' type='file' style={{display:'none'}} onChange={()=> postFile()}></input>
+			 
 			<div style={{width:'100%'}} align="center">
 			<Nabvar titulo="Actividades" departamento={props.rzonsocial} dptoid={props.dptoid}/>    
 			</div>
@@ -722,9 +710,24 @@ async function actualizarFecha(folio) {
 							}
 							
 							<td style={{  boxShadow:'0px 0px 0px 8px '+item.backgroundColor+' inset'}} align='center' ><label>{item.proyecto}</label></td>
-							<td>{item.actividad}</td>
-							<td>{item.descripcion}</td> 
 							
+							{ (item.rol == 2) ? 
+							<>
+							<td align='center'>
+								 
+								<input id={"actividad1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'100%', marginTop:'5px'}}/>
+  
+						 	</td>
+							<td align='center'> 
+							<input id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text"  style={{width:'100%', marginTop:'5px'}}/>
+						 </td>
+						 </>
+                         : 
+						 <>
+						 <td>{item.actividad} <input id={"actividad1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/></td>
+						 <td>{item.descripcion} <input id={"descripcion1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/></td> 
+						 </>
+							}
 							<td>{formatDate(item.fechainicio)}</td> 
 							<td align='center' style={{backgroundColor: getColor(item.fechatermino), color:  'black'}}> <input  style={{width:'95px', height:'31px', backgroundColor: getColor(item.fechatermino)}} type="date" id={item.folio} onChange={() => actualizarFecha(item.folio)} value={(item.fechatermino).substring(0,10)}/></td>  
 							<td>
@@ -737,15 +740,7 @@ async function actualizarFecha(folio) {
 							</td>
 							<td align='center'><input defaultValue={item.comentarios} id={"observacionesActividades"+item.folio} style={{width:'100%', height:'31px' }}></input></td>
 							<td><button  className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(item.folio)}><BsArrowRepeat /></button></td>
-							{ (item.rol == 2) ? 
-							<td align='center'>
-							<button className='btn btn-outline-success btn-sm' onClick={ () => finalizado(item.folio, item.folioresponsable, item.actividad) }><BsFillCheckCircleFill /></button>
-						</td>
-                         : 
-						 <td>
-						 	</td>
-                          
-							}
+						
 							{ (item.rol == 2) ? 
 							<td>
 							<button className='btn btn-outline-danger btn-sm' onClick={ () => eliminarActividad(item.folio) }><BsXCircleFill /></button>

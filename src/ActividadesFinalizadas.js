@@ -115,21 +115,7 @@ async function getAllColaboradores() {
  
 
 
-	async function getCargas(){
-		var id = "getCargas";
-		const res = await axios.get('https://flotillas.grupopetromar.com/apirestflotilla/?id='+id);
 	 
-		setLista(res.data);
-		
-		console.log(res.data);
-	
-	  }
-	  function dif(start, end){
-		//start = formatDate(start);
-		//end = formatDate(end);
-		var a = diff(start, end);
-		return a;
-	  }
 
 	  function diff(start, end) {
 		var date1 = new Date(start);
@@ -146,22 +132,7 @@ async function getAllColaboradores() {
 		return diffInDays;
 	 }
 	 
-	async function postFile(){
-		let fd = new FormData() 
-		fd.append("id", "16")
-		fd.append("idorden", id)
-		fd.append("tipo", tipo)
-		fd.append("file", document.getElementById("input-cotizacion").files[0]) 
-		
-		const res = await axios.post(process.env.REACT_APP_API_URL,  fd, {
-			headers: {
-				'Content-Type': 'multipart/form-data'
-			}
-		});
-
-	//	verRequisicion(id);
-	notify(res.data.trim());
-	}
+ 
 
 	async function getActividades(){    
 		//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
@@ -185,7 +156,7 @@ async function getAllColaboradores() {
 	 
 
 	async function getUsuarios(){
-		var id = "2";
+		var id = "getUsuarios";
 		openModalLoad();
 		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id); 
 		closeModalLoad();
@@ -198,9 +169,7 @@ async function getAllColaboradores() {
 	let options = [];
 
 	return (
-		<div className="container ">
-			<input id='input-cotizacion' type='file' style={{display:'none'}} onChange={()=> postFile()}></input>
-
+		<div className="container "> 
 			<Nabvar titulo="Actividades Finalizadas" departamento={props.rzonsocial} dptoid={props.dptoid}/>    
 			<div style={{width:'100%'}} align="right">
 			<button style={{marginTop:'5px', marginRight:'10px',  width:'75px'}} onClick={() => getActividades()} class="btn btn-outline-success btn-sm">Actualizar</button>
@@ -260,7 +229,7 @@ async function getAllColaboradores() {
 							<td>{item.observaciones}</td> 
 							<td>{formatDate(item.fechainicio)}</td> 
 							<td>{formatDate(item.fechatermino)}</td> 
-							<td align='center'>{dif(item.fechai, item.fechat) + ' día(s)'}</td>
+							<td align='center'>{diff(item.fechai, item.fechat) + ' día(s)'}</td>
 						 
 						  
 							
