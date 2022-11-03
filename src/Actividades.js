@@ -740,7 +740,16 @@ async function actualizarFecha(folio) {
 							</td>
 							<td align='center'><input defaultValue={item.comentarios} id={"observacionesActividades"+item.folio} style={{width:'100%', height:'31px' }}></input></td>
 							<td><button  className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(item.folio)}><BsArrowRepeat /></button></td>
-						
+							{ (item.rol == 2) ? 
+							<td align='center'>
+							<button className='btn btn-outline-success btn-sm' onClick={ () => finalizado(item.folio, item.folioresponsable, item.actividad) }><BsFillCheckCircleFill /></button>
+						</td>
+                         : 
+						 <td>
+						 	</td>
+
+							}
+
 							{ (item.rol == 2) ? 
 							<td>
 							<button className='btn btn-outline-danger btn-sm' onClick={ () => eliminarActividad(item.folio) }><BsXCircleFill /></button>
