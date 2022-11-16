@@ -438,6 +438,7 @@ async function getAllColaboradoresdelProyecto(){
 			fetch(process.env.REACT_APP_API_URL, {
 				method: "POST",
 				mode: "cors",
+				credentials: 'include',
 				body: toSend
 			})
 			.then(response => response.text())
@@ -675,7 +676,7 @@ async function actualizarFecha(folio) {
 				
 				<div  style={{height:'100%', overflowY: 'scroll', width:'100%'}}>
 					<table id="productstable" style={{width:'100%'}}>
-						<tr> 
+						<tr > 
 							<th>Folio</th>
 							<th>Responsable</th> 
 							<th></th>
@@ -699,7 +700,7 @@ async function actualizarFecha(folio) {
 
 						{ lista.map(item => ( 
 							 
-						<tr style={{  fontSize:'13.5px', border: '2px solid #ABB2B9'}}>
+						<tr id="tabletr" style={{  fontSize:'13.5px', border: '2px solid #ABB2B9'}}>
 							 
 							<td  align='center' className='id-orden'>{item.folio}</td>
 						 
@@ -724,8 +725,8 @@ async function actualizarFecha(folio) {
 						 </>
                          : 
 						 <>
-						 <td>{item.actividad} <input id={"actividad1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/></td>
-						 <td>{item.descripcion} <input id={"descripcion1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/></td> 
+						 <td>{item.actividad} </td>
+						 <td>{item.descripcion}</td> 
 						 </>
 							}
 							<td>{formatDate(item.fechainicio)}</td> 

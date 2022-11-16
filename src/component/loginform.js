@@ -39,7 +39,7 @@ const Login = (isLoggedIna) =>  {
 		var pass = document.getElementById("form-password").value;  
 		let fd = new FormData()  
 		fd.append("user", user)
-		fd.append("pass", pass)
+		fd.append("pass", pass) 
 		fd.append("id", "loginActividades");    
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd);
 		console.log(res.data);

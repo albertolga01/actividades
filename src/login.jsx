@@ -30,7 +30,7 @@ class Login extends React.Component {
         var data = [user, password];
     
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://localhost:8080/apirest/login.php");
+        xhr.open("POST", "http://localhost:3000/apirest/login.php");
         xhr.setRequestHeader("Content-Type", "application/json"); 
         xhr.send(JSON.stringify(data));
         xhr.onload = function(){

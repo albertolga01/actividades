@@ -72,3 +72,10 @@ color: white;
     transform: rotate(360deg);
   }
 }
+
+
+#tabletr:hover{
+  
+  background: rgba(77, 128, 169, 0.411);
+
+}
