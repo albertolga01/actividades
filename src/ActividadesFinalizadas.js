@@ -140,13 +140,18 @@ async function getAllColaboradores() {
 		var id = "getActividadesFinalizadas";
 		openModalLoad();
 		var date = document.getElementById("input-fecha").value; 
-		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&date='+date+'&userid='+props.userid);
+		var termino = document.getElementById("input-fecha-termino").value; 
+		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&date='+date+'&userid='+props.userid+'&termino='+termino);
 		closeModalLoad();
 		console.log("Actividades"); 
 		console.log(res.data); 
 		var table = document.getElementById('productstable');
 		setLista(res.data); 
 		setListaDos(res.data); 
+		var lista = res.data;
+		var listadeproyectos = lista.filter( (ele, ind) => ind === lista.findIndex( elem => elem.proyecto === ele.proyecto))
+		//setRegistros(res.data.length);
+		setListaP(listadeproyectos);
 	}
 
   	 
@@ -178,8 +183,12 @@ async function getAllColaboradores() {
   </div>
 			<div className="row p-3">
 				<div>
-					<label style={{width:'223px'}}>Filtrar por fecha: &nbsp; </label>
+					<span>Filtrar por fecha:&nbsp;</span>
 					<input id='input-fecha' type='date' style={{width:'97px',fontSize:'12px', cursor:'pointer'}} onChange={() => getActividades()}></input>
+					<span>&nbsp; </span>
+					<input id='input-fecha-termino' type='date' style={{width:'97px',fontSize:'12px', cursor:'pointer'}} onChange={() => getActividades()}></input>
+					<span>&nbsp; </span>
+					<button  onClick={() => getActividades()} class="btn btn-outline-success btn-sm">Filtrar</button>
 				</div>
 				<div>
 					<select id="filtrarproyecto" style={{width:'320px', marginTop:'5px'}}   onChange={() => filterProyecto()}>

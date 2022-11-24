@@ -9,7 +9,8 @@ import Modal from 'react-modal';
 import './App.css'; 
 import { FaBeer, FaReact, Farefr } from 'react-icons/fa';
 import { AiFillAlert } from "react-icons/ai";
-import { BsArrowRepeat, BsFillCheckCircleFill, BsXCircleFill } from "react-icons/bs";
+import { BsArrowRepeat, BsFillCheckCircleFill, BsXCircleFill, BsEyeFil, BsEyeSlashFill } from "react-icons/bs";
+import { FaEye } from "react-icons/fa";
 
 import moment from 'moment';
  
@@ -122,7 +123,20 @@ function Actividades(props) {
 	},[])
 	
 	 
+	function mostrarOcultas(){
+		let ocultas = document.getElementById("ocultas").checked;
+		 
 
+		
+		if(ocultas == true){
+			var result = listados.filter((x) => (x.oculta === "1")); 
+			setLista(result);
+		}else if(ocultas == false){
+			var result = listados.filter((x) => (x.oculta === "0")); 
+			setLista(result);
+		} 
+		 
+	}
 
 	function filterProyecto() {
 		var proyectos = document.getElementById('filtrarproyecto').value;  
@@ -316,6 +330,7 @@ async function getAllColaboradoresdelProyecto(){
 		setLista([]);
 		setListaDos([]);
 		openModalLoad(); 
+		document.getElementById("ocultas").checked = false;
 		var id = "getActividades";
 		var date = document.getElementById("input-fecha").value; 
 		var termino = document.getElementById("input-fecha-termino").value; 
@@ -324,12 +339,14 @@ async function getAllColaboradoresdelProyecto(){
 		console.log("Actividades"); 
 		console.log(res.data); 
 		var table = document.getElementById('productstable');
-		setLista(res.data); 
+		var result = res.data.filter((x) => (x.oculta === "0")); 
+			setLista(result); 
 		setListaDos(res.data);  
 		var lista = res.data;
 		var listadeproyectos = lista.filter( (ele, ind) => ind === lista.findIndex( elem => elem.proyecto === ele.proyecto))
 		setRegistros(res.data.length);
 		setListaProyectos(listadeproyectos);
+		 
 	}
 
 
@@ -467,6 +484,19 @@ async function actualizarComentarios(folio){
 		fd.append("comentarios", document.getElementById("observacionesActividades"+folio).value)
 		fd.append("actividad", document.getElementById("actividad1"+folio).value)
 		fd.append("descripcion", document.getElementById("descripcion1"+folio).value)
+		const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
+		console.log(res.data);
+		notify(res.data.trim());
+		getActividades();
+	}
+
+}
+async function ocultarActividad(folio){
+	if(window.confirm('Deseas ocultar la actividad con folio: ' + folio)){ 
+		let fd = new FormData() 
+		fd.append("id", "ocultarActividad")
+		fd.append("folio", folio) 
+		 
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
 		console.log(res.data);
 		notify(res.data.trim());
@@ -673,6 +703,12 @@ async function actualizarFecha(folio) {
 				<div> 
 				</div>
 				}
+				<div>
+					<span>Mostrar Ocultas</span>&nbsp;&nbsp;&nbsp;
+				<input type="checkbox" id="ocultas" onChange={() => mostrarOcultas()}></input>
+
+				</div>
+				 
 				
 				<div  style={{height:'100%', overflowY: 'scroll', width:'100%'}}>
 					<table id="productstable" style={{width:'100%'}}>
@@ -689,6 +725,7 @@ async function actualizarFecha(folio) {
 							<th>Término</th>
 							<th>Estado</th> 
 							<th>Observaciones</th>
+							<th></th> 
 							<th></th> 
 							<th></th> 
 							<th></th>
@@ -741,6 +778,7 @@ async function actualizarFecha(folio) {
 							</td>
 							<td align='center'><input defaultValue={item.comentarios} id={"observacionesActividades"+item.folio} style={{width:'100%', height:'31px' }}></input></td>
 							<td><button  className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(item.folio)}><BsArrowRepeat /></button></td>
+							<td><button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(item.folio)}><FaEye /></button></td>
 							{ (item.rol == 2) ? 
 							<td align='center'>
 							<button className='btn btn-outline-success btn-sm' onClick={ () => finalizado(item.folio, item.folioresponsable, item.actividad) }><BsFillCheckCircleFill /></button>
