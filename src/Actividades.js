@@ -9,7 +9,7 @@ import Modal from 'react-modal';
 import './App.css'; 
 import { FaBeer, FaReact, Farefr } from 'react-icons/fa';
 import { AiFillAlert } from "react-icons/ai";
-import { BsArrowRepeat, BsFillCheckCircleFill, BsXCircleFill, BsEyeFil, BsEyeSlashFill } from "react-icons/bs";
+import { BsArrowRepeat, BsFillCheckCircleFill, BsXCircleFill, BsEyeFil, BsEyeSlashFill, BsFillFileEarmarkPlusFill, BsUpload } from "react-icons/bs";
 import { FaEye } from "react-icons/fa";
 
 import moment from 'moment';
@@ -22,6 +22,7 @@ import {ThreeDots } from  'react-loader-spinner'
 
 
 import Pusher from 'pusher-js'; 
+import { wait } from '@testing-library/react';
 
 const customStyles = {
 	content: {
@@ -123,11 +124,11 @@ function Actividades(props) {
 	},[])
 	
 	 
-	function mostrarOcultas(){
+	async 	function   mostrarOcultas(){
 		let ocultas = document.getElementById("ocultas").checked;
 		 
-
-		
+		setLista([]);
+		await new Promise(resolve => setTimeout(resolve, 1000)); // 3 sec
 		if(ocultas == true){
 			var result = listados.filter((x) => (x.oculta === "1")); 
 			setLista(result);
@@ -203,18 +204,20 @@ async function getAllColaboradoresdelProyecto(){
 	}
 	}
 
- 
+	const [modalIsOpenArchivo, setIsOpenArchivo] = React.useState(false);
 	const [modalIsOpen, setIsOpen] = React.useState(false);
 	const [modalIsOpenC, setIsOpenC] = React.useState(false);
 	let subtitle; 
 	const [lista, setLista] =  useState([]);  
 	const [listados, setListaDos] =  useState([]);  
 	const [value, setValue] = useState([]); 
+	const [folioActividad1, setFolioActividad1] = useState([]); 
 	let id = 0; 
 	let tipo = 0; 
  
  
 	const [listaproyectos, setListaProyectos] =  useState([]);
+	const [listadocumentos, setListaDocumentos] =  useState([]);
 
 	useEffect(() => {
 		getActividades(); 
@@ -248,6 +251,16 @@ async function getAllColaboradoresdelProyecto(){
 	
 
 
+		function openModalA() {
+			setIsOpenArchivo(true);
+		  }
+		  function closeModalA() {
+			setIsOpenArchivo(false);
+		  }
+		  function afterOpenModalA() {
+			// references are now sync'd and can be accessed.
+			subtitle.style.color = 'black';
+		  }
 	function openModal() {
 		setIsOpen(true);
 	  }
@@ -323,7 +336,22 @@ async function getAllColaboradoresdelProyecto(){
 	 
 	}
   
- 
+	async function addDocumento(){
+		openModalLoad();
+		var documento = document.getElementById("documento");
+		var descripcion = document.getElementById("descripcionArhivo").value;
+		let fd = new FormData() 
+		fd.append("id","cargarDocumento")
+		fd.append("folio", folioActividad1) 
+		fd.append("documento", documento.files[0]);
+		fd.append("descripcion", descripcion);
+		setListaDocumentos([]);
+		const res = await axios.post(process.env.REACT_APP_API_URL, fd);
+		closeModalLoad();
+		closeModalA();
+		notify(res.data.trim());
+		
+	}
 
 	async function getActividades(){    
 		//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
@@ -335,9 +363,7 @@ async function getAllColaboradoresdelProyecto(){
 		var date = document.getElementById("input-fecha").value; 
 		var termino = document.getElementById("input-fecha-termino").value; 
 		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&date='+date+'&userid='+props.userid+'&termino='+termino);
-		closeModalLoad();
-		console.log("Actividades"); 
-		console.log(res.data); 
+		closeModalLoad(); 
 		var table = document.getElementById('productstable');
 		var result = res.data.filter((x) => (x.oculta === "0")); 
 			setLista(result); 
@@ -530,6 +556,15 @@ async function actualizarFecha(folio) {
 	}
 	
 
+	async function getDocumentos(folio){
+		var id = "getDocumentos";
+		setListaDocumentos([]);
+		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&folio='+folio); 
+		//console.log(rese.data);
+		setListaDocumentos(rese.data);    
+	}
+	
+
 	async function actualizarResponsable(proyecto, folioproyecto, folioactividad){
 		setIsOpen1(true);	
 		setNombreproyecto(proyecto); 
@@ -558,6 +593,15 @@ async function actualizarFecha(folio) {
 
 	}
 
+
+	function agregarDoc(folio){
+		openModalA();
+
+		setFolioActividad1(folio);
+		getDocumentos(folio);
+
+
+	}
 
 
 	
@@ -726,7 +770,8 @@ async function actualizarFecha(folio) {
 							<th>Estado</th> 
 							<th>Observaciones</th>
 							<th></th> 
-							<th></th> 
+							<th></th>
+							<th>Archivo</th> 
 							<th></th> 
 							<th></th>
 							 
@@ -779,6 +824,7 @@ async function actualizarFecha(folio) {
 							<td align='center'><input defaultValue={item.comentarios} id={"observacionesActividades"+item.folio} style={{width:'100%', height:'31px' }}></input></td>
 							<td><button  className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(item.folio)}><BsArrowRepeat /></button></td>
 							<td><button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(item.folio)}><FaEye /></button></td>
+							<td><button style={{width:'100%'}} className='btn btn-outline-primary btn-sm' onClick={() => agregarDoc(item.folio)}><BsUpload /></button></td>
 							{ (item.rol == 2) ? 
 							<td align='center'>
 							<button className='btn btn-outline-success btn-sm' onClick={ () => finalizado(item.folio, item.folioresponsable, item.actividad) }><BsFillCheckCircleFill /></button>
@@ -852,6 +898,48 @@ async function actualizarFecha(folio) {
 				<button onClick={closeModal1} class="btn btn-outline-danger btn-sm ">Cancelar</button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 				<button  class="btn btn-outline-success btn-sm" onClick={() => actualizarResponsable1()}>Actualizar</button>
 			</Modal>
+
+
+					<Modal
+			isOpen={modalIsOpenArchivo}
+			onAfterOpen={afterOpenModalA}
+			onRequestClose={closeModalA}
+			style={customStyles}
+			contentLabel="Example Modal"
+		>
+			<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'black'}}>Agregar Archivo</h2> 
+
+			<div>Archivo:</div>
+			<input id="documento" type="file" style={{display: "none"}}></input>
+			<input type="button"  style={{width:'100%' }} id="documento" class="btn btn-outline-success btn-sm" value="Elegir archivo" onClick={() => {document.getElementById('documento').click()}}></input>
+
+			<div>Descripción:</div>
+			<input id="descripcionArhivo" type="text"  style={{width:'100%', marginTop:'5px'}}/>
+			<tr > 
+							<th>Folio</th>
+							<th>Descripción</th> 
+							<th>Documento</th> 
+							  
+						</tr>
+			{ listadocumentos.map(item => ( 
+							 
+							 <tr id="tabletr" style={{  fontSize:'13.5px', border: '2px solid #ABB2B9'}}>
+								  
+								 <td  align='center' className='id-orden'>{item.folio}</td>
+								 <td  align='center' className='id-orden'>{item.descripcion}</td>
+								 <td  align='center' className='id-orden'><a target="_blank" rel="noreferrer" href={"http://compras.grupopetromar.com/apirest/actividades/" + item.documento}>{item.documento}</a></td>
+							   
+								 
+							 </tr> 
+							 ))}	
+			
+			
+		<br></br>
+		<br></br>
+			<button onClick={closeModalA} class="btn btn-outline-danger btn-sm " style={{ height:'45px'}}>Cancelar</button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<button onClick={() => addDocumento()} class="btn btn-outline-success btn-sm"  style={{ height:'45px'}}>Guardar</button>
+		</Modal>
+
 
 
 							<h2>Calendario de actividades</h2>

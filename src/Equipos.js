@@ -298,7 +298,7 @@ function Equipos(props) {
 						</tr>
 
 						{ listap.map(item => ( 
-						<tr>
+						<tr id="tabletr" style={{  fontSize:'13.5px', border: '2px solid #ABB2B9'}}>
 							<td className='id-orden'>{item.id}</td> 
 							<td>{item.equipo}</td>
 							<td>{item.marca}</td>

@@ -393,7 +393,7 @@ function Proyectos(props) {
 						</tr>
 
 						{ lista.map(item => ( 
-						<tr>
+						<tr id="tabletr" style={{  fontSize:'13.5px', border: '2px solid #ABB2B9'}}>
 							<td className='id-orden'>{item.folio}</td>
 						 
 							<td>{item.name}</td>

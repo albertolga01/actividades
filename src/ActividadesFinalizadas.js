@@ -9,6 +9,8 @@ import Modal from 'react-modal';
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";  
 import {ThreeDots } from  'react-loader-spinner'
 
+import { BsBackspace, BsFiles } from "react-icons/bs";
+
  
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -33,7 +35,20 @@ const customStyles = {
 	const [listap, setListaP] = useState([]);
 	const [listau, setListaU] = useState([]);
 	const [modalIsOpenLoad, setIsOpenLoad] = React.useState(false);
-	 
+
+	const [listadocumentos, setListaDocumentos] =  useState([]);
+	const [modalIsOpenArchivo, setIsOpenArchivo] = React.useState(false);
+	const [folioActividad1, setFolioActividad1] = useState([]); 
+
+	let subtitle; 
+	
+	function VerDoc(folio){
+		openModalA();
+		 setFolioActividad1(folio);
+		 getDocumentos(folio);
+		
+	}
+
 	function openModalLoad() { 
 		setIsOpenLoad(true); 
 		 }  
@@ -156,9 +171,45 @@ async function getAllColaboradores() {
 
   	 
  
+	async function RegresarActividad(folio){
+		if(window.confirm('Deseas regresar la actividad con folio: ' + folio)){ 
+			let fd = new FormData() 
+			fd.append("id", "regresarActividad")
+			fd.append("folio", folio) 
+			 
+			const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
+			console.log(res.data);
+			notify(res.data.trim());
+			getActividades();
+		}
+	
+	}
 
+
+	function openModalA() {
+		setIsOpenArchivo(true);
+	  }
+	  function closeModalA() {
+		setIsOpenArchivo(false);
+	  }
+	  function afterOpenModalA() {
+		// references are now sync'd and can be accessed.
+		subtitle.style.color = 'black';
+	  }
 	 
-	 
+	async function getDocumentos(folio){
+		var id = "getDocumentos";
+		setListaDocumentos([]);
+		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&folio='+folio); 
+		//console.log(rese.data);
+		//setListaDocumentos(rese.data);   
+		
+		if(rese.data != ""){
+			
+			setListaDocumentos([]);
+		}
+		setListaDocumentos(rese.data);
+	}
 
 	async function getUsuarios(){
 		var id = "getUsuarios";
@@ -225,21 +276,24 @@ async function getAllColaboradores() {
 							<th>Inicio</th> 
 							<th>Término</th> 
 							<th>Duración</th> 
+							<th>Regresar Actividad</th>
+							<th>Archivos</th>
 						</tr>
 
 						{ lista.map(item => ( 
-						<tr>
+						<tr id="tabletr" style={{  fontSize:'13.5px', border: '2px solid #ABB2B9'}}>
 							<td className='id-orden'>{item.folio}</td>
 						 
 							<td>{item.name}</td>
 							<td>{item.proyecto}</td>
 							<td>{item.actividad}</td>
 							<td>{item.descripcion}</td> 
-							<td>{item.observaciones}</td> 
+							<td >{item.observaciones}</td> 
 							<td>{formatDate(item.fechainicio)}</td> 
 							<td>{formatDate(item.fechatermino)}</td> 
 							<td align='center'>{diff(item.fechai, item.fechat) + ' día(s)'}</td>
-						 
+							<td><button style={{width:'100%'}} className='btn btn-outline-success btn-sm' onClick={() => RegresarActividad(item.folio)}><BsBackspace /></button></td>
+							<td><button style={{width:'100%'}} className='btn btn-outline-primary btn-sm' onClick={() =>VerDoc(item.folio)}><BsFiles /></button></td>
 						  
 							
 						</tr> 
@@ -263,6 +317,41 @@ async function getAllColaboradores() {
 						<ThreeDots color="#0071ce" height={80} width={80} /> 
 						</div>  
 				</Modal>
+
+				<Modal
+			isOpen={modalIsOpenArchivo}
+			onAfterOpen={afterOpenModalA}
+			onRequestClose={closeModalA}
+			style={customStyles}
+			contentLabel="Example Modal"
+		>
+			<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'black'}}>Archivos</h2> 
+
+			
+			<tr > 
+							<th>Folio</th>
+							<th>Descripción</th> 
+							<th>Documento</th> 
+							  
+						</tr>
+			{ listadocumentos.map(item => ( 
+							 
+							 <tr id="tabletr" style={{  fontSize:'13.5px', border: '2px solid #ABB2B9'}}>
+								  
+								 <td  align='center' className='id-orden'>{item.folio}</td>
+								 <td  align='center' className='id-orden'>{item.descripcion}</td>
+								 <td  align='center' className='id-orden'><a target="_blank" rel="noreferrer" href={"http://compras.grupopetromar.com/apirest/actividades/" + item.documento}>{item.documento}</a></td>
+							   
+								 
+							 </tr> 
+							 ))}	
+			
+			
+		<br></br>
+		<br></br>
+			<button onClick={closeModalA} class="btn btn-outline-danger btn-sm " style={{ width: '100px',height:'45px'}}>Cerrar</button> 
+			
+		</Modal>
 		</div>
 	);   
 }
