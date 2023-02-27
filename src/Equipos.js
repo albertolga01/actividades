@@ -55,16 +55,33 @@ function Equipos(props) {
 	const [listap, setListaP] = useState([]);
 	const [listapd, setListaPD] = useState([]); 
 	const [listau, setListaU] = useState([]);
+	const [listatipoe, setListatipoe] = useState([]);
 	
 	const [listaver, setListaVer] = useState([]);
 	const [registros, setRegistros] = useState([]);
    
+	const [fecha, setFecha] = useState([]);
    
 	useEffect(() => {
 		getTodosEquipos();
+		getTiposEquipos();
+		dateToday();
 	}, [])
   
-	 
+	function dateToday(){
+		var date = new Date();
+
+		var day = date.getDate();
+		var month = date.getMonth() + 1;
+		var year = date.getFullYear();
+
+		if (month < 10) month = "0" + month;
+		if (day < 10) day = "0" + day;
+
+		var today = year + "-" + month + "-" + day;
+		//document.getElementById('fechatermino').value = today;
+		setFecha(today)
+	 }
   
 	async function getTodosEquipos() {
 	  var id = "getTodosEquipos";
@@ -78,6 +95,15 @@ function Equipos(props) {
 	  console.log(rese.data);
   } 
 
+  async function getTiposEquipos() {
+	var id = "getTiposEquipos";
+	openModalLoad();
+	const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id);  
+	closeModalLoad();
+	setListatipoe(rese.data); 
+	console.log(rese.data);
+} 
+
  
 
 	const [listav, setListaV] = useState([]);
@@ -89,6 +115,7 @@ function Equipos(props) {
 	let id = 0; 
 	let tipo = 0; 
  
+	
 
 	useEffect(()=> {
 		getEquipos();
@@ -122,6 +149,7 @@ function Equipos(props) {
 		var descripcion = document.getElementById("descripcion").value;
 		var observaciones = document.getElementById("observaciones").value;
 		var fechaasignacion = document.getElementById("fechaasignacion").value; 
+		var tipoequipo = document.getElementById("tipoequipo").value; 
 		let fd = new FormData() 
 		fd.append("id","addEquipo") 
 		fd.append("folioresponsable",folioresponsable)  
@@ -130,6 +158,7 @@ function Equipos(props) {
 		fd.append("descripcion",descripcion)   
 		fd.append("observaciones",observaciones)   
 		fd.append("fechaasignacion", fechaasignacion)    
+		fd.append("tipoequipo", tipoequipo)    
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd);
 		notify(res.data.trim());
 		getEquipos();
@@ -205,6 +234,9 @@ function Equipos(props) {
 		//console.log(rese.data);
 		setValue(res.data);    
 	} 
+
+	 
+	
    
 
   		// Dynamically create select list
@@ -252,6 +284,13 @@ function Equipos(props) {
 	 
 	 <div>Equipo:</div>
 	<input id="equipo" type="text"  style={{width:'100%', marginTop:'5px'}}/>
+	<div>Tipo equipo:</div>
+	<select id="tipoequipo" style={{width:'320px', marginTop:'5px'}}  >
+				{listatipoe.map(item => ( 
+							<option value={item.folio}>{item.nombre}</option>
+
+				))}
+				</select>
  
 	<div>Marca:</div>
 	<input id="marca" type="text"  style={{width:'100%', marginTop:'5px'}}/>
@@ -260,7 +299,7 @@ function Equipos(props) {
 	<input id="descripcion" type="text"  style={{width:'100%', marginTop:'5px'}}/>
 	
 	<div>Fecha de asignación:</div>
-	<input id="fechaasignacion"    style={{width:'100%', marginTop:'5px'}} type="date" value={date.toLocaleDateString('en-CA')} onChange={onSetDate}/>
+	<input id="fechaasignacion"    style={{width:'100%', marginTop:'5px'}} type="date" defaultValue={fecha}/>
 	
 	<div>Observaciones:</div>
 	<input id="observaciones" type="text"  style={{width:'100%', marginTop:'5px'}}/>
@@ -287,6 +326,7 @@ function Equipos(props) {
 					<table id="productstable" style={{width:'100%'}}>
 						<tr>
 							<th>Folio</th>
+							<th>Tipo Equipo</th>
 							<th>Equipo</th>
 							<th>Marca</th>
 							<th>Descripción</th>
@@ -300,6 +340,7 @@ function Equipos(props) {
 						{ listap.map(item => ( 
 						<tr id="tabletr" style={{  fontSize:'13.5px', border: '2px solid #ABB2B9'}}>
 							<td className='id-orden'>{item.id}</td> 
+							<td>{item.tipoequipo}</td>
 							<td>{item.equipo}</td>
 							<td>{item.marca}</td>
 							<td>{item.descripcion}</td>

@@ -61,13 +61,31 @@ function Accesos(props) {
 	const [listau, setListaU] = useState([]);
 	
 	const [registros, setRegistros] = useState([]);
+
+	const [fecha, setFecha] = useState([]);
+	
    
    
 	useEffect(() => {
 		getAllAccesos();
+		dateToday();
 	}, [])
   
- 
+	function dateToday(){
+		var date = new Date();
+
+		var day = date.getDate();
+		var month = date.getMonth() + 1;
+		var year = date.getFullYear();
+
+		if (month < 10) month = "0" + month;
+		if (day < 10) day = "0" + day;
+
+		var today = year + "-" + month + "-" + day;
+		//document.getElementById('fechatermino').value = today;
+		setFecha(today)
+	 }
+
 	async function getAllAccesos() {
 	  var id = "getTodosAccesos";
 	  const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id);
@@ -242,7 +260,7 @@ function Accesos(props) {
 	<input id="descripcion" type="text"  style={{width:'100%', marginTop:'5px'}}/>
 	
 	<div>Fecha de asignación:</div>
-	<input id="fechaasignacion"    style={{width:'100%', marginTop:'5px'}} type="date" value={date.toLocaleDateString('en-CA')} onChange={onSetDate}/>
+	<input id="fechaasignacion"    style={{width:'100%', marginTop:'5px'}} type="date" defaultValue={fecha}/>
 	
 	<div>Observaciones:</div>
 	<input id="observaciones" type="text"  style={{width:'100%', marginTop:'5px'}}/>

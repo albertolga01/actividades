@@ -57,6 +57,7 @@ const customStyles = {
 function Actividades(props) {
 
 	console.log(props.dptoid);
+	
 
 
 	let defaultDate = new Date()
@@ -85,8 +86,8 @@ function Actividades(props) {
 	const [colaboradoresEP, setColaboradoresEP] = useState([]);
 	const [colaboradoresRes, setcolaboradoresRes] = useState([]);
 	const [nombreproyecto, setNombreproyecto] = useState([]);
-	const [folioProyecto, setfolioProyecto] = useState([]);
-	const [folioActividad, setFolioActividad] = useState([]);
+	const [folioProyecto, setfolioProyecto] = useState([]); 
+	const [fecha, setFecha] = useState([]);
 	
 
 	const [registros, setRegistros] = useState([]);
@@ -212,12 +213,44 @@ async function getAllColaboradoresdelProyecto(){
 	const [listados, setListaDos] =  useState([]);  
 	const [value, setValue] = useState([]); 
 	const [folioActividad1, setFolioActividad1] = useState([]); 
+	const [folioActividad, setFolioActividad] = useState([]); 
 	let id = 0; 
 	let tipo = 0; 
  
  
 	const [listaproyectos, setListaProyectos] =  useState([]);
 	const [listadocumentos, setListaDocumentos] =  useState([]);
+	const [listadetalleact, setListadetalleact] =  useState([]);
+	const [usaurioproyecto, setUsuarioProyecto] =  useState([]);
+	const [folioactproyecto, setFolioActProyecto] =  useState([]);
+	
+
+	//Modal Detalles Actividad
+	const [modalIsOpenDetalleAct, setIsOpenDetalleAct] = React.useState(false);
+
+	function openModalDetalleAct() {
+		setIsOpenDetalleAct(true);
+	  }
+	  function closeModalDetalleAct() {
+		setIsOpenDetalleAct(false);
+	  }
+	  function afterOpenModalDetalleAct() { 
+	  }
+
+	//Modal Detalles Proyecto
+	  const [listadetalleproyecto, setListadetalleproyecto] =  useState([]);
+	  const [modalIsOpenDetalleProyecto, setIsOpenDetalleProyecto] = React.useState(false);
+
+	function openModalDetalleProyecto() {
+		setIsOpenDetalleProyecto(true);
+	  }
+	  function closeModalDetalleProyecto() {
+		setIsOpenDetalleProyecto(false);
+	  }
+	  function afterOpenModalDetalleProyecto() { 
+	  }
+
+
 
 	useEffect(() => {
 		getActividades(); 
@@ -228,6 +261,7 @@ async function getAllColaboradoresdelProyecto(){
 	useEffect(()=> {
 		getUsuarios();
 		notificaciones();
+		dateToday();
 	}, [])
 
 
@@ -304,6 +338,27 @@ async function getAllColaboradoresdelProyecto(){
         }
     }
 
+	async function MostrarDetalle(folio){
+		var id = "obtenerDetalle";
+		setListadetalleact([]);
+		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&folio='+folio); 
+		//console.log(rese.data);
+		setListadetalleact(rese.data);  
+		openModalDetalleAct();
+          
+    }
+
+	async function MostrarDetalleProyecto(folio, folioresponsable, name){
+		var id = "obtenerProyectosUsuario";
+		setUsuarioProyecto(name);
+		setFolioActProyecto(folio);
+		setListadetalleproyecto([]);
+		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&folioresponsable='+folioresponsable); 
+		//console.log(rese.data);
+		setListadetalleproyecto(rese.data);  
+		openModalDetalleProyecto();
+          
+    }
 
 	  async function addActividad(){  
 		openModalLoad();
@@ -324,6 +379,7 @@ async function getAllColaboradoresdelProyecto(){
 		fd.append("fechatermino", fechatermino)   
 		fd.append("folioencargado", folioencargado)   
 		fd.append("folioresponsable", folioresponsable)   
+		fd.append("creada", props.userid)   
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd);
 		closeModalLoad();
 		notify(res.data.trim());
@@ -372,7 +428,7 @@ async function getAllColaboradoresdelProyecto(){
 		var listadeproyectos = lista.filter( (ele, ind) => ind === lista.findIndex( elem => elem.proyecto === ele.proyecto))
 		setRegistros(res.data.length);
 		setListaProyectos(listadeproyectos);
-		 
+		//console.log(res.data);
 	}
 
 
@@ -417,7 +473,20 @@ async function getAllColaboradoresdelProyecto(){
 		}
 	}
 
-	 
+	 function dateToday(){
+		var date = new Date();
+
+		var day = date.getDate();
+		var month = date.getMonth() + 1;
+		var year = date.getFullYear();
+
+		if (month < 10) month = "0" + month;
+		if (day < 10) day = "0" + day;
+
+		var today = year + "-" + month + "-" + day;
+		//document.getElementById('fechatermino').value = today;
+		setFecha(today)
+	 }
 
 	function formatDate(date){
 		var index = date.search(" ");
@@ -511,7 +580,22 @@ async function actualizarComentarios(folio){
 		fd.append("actividad", document.getElementById("actividad1"+folio).value)
 		fd.append("descripcion", document.getElementById("descripcion1"+folio).value)
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
-		console.log(res.data);
+		console.log("Actualizarcomentarios: " +res.data);
+		notify(res.data.trim());
+		getActividades();
+	}
+
+}
+
+
+async function actualizarProyectoActividad(){
+	let folioproyecto = document.getElementById("slc-folio-proyecto").value;
+	if(window.confirm('Actualizar proyecto de la actividad con folio: ' + folioactproyecto)){ 
+		let fd = new FormData() 
+		fd.append("id", "actualizarProyectoActividad")
+		fd.append("folioproyecto", folioproyecto) 
+		fd.append("folioactividad", folioactproyecto)
+		const res = await axios.post(process.env.REACT_APP_API_URL, fd);  
 		notify(res.data.trim());
 		getActividades();
 	}
@@ -671,8 +755,8 @@ async function actualizarFecha(folio) {
 	<div>Descripción:</div>
 	<input id="descripcion" type="text"  style={{width:'100%', marginTop:'5px'}}/>
 	
-	<div>Fecha de término estimada:</div>
-	<input id="fechatermino"    style={{width:'100%', marginTop:'5px'}} type="date" value={date.toLocaleDateString('en-CA')} onChange={onSetDate}/>
+	<div>Fecha de término estimada:</div> 
+	<input id="fechatermino" style={{width:'100%', marginTop:'5px'}} type="date" defaultValue={fecha}/>
 	  
 	
 <br></br>
@@ -754,17 +838,16 @@ async function actualizarFecha(folio) {
 				</div>
 				 
 				
-				<div  style={{height:'100%', overflowY: 'scroll', width:'100%'}}>
-					<table id="productstable" style={{width:'100%'}}>
+				<div  style={{height:'100%', overflowX: 'scroll', width:'100%'}}>
+					<table id="productstable" style={{width:'110%'}}>
 						<tr > 
 							<th>Folio</th>
 							<th>Responsable</th> 
 							<th></th>
 							 
 							<th>Proyecto</th>
-							<th>Actividad</th>
-							<th>Descripción</th>
-							
+							<th style={{minWidth: '250px'}}>Actividad</th>
+							<th style={{minWidth: '250px'}}>Descripción</th>
 							<th>Inicio</th>
 							<th>Término</th>
 							<th>Estado</th> 
@@ -784,15 +867,19 @@ async function actualizarFecha(folio) {
 							 
 						<tr id="tabletr" style={{  fontSize:'13.5px', border: '2px solid #ABB2B9'}}>
 							 
-							<td  align='center' className='id-orden'>{item.folio}</td>
+							<td  onClick={() => MostrarDetalle(item.folio)} align='center' className='id-orden'>{item.folio}</td>
 						 
-							<td><label onClick={() => Notificar(item.name, item.actividad)}>{item.name}</label></td>
+							<td><label onClick={() => Notificar(item.name, item.actividad)}>{(item.name).split(" ")[0]}</label></td>
 							{ (item.rol == 2) ? 
 							<td><button  className='btn btn-outline-success btn-sm' onClick={() => actualizarResponsable(item.proyecto, item.folioproyecto, item.folio)}><BsArrowRepeat /></button></td>
 							:<td></td>
 							}
+							{(item.rol == 2)?
+							<td onClick={()=> MostrarDetalleProyecto(item.folio, item.folioresponsable, item.name)} style={{  boxShadow:'0px 0px 0px 5px '+item.backgroundColor+' inset'}} align='center' ><label>{item.proyecto}</label></td>
+							:
+							<td  style={{  boxShadow:'0px 0px 0px 5px '+item.backgroundColor+' inset'}} align='center' ><label>{item.proyecto}</label></td>
+							}
 							
-							<td style={{  boxShadow:'0px 0px 0px 8px '+item.backgroundColor+' inset'}} align='center' ><label>{item.proyecto}</label></td>
 							
 							{ (item.rol == 2) ? 
 							<>
@@ -807,8 +894,9 @@ async function actualizarFecha(folio) {
 						 </>
                          : 
 						 <>
-						 <td>{item.actividad} </td>
-						 <td>{item.descripcion}</td> 
+						<td>{item.actividad}<input id={"actividad1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/> </td>
+						 <td>{item.descripcion}<input id={"descripcion1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/></td> 
+						 
 						 </>
 							}
 							<td>{formatDate(item.fechainicio)}</td> 
@@ -933,11 +1021,92 @@ async function actualizarFecha(folio) {
 							 </tr> 
 							 ))}	
 			
-			
 		<br></br>
 		<br></br>
 			<button onClick={closeModalA} class="btn btn-outline-danger btn-sm " style={{ height:'45px'}}>Cancelar</button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			<button onClick={() => addDocumento()} class="btn btn-outline-success btn-sm"  style={{ height:'45px'}}>Guardar</button>
+		</Modal>
+
+
+		<Modal
+			isOpen={modalIsOpenDetalleAct}
+			onAfterOpen={afterOpenModalDetalleAct}
+			onRequestClose={closeModalDetalleAct}
+			style={customStyles}
+			contentLabel="Example Modal"
+		>
+			<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'black'}}>Detalles de la actividad</h2>
+
+	 
+				{ listadetalleact.map(item => ( 
+							 
+					<div style={{  fontSize:'13.5px'}}>
+					 
+					<label style={{fontSize:'16px', fontWeight:'bold'}}>Creado por:</label><br></br>
+					<label>{item.creadapor}</label> 
+					<br></br>
+					<br></br>
+					<label style={{fontSize:'16px', fontWeight:'bold'}}>Proyecto:</label><br></br>
+					<label>{item.proyecto}</label>
+					<br></br>
+					<br></br>
+					<label style={{fontSize:'16px', fontWeight:'bold'}}>Responsable:</label><br></br>
+					<label>{item.name}</label> 
+					<br></br>
+					<br></br>
+					<label style={{fontSize:'16px', fontWeight:'bold'}}>Actividad:</label><br></br>
+					<label>{item.actividad}</label> 
+					<br></br>
+					<br></br>
+					<label style={{fontSize:'16px', fontWeight:'bold'}}>Descripción:</label><br></br>
+					<label>{item.descripcion}</label>
+					<br></br>
+					<br></br>
+					<label style={{fontSize:'16px', fontWeight:'bold'}}>Fecha de término estimada:</label> <br></br>
+					<label>{formatDate(item.fechatermino)}</label>
+							   
+								 
+				</div> 
+							 ))}
+		 
+		<br></br>
+			<button onClick={closeModalDetalleAct} class="btn btn-outline-danger btn-sm " style={{ width:'100%'}}>Cerrar</button> 
+		</Modal>
+
+
+		<Modal
+			isOpen={modalIsOpenDetalleProyecto}
+			onAfterOpen={afterOpenModalDetalleProyecto}
+			onRequestClose={closeModalDetalleProyecto}
+			style={customStyles}
+			contentLabel="Example Modal"
+		>
+			<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'black'}}>Actualizar proyecto</h2>
+			
+			<label style={{fontSize:'16px', fontWeight:'bold'}}>Responsable:</label><br></br>
+					<label>{usaurioproyecto}</label> 
+					<br></br>
+					<br></br>  
+	 
+				
+							 
+					<div style={{  fontSize:'13.5px'}}>
+					 
+					 
+					<label style={{fontSize:'16px', fontWeight:'bold'}}>Proyecto:</label><br></br>
+					<select id="slc-folio-proyecto" style={{width:'100%'}}>
+					{ listadetalleproyecto.map(item => ( 
+						<option value={item.folio}>{item.proyecto}</option>
+						))}
+					</select>
+					<br></br>
+					<br></br>
+					 	 
+				</div> 
+							 
+		 
+		<br></br>
+			<button onClick={actualizarProyectoActividad} class="btn btn-outline-success btn-sm " style={{ width:'100%'}}>Actualizar</button> 
 		</Modal>
 
 
