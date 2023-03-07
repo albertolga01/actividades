@@ -340,7 +340,7 @@ async function getAllColaboradores() {
 								  
 								 <td  align='center' className='id-orden'>{item.folio}</td>
 								 <td  align='center' className='id-orden'>{item.descripcion}</td>
-								 <td  align='center' className='id-orden'><a target="_blank" rel="noreferrer" href={"http://compras.grupopetromar.com/apirest/actividades/" + item.documento}>{item.documento}</a></td>
+								 <td  align='center' className='id-orden'><a target="_blank" rel="noreferrer" href={"https://actividades.grupopetromar.com/apirest/actividades/" + item.documento} >{item.documento}</a></td>
 							   
 								 
 							 </tr> 

@@ -112,7 +112,7 @@ async function getColaboradores(folio) {
 }
 
 async function getTodosColaboradores() {
-	var id = "getAllColaboradores1";
+	var id = "getTodosColaboradores";
 	
 	const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id);  
 	setListaUT(rese.data); 
@@ -343,7 +343,7 @@ async function getProyectosGrupo(folio) {
 										<br></br> 
 										<br></br> 
 										
-				<div>Personas en este proyecto:</div> 
+				<div>Personas en este grupo:</div> 
 
 				{ colaboradoresG.map(item => ( 
 									<tr> 
@@ -359,7 +359,7 @@ async function getProyectosGrupo(folio) {
 
 					<select id="idColaborador" style={{width:'100%', marginTop:'5px'}}   >
 										{listaut.map(item => ( 
-												<option value={item.userid}>{item.name}</option>
+												<option value={item.foliocolab}>{item.nombre}</option>
 							
 										))}
 										</select>

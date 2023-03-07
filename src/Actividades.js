@@ -214,6 +214,10 @@ async function getAllColaboradoresdelProyecto(){
 	const [value, setValue] = useState([]); 
 	const [folioActividad1, setFolioActividad1] = useState([]); 
 	const [folioActividad, setFolioActividad] = useState([]); 
+
+
+	const [showDesc, setShowDesc] = React.useState(false);
+
 	let id = 0; 
 	let tipo = 0; 
  
@@ -577,8 +581,10 @@ async function actualizarComentarios(folio){
 		fd.append("id", "actualizarComentarios")
 		fd.append("folio", folio) 
 		fd.append("comentarios", document.getElementById("observacionesActividades"+folio).value)
-		fd.append("actividad", document.getElementById("actividad1"+folio).value)
-		fd.append("descripcion", document.getElementById("descripcion1"+folio).value)
+		fd.append("actividad", document.getElementById("actividad1"+folio).value) 
+			fd.append("descripcion", document.getElementById("descripcion1"+folio).value)
+		 
+		
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
 		console.log("Actualizarcomentarios: " +res.data);
 		notify(res.data.trim());
@@ -685,6 +691,15 @@ async function actualizarFecha(folio) {
 		getDocumentos(folio);
 
 
+	}
+
+
+	function mostrarDesc(){
+		if(showDesc){
+			setShowDesc(false);
+		}else{
+			setShowDesc(true);
+		}
 	}
 
 
@@ -832,31 +847,33 @@ async function actualizarFecha(folio) {
 				</div>
 				}
 				<div>
-					<span>Mostrar Ocultas</span>&nbsp;&nbsp;&nbsp;
+					<span>Mostrar ocultas</span>&nbsp;&nbsp;&nbsp;
 				<input type="checkbox" id="ocultas" onChange={() => mostrarOcultas()}></input>
+
+				</div>
+
+				<div>
+					<span>Mostrar descripción</span>&nbsp;&nbsp;&nbsp;
+				<input type="checkbox" id="ocultas" onChange={() => mostrarDesc()}></input>
 
 				</div>
 				 
 				
 				<div  style={{height:'100%', overflowX: 'scroll', width:'100%'}}>
-					<table id="productstable" style={{width:'110%'}}>
+					<table id="productstable" style={{width:'100%'}}>
 						<tr > 
-							<th>Folio</th>
-							<th>Responsable</th> 
-							<th></th>
+							<th style={{width:'35px'}}>Folio</th>
+							<th style={{width:'95px'}}> Responsable</th> 
+							<th style={{width:'35px'}}></th>
 							 
-							<th>Proyecto</th>
-							<th style={{minWidth: '250px'}}>Actividad</th>
-							<th style={{minWidth: '250px'}}>Descripción</th>
-							<th>Inicio</th>
-							<th>Término</th>
-							<th>Estado</th> 
-							<th>Observaciones</th>
+							<th style={{width:'100px'}}>Proyecto</th>
+							<th style={{width: '250px'}}>Actividad</th>
+							{showDesc && <th style={{minWidth: '250px'}}>Descripción</th>}
+							<th style={{width: '95px'}}>Inicio /<br></br> termino</th>  
+							<th style={{width:'100px'}}>Estado</th> 
+							<th style={{width:'250px'}}>Observaciones</th> 
 							<th></th> 
-							<th></th>
-							<th>Archivo</th> 
-							<th></th> 
-							<th></th>
+							<th></th>  
 							 
 							  
 							
@@ -885,22 +902,31 @@ async function actualizarFecha(folio) {
 							<>
 							<td align='center'>
 								 
-								<input id={"actividad1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'100%', marginTop:'5px'}}/>
+								<textarea id={"actividad1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'250px', marginTop:'5px'}} rows="4" cols="50"/>
   
 						 	</td>
-							<td align='center'> 
-							<input id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text"  style={{width:'100%', marginTop:'5px'}}/>
-						 </td>
+							 {(showDesc) ?  
+							 	<td align='center'> 
+										<input id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text"  style={{width:'100%', marginTop:'5px'}}/>
+						 		</td> : 
+								<td align='center' hidden> 
+									<input id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text"  style={{width:'100%', marginTop:'5px'}}/>
+						 		</td>
+						 
+						 
+						 }
+							
 						 </>
                          : 
 						 <>
-						<td>{item.actividad}<input id={"actividad1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/> </td>
-						 <td>{item.descripcion}<input id={"descripcion1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/></td> 
+						<td style={{width:'250px'}}>{item.actividad}<input id={"actividad1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/> </td>
+						{showDesc && <td>{item.descripcion}<input id={"descripcion1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/></td> }
+						 
 						 
 						 </>
 							}
-							<td>{formatDate(item.fechainicio)}</td> 
-							<td align='center' style={{backgroundColor: getColor(item.fechatermino), color:  'black'}}> <input  style={{width:'95px', height:'31px', backgroundColor: getColor(item.fechatermino)}} type="date" id={item.folio} onChange={() => actualizarFecha(item.folio)} value={(item.fechatermino).substring(0,10)}/></td>  
+							<td>{formatDate(item.fechainicio)}<input  style={{width:'95px', height:'31px', backgroundColor: getColor(item.fechatermino)}} type="date" id={item.folio} onChange={() => actualizarFecha(item.folio)} value={(item.fechatermino).substring(0,10)}/></td> 
+							 
 							<td>
 								 
 								<select style={{height:'31px'}} id={'sel'+item.folio} name={item.est} onChange={() => ActualizarStatus(item.folio, item.folioencargado, item.actividad, item.folioresponsable)}>
@@ -909,30 +935,22 @@ async function actualizarFecha(folio) {
 								<option value="3">Terminado</option>
 								</select>  
 							</td>
-							<td align='center'><input defaultValue={item.comentarios} id={"observacionesActividades"+item.folio} style={{width:'100%', height:'31px' }}></input></td>
-							<td><button  className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(item.folio)}><BsArrowRepeat /></button></td>
-							<td><button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(item.folio)}><FaEye /></button></td>
-							<td><button style={{width:'100%'}} className='btn btn-outline-primary btn-sm' onClick={() => agregarDoc(item.folio)}><BsUpload /></button></td>
+							<td align='center'><textarea defaultValue={item.comentarios} id={"observacionesActividades"+item.folio} style={{width:'250px'}} rows="4" cols="50"></textarea></td>
+							<td style={{width: '80px'}}><button  className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(item.folio)}><BsArrowRepeat /></button>
+							<button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(item.folio)}><FaEye /></button>
+							<button style={{width:'64px'}} className='btn btn-outline-primary btn-sm' onClick={() => agregarDoc(item.folio)}><BsUpload /></button></td>
 							{ (item.rol == 2) ? 
-							<td align='center'>
+							<td align='center' style={{width:'35px'}}>
 							<button className='btn btn-outline-success btn-sm' onClick={ () => finalizado(item.folio, item.folioresponsable, item.actividad) }><BsFillCheckCircleFill /></button>
-						</td>
-                         : 
-						 <td>
-						 	</td>
-
-							}
-
-							{ (item.rol == 2) ? 
-							<td>
 							<button className='btn btn-outline-danger btn-sm' onClick={ () => eliminarActividad(item.folio) }><BsXCircleFill /></button>
 						</td>
                          : 
 						 <td>
 						 	</td>
-                          
+
 							}
-						  
+
+							 
 							
 						</tr> 
 						))}	
@@ -1015,7 +1033,7 @@ async function actualizarFecha(folio) {
 								  
 								 <td  align='center' className='id-orden'>{item.folio}</td>
 								 <td  align='center' className='id-orden'>{item.descripcion}</td>
-								 <td  align='center' className='id-orden'><a target="_blank" rel="noreferrer" href={"http://compras.grupopetromar.com/apirest/actividades/" + item.documento}>{item.documento}</a></td>
+								 <td  align='center' className='id-orden'><a target="_blank" rel="noreferrer" href={"https://actividades.grupopetromar.com/apirest/actividades/" + item.documento}>{item.documento}</a></td>
 							   
 								 
 							 </tr> 
