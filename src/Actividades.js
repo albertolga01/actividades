@@ -372,7 +372,8 @@ async function getAllColaboradoresdelProyecto(){
 		var descripcion = document.getElementById("descripcion").value;
 		var fechatermino = document.getElementById("fechatermino").value;
 		var folioencargado = document.getElementById("folioencargado").value;
-		var folioresponsable = document.getElementById("folioresponsable").value; 
+		var folioresponsable = document.getElementById("folioresponsable").value;
+		var observaciones = document.getElementById("observaciones").value; 
 		 
 		if((folioproyecto != "Seleccione") && (actividad.length > 1)){
 		let fd = new FormData() 
@@ -383,6 +384,7 @@ async function getAllColaboradoresdelProyecto(){
 		fd.append("fechatermino", fechatermino)   
 		fd.append("folioencargado", folioencargado)   
 		fd.append("folioresponsable", folioresponsable)   
+		fd.append("observaciones", observaciones)
 		fd.append("creada", props.userid)   
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd);
 		closeModalLoad();
@@ -737,11 +739,7 @@ async function actualizarFecha(folio) {
                      <option value={item.folio}>{item.proyecto}</option>
 
   		  ))}
-		  </select>
-
-
-							  
-
+		  </select> 
 	<div>Responsable:</div>
 
 		  { 
@@ -758,10 +756,7 @@ async function actualizarFecha(folio) {
 		  <input id="folioresponsable" type="text" value={props.userid} style={{ width: '100%', marginTop: '5px' }} hidden="hidden" />
 		  </>
 		    }
-		    
-	 	 
-	 
-	 
+		     
 	<input id="folioencargado" type="text" value={props.userid} style={{width:'100%', marginTop:'5px'}} hidden="hidden" />
 	 
 	<div>Actividad:</div>
@@ -769,6 +764,9 @@ async function actualizarFecha(folio) {
 
 	<div>Descripción:</div>
 	<input id="descripcion" type="text"  style={{width:'100%', marginTop:'5px'}}/>
+	
+	<div>Observaciones:</div>
+	<textarea id="observaciones" type="text" style={{width:'100%', marginTop:'5px'}} rows="2" cols="25" />
 	
 	<div>Fecha de término estimada:</div> 
 	<input id="fechatermino" style={{width:'100%', marginTop:'5px'}} type="date" defaultValue={fecha}/>
@@ -907,10 +905,10 @@ async function actualizarFecha(folio) {
 						 	</td>
 							 {(showDesc) ?  
 							 	<td align='center'> 
-										<input id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text"  style={{width:'100%', marginTop:'5px'}}/>
+										<textarea id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text"  style={{width:'100%', marginTop:'5px'}}/>
 						 		</td> : 
 								<td align='center' hidden> 
-									<input id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text"  style={{width:'100%', marginTop:'5px'}}/>
+									<textarea id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text"  style={{width:'100%', marginTop:'5px'}}/>
 						 		</td>
 						 
 						 
@@ -920,7 +918,18 @@ async function actualizarFecha(folio) {
                          : 
 						 <>
 						<td style={{width:'250px'}}>{item.actividad}<input id={"actividad1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/> </td>
-						{showDesc && <td>{item.descripcion}<input id={"descripcion1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/></td> }
+						 
+
+						{(showDesc) ?  
+							 	<td align='center'> 
+										<textarea id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text" style={{width:'100%', marginTop:'5px'}} rows="4" cols="50"/>
+						 		</td> : 
+								<td align='center' hidden> 
+									<textarea id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text" style={{width:'100%', marginTop:'5px'}} rows="4" cols="50"/>
+						 		</td>
+						 
+						 
+						 }
 						 
 						 
 						 </>
