@@ -4,6 +4,7 @@ import axios from 'axios';
 import {Nabvar} from './component/Navbar';  
 import FullCalendar from '@fullcalendar/react' // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
+import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
 import esLocale from '@fullcalendar/core/locales/es'; 
 import Modal from 'react-modal';
 import './App.css'; 
@@ -663,6 +664,7 @@ async function actualizarFecha(folio) {
 
 
   }
+  
 	async function getUsuarios(){
 		var id = "getUsuarios";
 		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id); 

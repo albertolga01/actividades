@@ -4,6 +4,7 @@ import axios from '../node_modules/axios';
 import {Nabvar} from './component/Navbar';  
 import FullCalendar from '@fullcalendar/react' // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
+import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
 import esLocale from '@fullcalendar/core/locales/es'; 
 import Modal from 'react-modal';
 import './App.css'; 
@@ -646,6 +647,20 @@ async function actualizarFecha(folio) {
 
 
   }
+
+  async function actualizarFechaCalendario(info, fecha) { 
+	if(window.confirm('Actualizar fecha de actividad con folio: ' + info.extendedProps.folio + ' al día: ' + fecha.toISOString().split('T')[0])){ 
+		let fd = new FormData() 
+		fd.append("id", "actualizarFechaActividad")
+		fd.append("folio", info.extendedProps.folio)
+		fd.append("fecha", fecha.toISOString().split('T')[0])
+		const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
+		console.log(res.data); 
+		notify(res.data.trim());
+		getActividades();
+	}    
+  }
+
 	async function getUsuarios(){
 		var id = "getUsuarios";
 		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id); 
@@ -800,6 +815,21 @@ async function actualizarFecha(folio) {
   weekends={true}
   locale={esLocale}
   events={lista}
+  editable={true}
+  droppable={true}
+  eventDrop={info => {
+	//<--- see from here
+	const { start, end } = info.oldEvent._instance.range;
+	console.log(start, end);
+	const {
+	  start: newStart,
+	  end: newEnd
+	} = info.event._instance.range;
+	console.log(newStart, newEnd);
+	if (new Date(start).getDate() === new Date(newStart).getDate()) {
+	  info.revert();
+	}
+  }}
 />
 
 
@@ -1146,12 +1176,27 @@ async function actualizarFecha(folio) {
 
 							<h2>Calendario de actividades</h2>
 				<FullCalendar
-				plugins={[ dayGridPlugin ]}
+				plugins={[ dayGridPlugin, interactionPlugin ]}
 				initialView="dayGridMonth"
 				weekends={true}
 				locale={esLocale}
 				events={lista}
 				eventClick={handleEventClick}
+				editable={true}
+				droppable={true}
+				eventDrop={info => {
+				  const { start, end } = info.oldEvent._instance.range;
+				  console.log(start, end);
+				  const {
+					start: newStart,
+					end: newEnd
+				  } = info.event._instance.range;
+				  actualizarFechaCalendario(info.event, newStart)
+				  console.log(newStart, newEnd);
+				  if (new Date(start).getDate() === new Date(newStart).getDate()) {
+					info.revert();
+				  }
+				}}
 				/>
 			</div>
 
