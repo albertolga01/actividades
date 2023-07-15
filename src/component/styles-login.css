@@ -213,6 +213,9 @@ body{
 .sideselected{
     background-color: #001f6b;
 }
+#sideimgvacia{
+    width: 26px;
+}
 
 #expand{
     content: url("../resources/expand_more_black_24dp.svg");

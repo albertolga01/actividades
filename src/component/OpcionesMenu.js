@@ -17,11 +17,11 @@ export default function OpcionesMenu(props) {
 
    
 
-    function Seleccionar(elemento){ 
+    function Seleccionar(elemento, idProyecto, NProyecto){ 
         if(isMenuOpen1 == true){ 
             SetIsMenuOpen1(false); 
         }  
-        props.unmount(elemento);   
+        props.unmount(elemento, idProyecto, NProyecto);   
     }
 
 
@@ -55,24 +55,35 @@ export default function OpcionesMenu(props) {
                 </span>
 
                 <hr></hr>
+               
                 { (props.admin == 1) ? 
 						 <div id="sidebtn" onClick={() => { Seleccionar("GrupoTrabajo"); }}>
                          <img id="sideimggrupo" alt="" />
-                         <span>Grupo de Trabajo</span>
+                         <span>DEPARTAMENTOS</span>
                      </div>
-                         : <label></label>
+                         : <></>
 							}
 
 
                 { (props.admin == 1) ? 
-							<div id="sidebtn" onClick={() => { Seleccionar("Proyectos"); }}>
+							<div id="sidebtn" onClick={() => { Seleccionar("Proyectos"); }} hidden>
                             <img id="sideimg3" alt="" />
                             <span>Proyectos</span>
                         </div>
-                         : <label></label>
+                         : <></>
 							}
-                
 
+
+                {
+                    (props.userid == "84" || props.userid == "142" || props.userid == "177") ?
+                    <div id="sidebtn" onClick={() => { Seleccionar("Actividades"); }}>
+                        <img id="sideimg1" alt="" />
+                        <span>ACTIVIDADES  </span>
+                    </div>
+                    :
+                    <></>
+                }
+                {/**
                 <div id="sidebtn" onClick={() => { Seleccionar("Actividades"); }}>
                     <img id="sideimg1" alt="" />
                     <span>Actividades Pendientes  </span>
@@ -82,26 +93,44 @@ export default function OpcionesMenu(props) {
                     <img id="sideimgchek" alt="" />
                     <span>Actividades Completadas</span>
                 </div>
+               
                 <div id="sidebtn" onClick={() => { Seleccionar("Solicitudes"); }}>
                     <img id="sideimgchek" alt="" />
                     <span>Solicitudes</span>
                 </div>
+                **/}
                 { (props.dptoid == 2 || props.dptoid == 8) ? 
-						 <div id="sidebtn" onClick={() => { Seleccionar("Equipos"); }}>
+						 <div id="sidebtn" onClick={() => { Seleccionar("Equipos"); }} hidden>
                          <img id="sidebtnequipos" alt="" />
                          <span>Equipos</span>
                      </div>
-                         : <label></label>
+                         : <></>
 							}
-                
+                 { props.listaDepartamentos.map(item => ( 
+							 <div id="sidebtn" onClick={() => { Seleccionar("ActividadesDtpo", item.folio, item.nombre); }}>
+                             <img id="sideimgvacia" alt="" />
+                             <span>{item.nombre} </span>
+                             
+                         </div>
+                ))}
+
                 { (props.dptoid == 8 ) ? 
 						 <div id="sidebtn" onClick={() => { Seleccionar("Accesos"); }}>
                          <img id="sidebtnaccesos" alt="" />
                          <span>Accesos</span>
                      </div>
-                         : <label></label>
+                         : <></>
 							}
-               
+ 
+						<div id="sidebtn" onClick={() => { Seleccionar("ActProyectos"); }}>
+                            <img id="sideimg3" alt="" />
+                            <span>PROYECTOS</span>
+                        </div>
+
+                        <div hidden id="sidebtn" onClick={() => { Seleccionar("ActividadesDtpo"); }}>
+                            <img id="sideimg3" alt="" />
+                            <span>Actividades por departamento</span>
+                        </div>
                 
                
                 <div id="sidebtn" onClick={() => logOut()}>

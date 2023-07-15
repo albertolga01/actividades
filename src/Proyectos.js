@@ -6,6 +6,7 @@ import Modal from 'react-modal';
 
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";  
 import {ThreeDots } from  'react-loader-spinner'
+import { BsArrowRepeat, BsEnvelopeFill, BsFillPersonPlusFill, BsXCircleFill} from "react-icons/bs";
 
  
 import { ToastContainer, toast } from 'react-toastify';
@@ -140,12 +141,17 @@ function Proyectos(props) {
 
 	  async function getAllColaboradoresEnGrupodelProyecto(idd){    
 		//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
-		 
+		 /*
 		var id = "getColabEnGrupo";
 		var folio = idd; 
 		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&folio='+folio);
 		console.log(res.data); 
-		setColaboradores(res.data);
+		setColaboradores(res.data);*/
+		var id = "getTodosColaboradores";
+	
+		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id);  
+		setColaboradores(rese.data); 
+		console.log(rese.data); 
 	//	getAllColaboradoresdelProyecto();
 	}
 
@@ -277,8 +283,32 @@ function Proyectos(props) {
 		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id); 
 		console.log(rese.data);
 		setValue(rese.data);    
-	} 
+	}
+	
+	async function BajaUsuarioProyecto(idd, userid, usuario, folio){
+
+		//var userid = document.getElementById("idColaborador").value;
+	
+		if(window.confirm('Desea eliminar a ' + usuario + ' del proyecto ' )){ 
+			openModalLoad();
+			let fd = new FormData() 
+			fd.append("id", "bajaUsuarioDepartamento") 
+			fd.append("folioproyecto",idd) 
+			fd.append("foliocolab",userid)    
+			fd.append("folio",folio)    
+			const res = await axios.post(process.env.REACT_APP_API_URL, fd);  
+			closeModalLoad();
+			notify(res.data.trim()); 
+			console.log(idd);
+			getAllColaboradoresdelProyecto(idd);
+			//getAllColaboradoresdelGrupo(foliogrupo);
+		}
+	}
    
+	function regresar(){
+        props.unmount("ActProyectos", "", "");   
+
+	}
 
   		// Dynamically create select list
 	let options = [];
@@ -289,7 +319,8 @@ function Proyectos(props) {
 
 			<Nabvar titulo="Proyectos" departamento={props.rzonsocial} dptoid={props.dptoid}/>    
 			<div style={{width:'100%'}} align="right">
-			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-success btn-sm">Nuevo Proyecto</button>
+			<button style={{marginRight:'10px'}} onClick={() => regresar()} class="btn btn-outline-success btn-sm">Regresar</button>
+			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-primary btn-sm">Nuevo Proyecto</button>
       
 
 
@@ -305,17 +336,25 @@ function Proyectos(props) {
 	
 	<div>Personas en este proyecto:</div> 
 	<table>
+		<th>Folio</th>
 		<th>Nombre</th>
 		<th>Rol</th>
+		<th>Eliminar</th>   
 		{ colaboradoresEP.map(item => ( 
 						<tr> 
 							 
+							 <td>{item.folio}</td>
 							 <td>{item.name}</td>
-			     			 <td><select style={{width:'135px'}}  id={'rol'+item.userid} onChange={()=> cambiarRol(item.userid)}>
+			     			 <td>
+								<select style={{width:'135px'}}  id={'rol'+item.userid} onChange={()=> cambiarRol(item.userid)}>
 								<option selected>{formatRol(item.rol)}</option>
 								<option value="1">Colaborador</option>
 								<option value="2">Administrador</option>
-								</select></td>
+								</select>
+							</td>
+							<td>
+								<button id="bttn-eliminar-usuario" style={{width:'100%'}} className='btn btn-outline-danger btn-sm' onClick={() => BajaUsuarioProyecto(item.folioproyecto, item.userid, item.name, item.folio)}><BsXCircleFill /></button>
+								</td>
 						  
 						</tr> 
 						))}	
@@ -328,7 +367,7 @@ function Proyectos(props) {
 
 <select id="foliocolab" style={{ marginTop:'5px', width:'100%'}}>
 		  {colaboradores.map(item => ( 
-                     <option value={item.userid}>{item.name}</option>
+                     <option value={item.foliocolab}>{item.nombre}</option>
 
   		  ))}
 		  </select>
@@ -363,7 +402,7 @@ function Proyectos(props) {
 	<input id="descripcion" type="text"  style={{width:'100%', marginTop:'5px'}}/>
 	
 	<div>Fecha de termino estimada:</div>
-	<input id="fechatermino" type="text"  style={{width:'100%', marginTop:'5px'}} type="date"/>
+	<input id="fechatermino" style={{width:'100%', marginTop:'5px'}} type="date"/>
 	  
 	
 <br></br>

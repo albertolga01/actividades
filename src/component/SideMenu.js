@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useSyncExternalStore } from 'react'
+import axios from '../../node_modules/axios'; 
 import App from '../App'; 
 import Proyectos from '../Proyectos';
 import GrupoTrabajo from '../GrupoTrabajo';
@@ -9,6 +10,8 @@ import Equipos from '../Equipos';
 import Accesos from '../Accesos'; 
 import Solicitudes from '../Solicitudes';
 import Push from 'push.js';
+import ActProyectos from '../ActProyectos';
+import ActividadesDtpo from '../ActividadesDtpo';
 
 import OpcionesMenu from './OpcionesMenu'; 
 import Pusher from 'pusher-js'; 
@@ -26,6 +29,10 @@ export default function SideMenu(props) {
     const [ref, setRef] = useState(false); 
     const [title, setTitle] = useState("titul"); 
     const [n, setN] = useState(); 
+	const [listaDepartamentos, setListaDepartamentos] = useState([]);
+	const [NProyecto, setNProyecto] = useState([]);
+	const [IdProyecto, setIdProyecto] = useState([]);
+
     // console.log(props.selected); 
   
   
@@ -38,9 +45,28 @@ export default function SideMenu(props) {
     }
 
     
+	async function obtenerDepartamentosUsuario(){
 
-    function cambiarSelected(selected){ 
+        var id = "obtenerDepartamentosUsuario";
+        const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&userid='+props.userid);  
+        setListaDepartamentos(rese.data);
+        setNProyecto(rese.data[0].nombre);
+        setIdProyecto(rese.data[0].folio);
+        console.log(rese.data);
+	}
+
+    
+
+    function cambiarSelected(selected, idproyecto, nproyecto){ 
           
+        close(selected);  
+        setIdProyecto(idproyecto);  
+        setNProyecto(nproyecto);  
+    }
+
+
+    function cambiar(selected){ 
+               
         close(selected);  
     }
 
@@ -58,29 +84,35 @@ export default function SideMenu(props) {
         }   else if (selected === '5') {
             return <ChangePassForm userid={props.userid}/>;
         }   else if (selected === 'Proyectos') {
-            return <Proyectos tipo={props.tipo} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
+            return <Proyectos tipo={props.tipo} unmount={cambiar} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
         } else if (selected === 'Actividades') {
             return <Actividades tipo={props.tipo} admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
         } else if (selected === 'ActividadesFinalizadas') {
             return <ActividadesFinalizadas tipo={props.tipo} admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
         }else if (selected === 'GrupoTrabajo') {
-            return <GrupoTrabajo tipo={props.tipo} admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
+            return <GrupoTrabajo  getDptos={obtenerDepartamentosUsuario} tipo={props.tipo} admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
         }else if (selected === 'Equipos') {
             return <Equipos tipo={props.tipo} admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
         }else if (selected === 'Accesos') {
             return <Accesos tipo={props.tipo} admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
         } else if (selected === 'Solicitudes') {
             return <Solicitudes tipo={props.tipo} admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
+        }else if (selected === 'ActProyectos') {
+            return <ActProyectos tipo={props.tipo} unmount={cambiar}  admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
+        }else if (selected === 'ActividadesDtpo') {
+            return <ActividadesDtpo iddepartamento={IdProyecto} nombredepartamento={NProyecto} tipo={props.tipo} admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
         }else {
             return (<div style={{ width: '100%', textAlign: 'center', backgroundColor: '', margin: 'auto' }}><h1>Error al Cargar</h1></div>);
         } 
     }
 
     useEffect(() => {
-         
+        obtenerDepartamentosUsuario();
 		notificaciones(); 
 		// eslint-disable-next-line
 	},[])
+
+
   
 
     function logOut() {
@@ -129,7 +161,7 @@ export default function SideMenu(props) {
 
      
         <div  style={{ height: '100vh', width: '100vw', top: '0',  position: 'sticky', display: 'flex', overflowX: 'auto'}}>
-            <OpcionesMenu dptoid={props.dptoid} unmount={cambiarSelected} admin={props.admin} name={props.name} isMenuOpen1={isMenuOpen1}></OpcionesMenu>
+            <OpcionesMenu userid={props.userid} getDptos={props.getDptos} listaDepartamentos={listaDepartamentos} dptoid={props.dptoid} unmount={cambiarSelected} admin={props.admin} name={props.name} isMenuOpen1={isMenuOpen1}></OpcionesMenu>
              <Element selected={selected} />   
         </div>
     )

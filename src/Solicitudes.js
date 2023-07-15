@@ -17,6 +17,14 @@ import 'react-toastify/dist/ReactToastify.css';
   
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";  
 import {ThreeDots } from  'react-loader-spinner'
+/*
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper'; 
+import '../node_modules/swiper/swiper.css';
+import '../node_modules/swiper/swiper.min.css'
+import '../node_modules/swiper/modules/pagination/pagination.min.css'
+import '../node_modules/swiper/modules/navigation/navigation.min.css'; 
+*/
 
 const customStyles = {
 	content: {
@@ -417,7 +425,15 @@ function myFunction(item) {
 			<button style={{marginTop:'5px', marginRight:'10px',  width:'75px'}} onClick={() => getSolicitudes()} class="btn btn-outline-success btn-sm">Actualizar</button>
 			<button onClick={openModalC} class="btn btn-outline-success btn-sm" hidden="hidden">Calendario</button> 
 
-      
+
+	{/**
+
+	<Swiper navigation={true} modules={[Navigation]} className="mySwiper">
+        <SwiperSlide>Slide 1</SwiperSlide>
+        <SwiperSlide>Slide 2</SwiperSlide>
+        <SwiperSlide>Slide 3</SwiperSlide> 
+      </Swiper>
+      **/}
 	  <Modal
 	isOpen={modalIsOpen}
 	onAfterOpen={afterOpenModal}

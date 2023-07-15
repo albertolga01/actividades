@@ -1,6 +1,6 @@
 
 import React,{useState, useEffect} from 'react';  
-import axios from '../node_modules/axios'; 
+import axios from 'axios'; 
 import {Nabvar} from './component/Navbar';  
 import FullCalendar from '@fullcalendar/react' // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
@@ -23,6 +23,17 @@ import {ThreeDots } from  'react-loader-spinner'
 
 import Pusher from 'pusher-js'; 
 import { wait } from '@testing-library/react';
+
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, EffectCube } from 'swiper'; 
+import '../node_modules/swiper/swiper.css';
+import '../node_modules/swiper/swiper.min.css'
+import '../node_modules/swiper/modules/pagination/pagination.min.css'
+import '../node_modules/swiper/modules/navigation/navigation.min.css'; 
+
+import '../node_modules/swiper/modules/effect-cube/effect-cube.min.css';
+import { NonceProvider } from 'react-select/dist/react-select.cjs.prod';
+
 
 const customStyles = {
 	content: {
@@ -54,7 +65,7 @@ const customStyles = {
 
 
 
-function Actividades(props) {
+function ActProyectos(props) {
 
 	console.log(props.dptoid);
 	
@@ -77,6 +88,12 @@ function Actividades(props) {
 		return date;
 	}
 
+
+	function seleccionar(){
+        
+        props.unmount("Proyectos", "", "");   
+	}
+
 	const [colaboradores, setColaboradores] =  useState([]);  
 	const [esAdmin, setEsAdmin] = useState([]);
 	const [listap, setListaP] = useState([]);
@@ -91,6 +108,17 @@ function Actividades(props) {
 	
 
 	const [registros, setRegistros] = useState([]);
+	const [NProyecto, setNProyecto] = useState([]);
+	const [IdProyecto, setIdProyecto] = useState([]);
+
+
+	
+	const pagination = { 
+		clickable: true, 
+		renderBullet: function (index, className) { 
+		return '<span class="' + className + '">' + (index + 1) + '</span>'; 
+		}, 
+	};
 	
 	const handleEventClick = ({ event, el }) => { 
 		//var fecha = new Date(event.start);
@@ -140,9 +168,9 @@ function Actividades(props) {
 		 
 	}
 
-	function filterProyecto() {
-		var proyectos = document.getElementById('filtrarproyecto').value;  
-		var result = listados.filter((x) => (x.proyecto === proyectos)); 
+	function filterProyecto(proyecto) {
+		//var proyectos = document.getElementById('filtrarproyecto').value;  
+		var result = listados.filter((x) => (x.proyecto === proyecto)); 
 		setLista(result);
 	}
 	
@@ -155,7 +183,7 @@ function Actividades(props) {
   
   
 	async function getAllProyectos() {
-	  var id = "getTodosProyectosGrupo";
+	  var id = "getTodosProyectosUsuario";
 	  const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&userid='+props.userid+'&admin='+props.admin);  
 	  
 	  
@@ -179,14 +207,13 @@ function Actividades(props) {
 } 
 
 
-async function getAllColaboradoresdelProyecto(){    
+async function getAllColaboradoresdelProyecto(proyecto){    
 	//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
 	setEsAdmin("0");
-	var id = "getColabEnProyecto";
-	var folio = document.getElementById('folioproyecto').value; 
+	var id = "getColabEnProyecto"; 
 	var rol = document.getElementById('rol');
 	openModalLoad(); 
-	const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&folio='+folio);
+	const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&folio='+proyecto);
 	closeModalLoad();
 	console.log(res.data);
 
@@ -210,11 +237,14 @@ async function getAllColaboradoresdelProyecto(){
 	const [modalIsOpenC, setIsOpenC] = React.useState(false);
 	let subtitle; 
 	const [lista, setLista] =  useState([]);  
+	const [listaEnProceso, setListaEnProceso] =  useState([]);  
+	const [listaTerminado, setListaTerminado] =  useState([]);  
 	const [listados, setListaDos] =  useState([]);  
 	const [value, setValue] = useState([]); 
 	const [folioActividad1, setFolioActividad1] = useState([]); 
 	const [folioActividad, setFolioActividad] = useState([]); 
 
+	const [lista1, setLista1] =  useState([]);  
 
 	const [showDesc, setShowDesc] = React.useState(false);
 
@@ -257,7 +287,7 @@ async function getAllColaboradoresdelProyecto(){
 
 
 	useEffect(() => {
-		getActividades(); 
+		//getActividades(); 
 	},[])
 
 	
@@ -279,7 +309,7 @@ async function getAllColaboradoresdelProyecto(){
 				//	alert(data.mensaje + " " + data.userid + " " + JSON.stringify(data)); 
 				//console.log(usuario);
 				if(data.userid === props.userid && data.tipo === "act"){   
-					getActividades();
+					getActividadesProyecto(IdProyecto, NProyecto);
 					
 				}
 			 
@@ -366,19 +396,18 @@ async function getAllColaboradoresdelProyecto(){
 
 	  async function addActividad(){  
 		openModalLoad();
-		
-		var folioproyecto = document.getElementById("folioproyecto").value;
+		 
 		var actividad = document.getElementById("actividad").value;
 		var descripcion = document.getElementById("descripcion").value;
 		var fechatermino = document.getElementById("fechatermino").value;
 		var folioencargado = document.getElementById("folioencargado").value;
 		var folioresponsable = document.getElementById("folioresponsable").value;
 		var observaciones = document.getElementById("observaciones").value; 
-		// console.log(actividad);
-		if((folioproyecto != "Seleccione") && (actividad.length >= 1)){
+		 
+		if((IdProyecto != "Seleccione") && (actividad.length > 1)){
 		let fd = new FormData() 
 		fd.append("id","addActividad") 
-		fd.append("folioproyecto",folioproyecto) 
+		fd.append("folioproyecto",IdProyecto) 
 		fd.append("actividad",actividad.replaceAll("'", "´").replaceAll('"', "´´")) 
 		fd.append("descripcion",descripcion.replaceAll("'", "´").replaceAll('"', "´´")) 
 		fd.append("fechatermino", fechatermino)   
@@ -389,12 +418,12 @@ async function getAllColaboradoresdelProyecto(){
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd);
 		closeModalLoad();
 		notify(res.data.trim());
+		closeModal();
 		
 		} else {
 			notify("No se puede agregar actividad, favor de seleccionar un proyecto y agregar el nombre de la actividad");
 		}
-		closeModal();
-		getActividades();
+		getActividadesProyecto(IdProyecto, NProyecto);
 		//verRequisicion(folio);
 	 
 	}
@@ -415,34 +444,22 @@ async function getAllColaboradoresdelProyecto(){
 		notify(res.data.trim());
 		
 	}
-
+/*
 	async function getActividades(){    
 		//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
-		setLista([]);
-		setListaDos([]);
+		 
 		openModalLoad(); 
-		try {
-			document.getElementById("ocultas").checked = false;
-		  } catch (error) {
-			console.error(error); 
-		  }
-		
 		var id = "getActividades";
 		var date = document.getElementById("input-fecha").value; 
 		var termino = document.getElementById("input-fecha-termino").value; 
 		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&date='+date+'&userid='+props.userid+'&termino='+termino);
-		closeModalLoad(); 
-		var table = document.getElementById('productstable');
-		var result = res.data.filter((x) => (x.oculta === "0")); 
-			setLista(result); 
-		setListaDos(res.data);  
+		closeModalLoad();  
 		var lista = res.data;
 		var listadeproyectos = lista.filter( (ele, ind) => ind === lista.findIndex( elem => elem.proyecto === ele.proyecto))
-		setRegistros(res.data.length);
-		setListaProyectos(listadeproyectos);
-		//console.log(res.data);
+		//setRegistros(res.data.length);
+		//setListaProyectos(listadeproyectos); 
 	}
-
+*/
 
 
 
@@ -463,7 +480,7 @@ async function getAllColaboradoresdelProyecto(){
 			const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
 			console.log(res.data);
 			notify(res.data.trim());
-			getActividades();
+			getActividadesProyecto(IdProyecto, NProyecto);
 		}
 	}
 
@@ -481,7 +498,7 @@ async function getAllColaboradoresdelProyecto(){
 			const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
 			console.log(res.data);
 			notify(res.data.trim());
-			getActividades();
+			getActividadesProyecto(IdProyecto, NProyecto);
 		}
 	}
 
@@ -570,7 +587,7 @@ async function getAllColaboradoresdelProyecto(){
 			.then((data)=> {
 				if(data){
 					notify("Actividad eliminada");
-					getActividades();
+					getActividadesProyecto(IdProyecto, NProyecto);
 					//cleanForm();
 				}
 			})
@@ -596,7 +613,7 @@ async function actualizarComentarios(folio){
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
 		console.log("Actualizarcomentarios: " +res.data);
 		notify(res.data.trim());
-		getActividades();
+		getActividadesProyecto(IdProyecto, NProyecto);
 	}
 
 }
@@ -611,7 +628,7 @@ async function actualizarProyectoActividad(){
 		fd.append("folioactividad", folioactproyecto)
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd);  
 		notify(res.data.trim());
-		getActividades();
+		getActividadesProyecto(IdProyecto, NProyecto);
 	}
 
 }
@@ -624,7 +641,7 @@ async function ocultarActividad(folio){
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
 		console.log(res.data);
 		notify(res.data.trim());
-		getActividades();
+		getActividadesProyecto(IdProyecto, NProyecto);
 	}
 
 }
@@ -640,7 +657,7 @@ async function actualizarFecha(folio) {
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
 		console.log(res.data); 
 		notify(res.data.trim());
-		getActividades();
+		getActividadesProyecto(IdProyecto, NProyecto);
 	}    
 	
 
@@ -685,7 +702,7 @@ async function actualizarFecha(folio) {
 			const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
 			console.log(res.data); 
 			notify(res.data.trim());
-			getActividades();
+			getActividadesProyecto(IdProyecto, NProyecto);
 			setIsOpen1(false);
 		}    
 
@@ -701,6 +718,54 @@ async function actualizarFecha(folio) {
 
 	}
 
+	function selTipoActividad(e){
+
+		if(e.target.value == "1"){
+			var res =  lista1; 
+		}else{
+			var res =  lista1.filter((x) => (x.est == e.target.value && x.activo == "1")); 
+		}
+		console.log(res);
+		setLista(res); 
+	}
+
+	async function getActividadesProyecto(proyecto, NProyecto){    
+		//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
+		console.log(proyecto);
+		if(proyecto == "" || proyecto == null){
+			return;
+		}
+		document.getElementById("1").checked = true;
+		setLista([]);
+		//alert(proyecto);
+		setListaEnProceso([]);
+		setListaTerminado([]);
+		setListaDos([]);
+		setNProyecto(NProyecto);
+		setIdProyecto(proyecto);
+		getAllColaboradoresdelProyecto(proyecto);
+		openModalLoad(); 
+		//document.getElementById("ocultas").checked = false;
+		var id = "getActividadesProyecto";
+		var date = document.getElementById("input-fecha").value; 
+		var termino = document.getElementById("input-fecha-termino").value; 
+		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&date='+date+'&userid='+props.userid+'&termino='+termino+'&proyecto='+proyecto);
+		closeModalLoad();
+		setLista(res.data); 
+		setLista1(res.data);
+		/*
+		var creado =  res.data.filter((x) => (x.est == "Creado"  && x.finalizado != "1")); 
+		setLista(creado); 
+		console.log(creado);
+		var proceso =  res.data.filter((x) => (x.est == "En Proceso" && x.finalizado != "1")); 
+		setListaEnProceso(proceso);
+		var terminado =  res.data.filter((x) => (x.est == "Terminado"  || x.finalizado == "1")); 
+		setListaTerminado(terminado);
+		*/
+		setListaDos(res.data);   
+		setRegistros(res.data.length); 
+		console.log(NProyecto);
+	}
 
 	function mostrarDesc(){
 		if(showDesc){
@@ -709,6 +774,9 @@ async function actualizarFecha(folio) {
 			setShowDesc(true);
 		}
 	}
+
+
+	
 
 
 	
@@ -721,10 +789,10 @@ async function actualizarFecha(folio) {
 		<div className="container ">
 			 
 			<div style={{width:'100%'}} align="center">
-			<Nabvar titulo="Actividades" departamento={props.rzonsocial} dptoid={props.dptoid}/>    
+			<Nabvar titulo={NProyecto} departamento={props.rzonsocial} dptoid={props.dptoid}/> 
 			</div>
 			<div style={{width:'100%'}} align="right">
-			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-primary btn-sm">Nueva Actividad</button><br></br>
+			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-success btn-sm">Nueva Actividad</button><br></br>
 			
 			<button onClick={openModalC} class="btn btn-outline-success btn-sm" hidden="hidden">Calendario</button> 
 
@@ -736,16 +804,9 @@ async function actualizarFecha(folio) {
 	style={customStyles}
 	contentLabel="Example Modal"
   >
-	<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'black'}}>Nueva Actividad</h2>
+	<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'black'}}>Nueva Actividad {NProyecto}</h2>
 	
-	<div>Proyecto:</div> 
-	<select id="folioproyecto" style={{width:'100%', marginTop:'5px'}}  onChange={()=> getAllColaboradoresdelProyecto()}>
-		 <option>Seleccione</option>
-		  {listap.map(item => ( 
-                     <option value={item.folio}>{item.proyecto}</option>
-
-  		  ))}
-		  </select> 
+	 
 	<div>Responsable:</div>
 
 		  { 
@@ -809,15 +870,15 @@ async function actualizarFecha(folio) {
   </Modal>
   </div> 
 			<div className="row p-3">
-				<div>
-					<span>Filtrar por fecha: </span>
-					<input id='input-fecha' type='date' style={{width:'96px',fontSize:'12px', cursor:'pointer'}} onChange={() => getActividades()}></input>
-					<span>&nbsp; </span>
-					<input id='input-fecha-termino' type='date' style={{width:'97px',fontSize:'12px', cursor:'pointer'}} onChange={() => getActividades()}></input>
-					<span>&nbsp; </span>
-					<button  onClick={() => getActividades()} class="btn btn-outline-success btn-sm">Filtrar</button>
+				<div> 
+					<span hidden>Filtrar por fecha: </span>
+					<input hidden id='input-fecha' type='date' style={{width:'96px',fontSize:'12px', cursor:'pointer'}} ></input>
+					<span hidden>&nbsp; </span>
+					<input hidden id='input-fecha-termino' type='date' style={{width:'97px',fontSize:'12px', cursor:'pointer'}} ></input>
+					<span hidden >&nbsp; </span> 
+					<button hidden style={{margin:'5px'}}  class="btn btn-outline-success btn-sm">Actualizar</button>
 				</div>
-				{ (props.admin == 1 ) ? 
+				{/** { (props.admin == 1 ) ? 
 				<div>
 				<select id="filtrarproyecto" style={{width:'320px', marginTop:'5px'}}   onChange={() => filterProyecto()}>
 				{listap.map(item => ( 
@@ -850,30 +911,59 @@ async function actualizarFecha(folio) {
 				<div> 
 				</div>
 				}
+				*/}
+
+				{/*Botones por proyecto */}
+				<div>
+				{listap.map(item => ( 
+					<button id="filtrarproyeco" style={{width:'24%', marginTop:'0.5%', marginLeft:'1%'}}  class="btn btn-outline-success btn-sm"  >
+					<option style={{fontSize: '12px'}}value={item.proyecto} onClick={() => getActividadesProyecto(item.folio, item.proyecto)}>{item.proyecto}</option>
+					</button>
+
+				))}	
+
+				<br></br>
+				<br></br>
+
+				<button id="Proyectos" onClick={() => seleccionar()} style={{ width:'15%', marginTop:'5px', margin:'5px' }}  class="btn btn-outline-primary btn-sm"> Proyectos</button>
+
+				</div>
+
+					{/**
 				<div>
 					<span>Mostrar ocultas</span>&nbsp;&nbsp;&nbsp;
 				<input type="checkbox" id="ocultas" onChange={() => mostrarOcultas()}></input>
 
 				</div>
-
+			
 				<div>
 					<span>Mostrar descripción</span>&nbsp;&nbsp;&nbsp;
-				<input type="checkbox" id="desc" onChange={() => mostrarDesc()}></input>
+				<input type="checkbox" id="ocultas" onChange={() => mostrarDesc()}></input>
 
 				</div>
+				**/} 
+				<div>
+				 <input type="radio" id="1" name="fav_language" value="1" onChange={(e) => selTipoActividad(e)}/>
+				 <label style={{padding:'5px'}}>Todas</label>
+				 <input type="radio" id="2" name="fav_language" value="Creado" style={{marginLeft: '15px'}} onChange={(e) => selTipoActividad(e)}/>
+				 <label style={{padding:'5px'}}>Creadas</label>
+				 <input type="radio" id="3" name="fav_language" value="En Proceso" style={{marginLeft: '15px'}} onChange={(e) => selTipoActividad(e)}/>
+				 <label style={{padding:'5px'}}>En proceso</label>
+				 <input type="radio" id="4" name="fav_language" value="Terminado" style={{marginLeft: '15px'}} onChange={(e) => selTipoActividad(e)}/>
+				 <label style={{padding:'5px'}}for="Finalizadas">Finalizadas</label>
+				</div>	
 				 
-				
-				<div  style={{height:'100%', overflowX: 'scroll', width:'100%'}}>
+					<div  style={{height:'100%', width:'100%'}}>
 					<table id="productstable" style={{width:'100%'}}>
 						<tr > 
 							<th style={{width:'35px'}}>Folio</th>
 							<th style={{width:'95px'}}> Responsable</th> 
 							<th style={{width:'35px'}}></th>
-							 
-							<th style={{width:'100px'}}>Proyecto</th>
+							{/** 
+							<th style={{width:'100px'}}>Proyecto</th>*/} 
 							<th style={{width: '250px'}}>Actividad</th>
 							{showDesc && <th style={{minWidth: '250px'}}>Descripción</th>}
-							<th style={{width: '95px'}}>Inicio /<br></br> termino</th>  
+							<th style={{width: '95px'}}>Inicio /<br></br> termino</th>
 							<th style={{width:'100px'}}>Estado</th> 
 							<th style={{width:'250px'}}>Observaciones</th> 
 							<th></th> 
@@ -895,20 +985,22 @@ async function actualizarFecha(folio) {
 							<td><button  className='btn btn-outline-success btn-sm' onClick={() => actualizarResponsable(item.proyecto, item.folioproyecto, item.folio)}><BsArrowRepeat /></button></td>
 							:<td></td>
 							}
+							{/** 
 							{(item.rol == 2)?
 							<td onClick={()=> MostrarDetalleProyecto(item.folio, item.folioresponsable, item.name)} style={{  boxShadow:'0px 0px 0px 5px '+item.backgroundColor+' inset'}} align='center' ><label>{item.proyecto}</label></td>
 							:
 							<td  style={{  boxShadow:'0px 0px 0px 5px '+item.backgroundColor+' inset'}} align='center' ><label>{item.proyecto}</label></td>
 							}
-							
+							*/}
 							
 							{ (item.rol == 2) ? 
 							<>
 							<td align='center'>
 								 
-								<textarea id={"actividad1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'250px', marginTop:'5px'}} rows="4" cols="50"/>
+								<textarea id={"actividad1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'250px', marginTop:'5px'}} rows="2" cols="50"/>
   
 						 	</td>
+							
 							 {(showDesc) ?  
 							 	<td align='center'> 
 										<textarea id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text"  style={{width:'100%', marginTop:'5px'}}/>
@@ -919,13 +1011,13 @@ async function actualizarFecha(folio) {
 						 
 						 
 						 }
-							
+							 
 						 </>
                          : 
 						 <>
 						<td style={{width:'250px'}}>{item.actividad}<input id={"actividad1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/> </td>
 						 
-
+						 {/**
 						{(showDesc) ?  
 							 	<td align='center'> 
 										<textarea id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text" style={{width:'100%', marginTop:'5px'}} rows="4" cols="50"/>
@@ -937,7 +1029,7 @@ async function actualizarFecha(folio) {
 						 
 						 }
 						 
-						 
+						 **/}
 						 </>
 							}
 							<td>{formatDate(item.fechainicio)}<input  style={{width:'95px', height:'31px', backgroundColor: getColor(item.fechatermino)}} type="date" id={item.folio} onChange={() => actualizarFecha(item.folio)} value={(item.fechatermino).substring(0,10)}/></td> 
@@ -950,9 +1042,9 @@ async function actualizarFecha(folio) {
 								<option value="3">Terminado</option>
 								</select>  
 							</td>
-							<td align='center'><textarea defaultValue={item.comentarios} id={"observacionesActividades"+item.folio} style={{width:'250px'}} rows="4" cols="50"></textarea></td>
+							<td align='center'><textarea defaultValue={item.comentarios} id={"observacionesActividades"+item.folio} style={{width:'250px'}} rows="2" cols="50"></textarea></td>
 							<td style={{width: '80px'}}><button  className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(item.folio)}><BsArrowRepeat /></button>
-							<button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(item.folio)}><FaEye /></button>
+							{/*<button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(item.folio)}><FaEye /></button>*/}
 							<button style={{width:'64px'}} className='btn btn-outline-primary btn-sm' onClick={() => agregarDoc(item.folio)}><BsUpload /></button></td>
 							{ (item.rol == 2) ? 
 							<td align='center' style={{width:'35px'}}>
@@ -970,11 +1062,13 @@ async function actualizarFecha(folio) {
 						</tr> 
 						))}	
 						<tr>
-							<td colSpan={2}>Registros: {registros}</td>
+							{/* <td colSpan={2}>Registros: {registros}</td>*/}
 						</tr>
 					</table> 
+					<br></br>
+					<br></br>
+					<br></br>
 				</div>
-
 
 				<ToastContainer 
 				progressClassName="toastProgress"
@@ -1143,16 +1237,7 @@ async function actualizarFecha(folio) {
 		</Modal>
 
 
-
-							<h2>Calendario de actividades</h2>
-				<FullCalendar
-				plugins={[ dayGridPlugin ]}
-				initialView="dayGridMonth"
-				weekends={true}
-				locale={esLocale}
-				events={lista}
-				eventClick={handleEventClick}
-				/>
+ 
 			</div>
 
 			
@@ -1160,4 +1245,4 @@ async function actualizarFecha(folio) {
 	);   
 }
 
-export default Actividades;
+export default ActProyectos;

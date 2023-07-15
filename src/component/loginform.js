@@ -85,7 +85,7 @@ const Login = (isLoggedIna) =>  {
 	} else {
 		return (
 			<div >
-				<SideMenu   admin={admin} departamento={departamento} usuario={usuario} userid={userid} name={name} dptoid={dptoid}  selected='Actividades' tipo={tipo} />
+				<SideMenu   admin={admin} departamento={departamento} usuario={usuario} userid={userid} name={name} dptoid={dptoid}  selected='ActividadesDtpo' tipo={tipo} />
 			</div>
 		);
 	}

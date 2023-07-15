@@ -11,7 +11,8 @@ import {ThreeDots } from  'react-loader-spinner'
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-  
+import { BsArrowRepeat, BsEnvelopeFill, BsFillPersonPlusFill, BsXCircleFill} from "react-icons/bs";
+
 
 const customStyles = {
 	content: {
@@ -72,6 +73,7 @@ function GrupoTrabajo(props) {
 	getColaboradores(rese.data[0].folio);
 }
 
+ 
 
 function ver(id, proyecto){
 	setProyecto(id);
@@ -96,6 +98,8 @@ function eliminarGrupo(folio){
 		if(data){
 			notify("Grupo eliminado");
 			getAllGrupos();
+			props.getDptos();
+
 			//cleanForm();
 		}
 	})
@@ -106,7 +110,8 @@ async function getColaboradores(folio) {
 	openModalLoad();
 	const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&folio='+folio);
 	closeModalLoad();
-	setListaU(rese.data); 
+	setListaU(rese.data);
+	//setListaUT(rese.data); 
 	console.log(rese.data);
 	getProyectosGrupo(folio);
 }
@@ -195,9 +200,32 @@ async function getProyectosGrupo(folio) {
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd);
 		notify(res.data.trim());
 		getAllGrupos();
+		closeModal();
 		//getActividades();
 		//verRequisicion(folio);
 	 
+	}
+
+
+	async function eliminarUsuarioProyecto(foliogrupo, userid, grupo, usuario, folio){
+
+		//var userid = document.getElementById("idColaborador").value;
+	
+		if(window.confirm('Desea eliminar a ' + usuario + ' del depatamento ' + grupo)){ 
+			openModalLoad();
+			let fd = new FormData() 
+			fd.append("id", "eliminarUsuarioDepartamento")
+			fd.append("foliogrupo", foliogrupo)
+			fd.append("foliocolab", userid) 
+			fd.append("folio", folio)  
+			const res = await axios.post(process.env.REACT_APP_API_URL, fd);  
+			closeModalLoad();
+			notify(res.data.trim()); 
+			console.log(foliogrupo);
+			props.getDptos();
+
+			getAllColaboradoresdelGrupo(foliogrupo);
+		}
 	}
 
 	
@@ -210,6 +238,8 @@ async function getProyectosGrupo(folio) {
 		fd.append("idProyecto",proyecto) 
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd);
 		notify(res.data.trim());
+		props.getDptos();
+
 		//getActividades();
 		//verRequisicion(folio);
 		getAllColaboradoresdelGrupo(proyecto);
@@ -217,8 +247,55 @@ async function getProyectosGrupo(folio) {
 	}
 
   
+	async function ActualizarStatus(id, folioencargado, actividad, folioresponsable){
+		 
+		var nv = document.getElementById('sel'+id); 
+		if(window.confirm('Actualizar estado de actividad con folio: ' + id)){
+			let fd = new FormData() 
+			fd.append("id", "actualizarEstadoActividad")
+			fd.append("folio", id)
+			fd.append("nuevoestado", nv.value)
+			fd.append("nuevoestadotexto", nv.options[nv.selectedIndex].innerText)
+			fd.append("name", props.name)
+			fd.append("folioencargado", folioencargado)
+			fd.append("actividad", actividad)
+			fd.append("tipo", "actividad")
+			fd.append("folioresponsable", folioresponsable)
+			const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
+			console.log(res.data);
+			notify(res.data.trim());
+			getActividades();
+		}
+	}
 
- 
+	function formatRol(rolid){
+		if(rolid == "1"){
+			return "Colaborador";
+		}else if(rolid == "2"){
+			return "Administrador";
+		}
+	
+	}
+
+	async function cambiarRol(foliocolab, foliogrupo){
+		var rol = document.getElementById("rol"+foliocolab).value;
+		 
+		var id = "cambiarRolColaboradorDto"; 
+			var foliogrupo = proyecto; 
+			 let fd = new FormData() 
+			fd.append("id",id) 
+			//fd.append("idProyecto",idProyecto)
+			fd.append("foliogrupo", foliogrupo)
+			fd.append("foliocolab",foliocolab)    
+			fd.append("rol",rol)    
+			const res = await axios.post(process.env.REACT_APP_API_URL, fd);
+			notify(res.data); 
+			//getAllColaboradoresdelProyecto(proyecto);
+			getAllColaboradoresdelGrupo(foliogrupo);
+			console.log(res.data);
+			console.log(rol);
+	
+	  }
 
 	async function getActividades(){    
 		 
@@ -230,9 +307,9 @@ async function getProyectosGrupo(folio) {
 	return (
 		<div className="container ">
 			
-			<Nabvar titulo="Grupo de Trabajo" departamento={props.rzonsocial} dptoid={props.dptoid}/>    
+			<Nabvar titulo="Departamentos" departamento={props.rzonsocial} dptoid={props.dptoid}/>    
 			<div style={{width:'100%'}} align="right">
-			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-success btn-sm">Nuevo Grupo</button><br></br>
+			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-success btn-sm">Nuevo Departamento</button><br></br>
 			<br></br>
 
 			<Modal 
@@ -252,12 +329,12 @@ async function getProyectosGrupo(folio) {
 	style={customStyles}
 	contentLabel="Example Modal"
   >
-	<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'black'}}>Nuevo Grupo de trabajo</h2>
+	<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'black'}}>Nuevo Departamento </h2>
  
 	<div>Encargado:</div>
 	<select id="encargado" style={{width:'100%', marginTop:'5px'}}   >
 							{listaut.map(item => ( 
-									   <option value={item.userid}>{item.name}</option>
+									   <option value={item.foliocolab}>{item.nombre}</option>
 				  
 							  ))}
 							</select>
@@ -343,13 +420,29 @@ async function getProyectosGrupo(folio) {
 										<br></br> 
 										<br></br> 
 										
-				<div>Personas en este grupo:</div> 
+				<div>Personas en este grupo:</div>
+				<tr>
+					 
+					<th class="header">Folio</th>   
+					<th class="header">Colaborador</th>   
+					<th class="header">Rol</th>   
+					<th class="header">Eliminar</th>   
+				</tr> 
 
 				{ colaboradoresG.map(item => ( 
 									<tr> 
 										
+										<td>{item.folio}</td>
 										<td>{item.nombre}</td>
-									
+										<td>
+											<select style={{width:'135px'}}  id={'rol'+item.foliocolab} onChange={()=> cambiarRol(item.foliocolab, item.foliogrupo,)}>
+												<option selected>{formatRol(item.rol)}</option>
+												<option value="1">Colaborador</option>
+												<option value="2">Administrador</option>
+											</select>
+										</td>
+										<td><button id="bttn-eliminar-usuario" style={{width:'100%'}} className='btn btn-outline-danger btn-sm' onClick={() => eliminarUsuarioProyecto(item.foliogrupo, item.foliocolab, item.grupo, item.nombre, item.folio)}><BsXCircleFill /></button> </td>
+
 									</tr> 
 									))
 									}	
