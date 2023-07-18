@@ -76,8 +76,7 @@ function Actividades(props) {
 				)
 			},
 			sortable: true,
-			maxWidth: "5px", 
-			width: "60px"  
+			width: "5%"  
 		},
 		{
 			name: 'Responsable',  
@@ -93,7 +92,7 @@ function Actividades(props) {
 				)
 			},
 			sortable: true,
-			width: "95px",
+			width: "10%",
 			wrap: true,
 		},
 		{
@@ -109,7 +108,7 @@ function Actividades(props) {
 				)
 			},
 			maxWidth: "5px",
-			width: "40px",
+			width: "5%",
 			sortable: true,
 		},
 		{
@@ -125,7 +124,7 @@ function Actividades(props) {
 				)
 			},
 			maxWidth: "5px",
-			width: "100px",
+			width: "10%",
 			sortable: true,
 		},
 		{
@@ -137,7 +136,7 @@ function Actividades(props) {
 							<>
 							<td align='center'>
 								 
-								<textarea id={"actividad1"+row.folio} defaultValue={row.actividad} type="text"  style={{width:'250px', marginTop:'5px'}} rows="3" cols="50"/>
+								<textarea id={"actividad1"+row.folio} defaultValue={row.actividad} type="text"  style={{width:'95%', marginTop:'5px'}} rows="3" cols="50"/>
   
 						 	</td>
 							 
@@ -145,7 +144,7 @@ function Actividades(props) {
 						 </>
                          : 
 						 <>
-						<td style={{width:'250px'}}>{row.actividad}<input id={"actividad1"+row.folio} defaultValue={row.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/> </td>
+						<td style={{width:'95%'}}>{row.actividad}<input id={"actividad1"+row.folio} defaultValue={row.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/> </td>
 						 
  
 						 
@@ -153,7 +152,7 @@ function Actividades(props) {
 						 </>
 				)
 			},
-			width: "255px",
+			width: "20%",
 			sortable: true,
 		},
 		{
@@ -164,7 +163,7 @@ function Actividades(props) {
 					(row.rol == 2) ? 
 							<> 
 							 	<td align='center'> 
-										<textarea id={"descripcion1"+row.folio} defaultValue={row.descripcion} type="text"  style={{width:'250px', marginTop:'5px'}} rows="3" cols="50"/>
+										<textarea id={"descripcion1"+row.folio} defaultValue={row.descripcion} type="text"  style={{width:'95%', marginTop:'5px'}} rows="3" cols="50"/>
 						 		</td>  
 							
 						 </>
@@ -172,14 +171,14 @@ function Actividades(props) {
 						 <>
 					  
 									<td align='center'> 
-											<textarea id={"descripcion1"+row.folio} defaultValue={row.descripcion} type="text" style={{width:'250px', marginTop:'5px'}} rows="3" cols="50"/>
+											<textarea id={"descripcion1"+row.folio} defaultValue={row.descripcion} type="text" style={{width:'95%', marginTop:'5px'}} rows="3" cols="50"/>
 									</td> 
 						 
 						 
 						 </>
 				)
 			},
-			width: "255px",
+			width: "20%",
 			sortable: true,
 			omit: !showDesc,
 		}, 
@@ -191,7 +190,7 @@ function Actividades(props) {
 					<td>{formatDate(row.fechainicio)}<input  style={{width:'95px', height:'31px', backgroundColor: getColor(row.fechatermino)}} type="date" id={row.folio} onChange={() => actualizarFecha(row.folio)} value={(row.fechatermino).substring(0,10)}/></td> 
 				)
 			},
-			width: "105px", 
+			width: "10%", 
 			sortable: true,
 		},
 		{
@@ -210,7 +209,7 @@ function Actividades(props) {
 
 					)
 			},
-			width: "90px",
+			width: "10%",
 			sortable: true,
 		}, 
 		{
@@ -218,10 +217,10 @@ function Actividades(props) {
 			//selector: row => row.actividad,
 			cell: (row) => {
 				return (
-					<td align='center'><textarea defaultValue={row.comentarios} id={"observacionesActividades"+row.folio} style={{width:'250px'}} rows="3" cols="50"></textarea></td>
+					<td align='center'><textarea defaultValue={row.comentarios} id={"observacionesActividades"+row.folio} style={{width:'95%'}} rows="3" cols="50"></textarea></td>
 					)
 			},
-			width: "255px",
+			width: "20%",
 			sortable: true,
 		}, 
 		{
@@ -235,7 +234,7 @@ function Actividades(props) {
 						<button style={{width:'64px'}} className='btn btn-outline-primary btn-sm' onClick={() => agregarDoc(row.folio)}><BsUpload /></button>
 					</td>)
 			},
-			width: "80px",
+			width: "7%",
 			sortable: true,
 		},
 		{
@@ -257,7 +256,7 @@ function Actividades(props) {
 					</td>
 					)
 			},
-			width: "45px",
+			width: "3%",
 			sortable: true,
 		}, 
 	];
