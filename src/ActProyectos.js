@@ -35,6 +35,11 @@ import '../node_modules/swiper/modules/navigation/navigation.min.css';
 import '../node_modules/swiper/modules/effect-cube/effect-cube.min.css';
 import { NonceProvider } from 'react-select/dist/react-select.cjs.prod';
 
+ 
+import DataTableExtensions from "react-data-table-component-extensions";
+import 'react-data-table-component-extensions/dist/index.css';
+import DataTable from 'react-data-table-component';
+
 
 const customStyles = {
 	content: {
@@ -69,7 +74,232 @@ const customStyles = {
 function ActProyectos(props) {
 
 	console.log(props.dptoid);
+	const [showDesc, setShowDesc] = React.useState(false);
 	
+	const columns = [
+		{
+			name: 'Folio',  
+			//selector: row => row.folio,
+			cell: (row) => {
+				return (
+					<td  onClick={() => MostrarDetalle(row.folio)} align='center' className='id-orden'>{row.folio}</td>
+				)
+			},
+			sortable: true,
+			maxWidth: "5px", 
+			width: "60px"  
+		},
+		{
+			name: 'Responsable',  
+			//selector: row => row.vehiculo + " " + row.modelo +" "+ row.numvehiculo,
+			cell: (row) => {
+				return (
+					<td align='left'>
+						<div align='left' style={{marginLeft:'20px'}}>
+							<label onClick={() => Notificar(row.name, row.actividad)}>{(row.name).split(" ")[0]}</label>
+					 	</div>
+					 
+					</td>
+				)
+			},
+			sortable: true,
+			width: "125px",
+			wrap: true,
+		},
+		{
+			name: '',  
+			//selector: row => row.accesorio,
+			cell: (row) => {
+				return (
+					<td>{ (row.rol == 2) ? 
+						<td><button  className='btn btn-outline-success btn-sm' onClick={() => actualizarResponsable(row.proyecto, row.folioproyecto, row.folio)}><BsArrowRepeat /></button></td>
+						:<td></td>
+						}
+				</td>
+				)
+			},
+			maxWidth: "5px",
+			width: "40px",
+			sortable: true,
+		},
+		{
+			name: 'Actividad',  
+			//selector: row => row.descripcion,
+			cell: (row) => {
+				return (
+					(row.rol == 2) ? 
+							<>
+							<td align='center'>
+								 
+								<textarea id={"actividad1"+row.folio} defaultValue={row.actividad} type="text"  style={{width:'250px', marginTop:'5px'}} rows="3" cols="50"/>
+  
+						 	</td>
+							 
+							
+						 </>
+                         : 
+						 <>
+						<td style={{width:'250px'}}>{row.actividad}<input id={"actividad1"+row.folio} defaultValue={row.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/> </td>
+						 
+ 
+						 
+						 
+						 </>
+				)
+			},
+			width: "255px",
+			sortable: true,
+		},
+		{
+			name: 'Descripcion',  
+			//selector: row => row.descripcion,
+			cell: (row) => {
+				return (
+					(row.rol == 2) ? 
+							<> 
+							 	<td align='center'> 
+										<textarea id={"descripcion1"+row.folio} defaultValue={row.descripcion} type="text"  style={{width:'250px', marginTop:'5px'}} rows="3" cols="50"/>
+						 		</td>  
+							
+						 </>
+                         : 
+						 <>
+					  
+									<td align='center'> 
+											<textarea id={"descripcion1"+row.folio} defaultValue={row.descripcion} type="text" style={{width:'250px', marginTop:'5px'}} rows="3" cols="50"/>
+									</td> 
+						 
+						 
+						 </>
+				)
+			},
+			width: "255px",
+			sortable: true,
+			omit: !showDesc,
+		}, 
+		{
+			name: 'Inicio/termino',  
+			selector: row => row.actividad,
+			cell: (row) => {
+				return (
+					<td>{formatDate(row.fechainicio)}<input  style={{width:'95px', height:'31px', backgroundColor: getColor(row.fechatermino)}} type="date" id={row.folio} onChange={() => actualizarFecha(row.folio)} value={(row.fechatermino).substring(0,10)}/></td> 
+				)
+			},
+			width: "125px", 
+			sortable: true,
+		},
+		{
+			name: 'Estado',  
+			//selector: row => row.actividad,
+			cell: (row) => {
+				return (
+				<td>
+								 
+					<select style={{height:'31px'}} id={'sel'+row.folio} name={row.est} onChange={() => ActualizarStatus(row.folio, row.folioencargado, row.actividad, row.folioresponsable)}>
+						<option value="1">{row.est}</option>
+						<option value="2">En Proceso</option>
+						<option value="3">Terminado</option>
+					 </select>  
+				</td>
+
+					)
+			},
+			width: "95px",
+			sortable: true,
+		}, 
+		{
+			name: 'Observaciones',  
+			//selector: row => row.actividad,
+			cell: (row) => {
+				return (
+					<td align='center'><textarea defaultValue={row.comentarios} id={"observacionesActividades"+row.folio} style={{width:'250px'}} rows="3" cols="50"></textarea></td>
+					)
+			},
+			width: "255px",
+			sortable: true,
+		}, 
+		{
+			name: '',  
+			//selector: row => row.actividad,
+			cell: (row) => {
+				return (
+					<td style={{width: '80px'}}>
+						<button  className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(row.folio)}><BsArrowRepeat /></button>
+						{/*<button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(row.folio)}><FaEye /></button>*/}
+						<button style={{width:'64px'}} className='btn btn-outline-primary btn-sm' onClick={() => agregarDoc(row.folio)}><BsUpload /></button>
+					</td>)
+			},
+			width: "80px",
+			sortable: true,
+		},
+		{
+			name: '',  
+			//selector: row => row.actividad,
+			cell: (row) => {
+				return (
+					<td>
+					{ (row.rol == 2) ? 
+						<td align='center' style={{width:'35px'}}>
+						<button className='btn btn-outline-success btn-sm' onClick={ () => finalizado(row.folio, row.folioresponsable, row.actividad) }><BsFillCheckCircleFill /></button>
+						<button className='btn btn-outline-danger btn-sm' onClick={ () => eliminarActividad(row.folio) }><BsXCircleFill /></button>
+					</td>
+					 : 
+					 <td>
+						 </td>
+
+						}
+					</td>
+					)
+			},
+			width: "45px",
+			sortable: true,
+		}, 
+	];
+
+	const tableCustomStyles = {
+		headCells: {
+		  style: {
+			fontSize: '15px',
+			fontWeight: 'bold', 
+			backgroundColor: '#e5e5e5',
+			paddingLeft: '8px',
+			paddingRight: '0px',
+		  },
+		},
+		cells: {
+			style: {
+				paddingLeft: '8px', // override the cell padding for data cells
+				paddingRight: '0px',
+			},
+		},
+	  }
+
+
+/*
+	const columns = [
+		{
+			name: 'Folio',  
+			cell: (row) => {
+				return (
+					<td  onClick={() => MostrarDetalle(item.folio)} align='center' className='id-orden'>{item.folio}</td>
+				)
+			},
+			sortable: true,
+			maxWidth: "5px", 
+			width: "60px"  
+		},
+		{
+			name: 'Responsable',  
+			cell: (row) => {
+				return (
+					<td  onClick={() => MostrarDetalle(item.folio)} align='center' className='id-orden'>{item.folio}</td>
+				)
+			},
+			sortable: true,
+			maxWidth: "5px", 
+			width: "60px"  
+		},
+	];*/
 
 
 	let defaultDate = new Date()
@@ -247,7 +477,6 @@ async function getAllColaboradoresdelProyecto(proyecto){
 
 	const [lista1, setLista1] =  useState([]);  
 
-	const [showDesc, setShowDesc] = React.useState(false);
 
 	let id = 0; 
 	let tipo = 0; 
@@ -956,7 +1185,27 @@ async function actualizarFecha(folio) {
 				</div>	
 				 
 					<div  style={{height:'100%', width:'100%'}}>
-					<table id="productstable" style={{width:'100%'}}>
+
+						<DataTableExtensions
+							columns={columns}
+							data={lista} 
+							print={false}
+							export={false}
+							filter={false} 
+							>
+									<DataTable
+												columns={columns}
+												data={lista}
+												fixedHeader={true}
+												fixedHeaderScrollHeight={'100%'}
+												customStyles={tableCustomStyles}
+												highlightOnHover={true}
+												noDataComponent={"No se encontró información"}
+												noHeader
+											
+											/>
+						</DataTableExtensions>
+					<table id="productstable" style={{width:'100%'}} hidden>
 						<tr > 
 							<th style={{width:'35px'}}>Folio</th>
 							<th style={{width:'95px'}}> Responsable</th> 
