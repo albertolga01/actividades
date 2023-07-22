@@ -18,6 +18,9 @@ import Pusher from 'pusher-js';
 import ReactNotifications from 'react-browser-notifications';
 
 import { push as Menu } from 'react-burger-menu'
+
+import { ChatProvider } from '../context/ChatProvider';
+
  
 export default function SideMenu(props) {
 
@@ -100,7 +103,7 @@ export default function SideMenu(props) {
         }else if (selected === 'ActProyectos') {
             return <ActProyectos tipo={props.tipo} unmount={cambiar}  admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
         }else if (selected === 'ActividadesDtpo') {
-            return <ActividadesDtpo iddepartamento={IdProyecto} nombredepartamento={NProyecto} tipo={props.tipo} admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
+            return <ActividadesDtpo rooms={listaDepartamentos} iddepartamento={IdProyecto} nombredepartamento={NProyecto} tipo={props.tipo} admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
         }else {
             return (<div style={{ width: '100%', textAlign: 'center', backgroundColor: '', margin: 'auto' }}><h1>Error al Cargar</h1></div>);
         } 
@@ -162,7 +165,10 @@ export default function SideMenu(props) {
      
         <div  style={{ height: '100vh', width: '100vw', top: '0',  position: 'sticky', display: 'flex', overflowX: 'auto'}}>
             <OpcionesMenu userid={props.userid} getDptos={props.getDptos} listaDepartamentos={listaDepartamentos} dptoid={props.dptoid} unmount={cambiarSelected} admin={props.admin} name={props.name} isMenuOpen1={isMenuOpen1}></OpcionesMenu>
-             <Element selected={selected} />   
+            <ChatProvider name={props.name}>
+             <Element selected={selected} />  
+			</ChatProvider>
+
         </div>
     )
   

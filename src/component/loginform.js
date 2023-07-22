@@ -4,7 +4,9 @@ import axios from '../../node_modules/axios';
 import SideMenu from './SideMenu'; 
 import 'dotenv/config';  
 import Push from 'push.js';  
+import { useChat } from '../context/ChatProvider';
  
+
 import Pusher from 'pusher-js'; 
 import { isPropsEqual } from '@fullcalendar/react';
 const Login = (isLoggedIna) =>  {
@@ -27,14 +29,12 @@ const Login = (isLoggedIna) =>  {
 		//notificaciones(); 
 		// eslint-disable-next-line
 	},[])
-  
-
-	 
-	 
+   
+ 
 	 
 	async function Login(e){  
+
 		e.preventDefault();  
-	 
 		var user = document.getElementById("form-usuario").value;
 		var pass = document.getElementById("form-password").value;  
 		let fd = new FormData()  

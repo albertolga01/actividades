@@ -12,6 +12,9 @@ import { FaBeer, FaReact, Farefr } from 'react-icons/fa';
 import { AiFillAlert } from "react-icons/ai";
 import { BsArrowRepeat, BsFillCheckCircleFill, BsXCircleFill, BsEyeFil, BsEyeSlashFill, BsFillFileEarmarkPlusFill, BsUpload } from "react-icons/bs";
 import { FaEye } from "react-icons/fa";
+import ChatContainer from './component/ChatContainer';
+import { useChat } from './context/ChatProvider';
+import styled from 'styled-components';
 
 import moment from 'moment';
  
@@ -28,7 +31,15 @@ import { wait } from '@testing-library/react';
 import DataTableExtensions from "react-data-table-component-extensions";
 import 'react-data-table-component-extensions/dist/index.css';
 import DataTable from 'react-data-table-component';
+import Login from './component/LoginChat';
+import useChatActions from './hooks/useChatActions';
 
+
+const WrapperContainer = styled.div`
+  display: grid;
+  height: 100vh;
+  place-items: center;
+`;
 
 const customStyles = {
 	content: {
@@ -62,8 +73,16 @@ const customStyles = {
 
 function ActividadesDtpo(props) {
 
+    const { userName } = useChat();
+    const { joinRoom } = useChatActions();
+
+    const { setUserName } = useChat();
+    const { currentRoom, setCurrentRoom } = useChat();
+
+
 	const [HideDescripcion, setHideDescripcion] = React.useState(false);
 	const [showDesc, setShowDesc] = React.useState(false);
+	const [showChat, setShowChat] = React.useState(false);
 
 	const columns = [
 		{
@@ -262,8 +281,7 @@ function ActividadesDtpo(props) {
 			},
 		},
 	  }
-
-	console.log(props.dptoid);
+ 
 	
 
 
@@ -322,6 +340,7 @@ function ActividadesDtpo(props) {
 			 }
 		
 	useEffect(() => {
+		setUserName(props.name);
 		getAllProyectos();
 		// eslint-disable-next-line
 	},[])
@@ -937,15 +956,44 @@ async function actualizarFecha(folio) {
 		setLista(res); 
 	}
 
+
+	function mostrarChat(){
+		setCurrentRoom(props.nombredepartamento);
+        joinRoom( props.dptoid, props.name );
+		setShowChat(!showChat)
+	}
+
 	
    
 	
   		// Dynamically create select list
 	let options = [];
 
+	const WrapperContainer = styled.div`
+	display: grid;
+	height: 100vh;
+	place-items: center;
+  `;
+  
 	return (
 		<div className="container ">
 			 
+			{(showChat) ?
+				<WrapperContainer>
+            {
+                ! userName
+                ?
+                <Login />
+                :
+                <ChatContainer rooms={props.rooms} />
+            }
+        </WrapperContainer>
+			:
+			<></>
+			
+			}
+			
+
 			<div style={{width:'100%'}} align="center">
 			<Nabvar titulo={props.nombredepartamento} departamento={props.rzonsocial} dptoid={props.dptoid}/>    
 			</div>
@@ -953,6 +1001,7 @@ async function actualizarFecha(folio) {
 			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-primary btn-sm">Nueva Actividad {props.nombredepartamento}</button><br></br>
 			
 			<button onClick={openModalC} class="btn btn-outline-success btn-sm" hidden="hidden">Calendario</button> 
+			<button onClick={mostrarChat} class="btn btn-outline-success btn-sm" >Chat</button> 
 
       
 	  <Modal

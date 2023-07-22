@@ -49,14 +49,7 @@ render(){
     const isLoggedIn = this.state.isLoggedIn;
     return( 
 
-        {(user.email != "") ? (
-
-
-            ) : (
-                
-            )
-            
-            }
+        
       
         <div id="body-content">
         <div id="div-img">

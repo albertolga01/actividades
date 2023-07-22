@@ -37,11 +37,14 @@
     "react-web-notification": "^0.8.0",
     "styled-components": "^5.3.11",
     "swiper": "^9.4.1",
-    "web-vitals": "^1.1.2"
+    "web-vitals": "^1.1.2", 
+    "socket.io": "^4.6.0",
+    "uuid": "^9.0.0", 
+    "socket.io-client": "^4.6.0"
   },
   "scripts": {
-    "start": "react-scripts --openssl-legacy-provider start",
-    "build": "react-scripts --openssl-legacy-provider build",
+    "start": "react-scripts  start",
+    "build": "react-scripts  build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
