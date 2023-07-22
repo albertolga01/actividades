@@ -1001,7 +1001,7 @@ async function actualizarFecha(folio) {
 			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-primary btn-sm">Nueva Actividad {props.nombredepartamento}</button><br></br>
 			
 			<button onClick={openModalC} class="btn btn-outline-success btn-sm" hidden="hidden">Calendario</button> 
-			<button onClick={mostrarChat} class="btn btn-outline-success btn-sm" >Chat</button> 
+			<button onClick={mostrarChat} class="btn btn-outline-success btn-sm" hidden>Chat</button> 
 
       
 	  <Modal
