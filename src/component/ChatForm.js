@@ -21,7 +21,7 @@ const MessageForm = styled.form`
     }
 `;
 
-const ChatForm = () => {
+const ChatForm = (props) => {
     const inputRef = useRef(null);
     const { sendMessage } = useChatActions();
     const { currentRoom, userName } = useChat();
@@ -32,7 +32,8 @@ const ChatForm = () => {
         sendMessage(
             inputRef.current.value, 
             currentRoom.id, 
-            userName
+            userName,
+            props.userid
         );
         
         inputRef.current.value = '';

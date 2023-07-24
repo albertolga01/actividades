@@ -11,6 +11,7 @@ import Accesos from '../Accesos';
 import Solicitudes from '../Solicitudes';
 import Push from 'push.js';
 import ActProyectos from '../ActProyectos';
+import ActProyectoSeleccionado from '../ActProyectoSeleccionado';
 import ActividadesDtpo from '../ActividadesDtpo';
 
 import OpcionesMenu from './OpcionesMenu'; 
@@ -35,6 +36,8 @@ export default function SideMenu(props) {
 	const [listaDepartamentos, setListaDepartamentos] = useState([]);
 	const [NProyecto, setNProyecto] = useState([]);
 	const [IdProyecto, setIdProyecto] = useState([]);
+	const [proyectoSeleccionado, setProyectoSeleccionado] = useState([]);
+	const [nombreProyectoSeleccionado, setNombreProyectoSeleccionado] = useState([]);
 
     // console.log(props.selected); 
   
@@ -73,6 +76,14 @@ export default function SideMenu(props) {
         close(selected);  
     }
 
+    function seleccionarProyecto(selected, idProyecto, nombre){ 
+        //alert(nombre);
+        setProyectoSeleccionado(idProyecto);
+        setNombreProyectoSeleccionado(nombre);
+        close(selected);  
+
+    }
+
    
     var isMenuOpen = function(state) {
  
@@ -101,7 +112,9 @@ export default function SideMenu(props) {
         } else if (selected === 'Solicitudes') {
             return <Solicitudes tipo={props.tipo} admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
         }else if (selected === 'ActProyectos') {
-            return <ActProyectos tipo={props.tipo} unmount={cambiar}  admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
+            return <ActProyectos  seleccionarProyecto={seleccionarProyecto} tipo={props.tipo} unmount={cambiar}  admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
+        }else if (selected === 'ActProyectoSeleccionado') {
+            return <ActProyectoSeleccionado nombreProyectoSeleccionado={nombreProyectoSeleccionado} proyectoSeleccionado={proyectoSeleccionado} tipo={props.tipo} unmount={cambiar}  admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
         }else if (selected === 'ActividadesDtpo') {
             return <ActividadesDtpo rooms={listaDepartamentos} iddepartamento={IdProyecto} nombredepartamento={NProyecto} tipo={props.tipo} admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
         }else {

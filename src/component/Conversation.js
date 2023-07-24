@@ -1,8 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { getFirstLetter } from '../helpers';
 import useMessages from '../hooks/useMessages';
 import { useChat } from '../context/ChatProvider';
+import axios from '../../node_modules/axios'; 
+
 
 const ConversationContainer = styled.div`
     display: flex;
@@ -64,18 +66,46 @@ const BotMessage = styled.div`
     background: rgba(0,0,0,0.05);
 `;
 
-const Conversation = () => {
+const Conversation = (props) => {
     const { socket } = useChat();
     const messages = useMessages();
     const chatConversation = useRef(null);
+
     
     // auto scroll to bottom on new message recieve / sent
     useEffect(() => {
         chatConversation.current.scrollTo(0, chatConversation.current.scrollHeight);    
     }, [messages]);
 
+
+    useEffect(() => {
+		getMensajesGrupo();
+	}, [])
+  
+    const [mensajesGrupo, setMensajesGrupo] = useState([]);
+
+    async function getMensajesGrupo(){
+        setMensajesGrupo([]);
+        console.log("current currom"+props.currentRoom);
+        let fd = new FormData() 
+            fd.append("id", "getMensajesGrupo") 
+            fd.append("folioGrupo", props.currentRoom) 
+            const res = await axios.post(process.env.REACT_APP_API_URL, fd);  
+            setMensajesGrupo(res.data);
+            //res.data.filter(({ id }) => !messages.includes(id));
+    }
+
     return (
+        
         <ConversationContainer ref={ chatConversation }>
+							{mensajesGrupo.map(item => ( 
+                                
+									<MessageContainer key={ item.folio } incomingMessage={props.userid != item.userid} >
+                                       <UserProfile content={ item.nombre } />
+                                       <MessageContent>{ item.mensaje }</MessageContent>
+                                   </MessageContainer>
+							  ))}
+                              
             {
                 messages.map((m) => {
                     const { text, author, socket_id, id } = m;
@@ -88,7 +118,7 @@ const Conversation = () => {
                     (
                         <MessageContainer key={ id } incomingMessage={ socket_id !== socket.id }>
                             <UserProfile content={ author } />
-                            <MessageContent>{ text }</MessageContent>
+                            <MessageContent>{ text } </MessageContent>
                         </MessageContainer>
                     );
                 })

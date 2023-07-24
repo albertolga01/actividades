@@ -325,6 +325,11 @@ function ActProyectos(props) {
         props.unmount("Proyectos", "", "");   
 	}
 
+	function seleccionarProyecto(idProyecto, nombre){
+		 
+        props.seleccionarProyecto("ActProyectoSeleccionado", idProyecto, nombre);
+	}
+
 	const [colaboradores, setColaboradores] =  useState([]);  
 	const [esAdmin, setEsAdmin] = useState([]);
 	const [listap, setListaP] = useState([]);
@@ -1023,7 +1028,9 @@ async function actualizarFecha(folio) {
 			<Nabvar titulo={NProyecto} departamento={props.rzonsocial} dptoid={props.dptoid}/> 
 			</div>
 			<div style={{width:'100%'}} align="right">
-			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-success btn-sm">Nueva Actividad</button><br></br>
+			<button id="Proyectos" onClick={() => seleccionar()} style={{ width:'15%', marginTop:'5px', margin:'5px' }}  class="btn btn-outline-primary btn-sm" > Proyectos</button>
+
+			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-success btn-sm" hidden>Nueva Actividad</button><br></br>
 			
 			<button onClick={openModalC} class="btn btn-outline-success btn-sm" hidden="hidden">Calendario</button> 
 
@@ -1146,9 +1153,10 @@ async function actualizarFecha(folio) {
 
 				{/*Botones por proyecto */}
 				<div>
+					{/*onClick={() => getActividadesProyecto(item.folio, item.proyecto)} */}
 				{listap.map(item => ( 
 					<button id="filtrarproyeco" style={{width:'24%', marginTop:'0.5%', marginLeft:'1%'}}  class="btn btn-outline-success btn-sm"  >
-					<option style={{fontSize: '12px'}}value={item.proyecto} onClick={() => getActividadesProyecto(item.folio, item.proyecto)}>{item.proyecto}</option>
+					<option style={{fontSize: '12px'}}value={item.proyecto}  onClick={() => seleccionarProyecto(item.folio, item.proyecto)}>{item.proyecto}</option>
 					</button>
 
 				))}	
@@ -1156,7 +1164,6 @@ async function actualizarFecha(folio) {
 				<br></br>
 				<br></br>
 
-				<button id="Proyectos" onClick={() => seleccionar()} style={{ width:'15%', marginTop:'5px', margin:'5px' }}  class="btn btn-outline-primary btn-sm"> Proyectos</button>
 
 				</div>
 
@@ -1173,7 +1180,7 @@ async function actualizarFecha(folio) {
 
 				</div>
 				**/} 
-				<div>
+				<div hidden>
 				 <input type="radio" id="1" name="fav_language" value="1" onChange={(e) => selTipoActividad(e)}/>
 				 <label style={{padding:'5px'}}>Todas</label>
 				 <input type="radio" id="2" name="fav_language" value="Creado" style={{marginLeft: '15px'}} onChange={(e) => selTipoActividad(e)}/>
@@ -1184,7 +1191,7 @@ async function actualizarFecha(folio) {
 				 <label style={{padding:'5px'}}for="Finalizadas">Finalizadas</label>
 				</div>	
 				 
-					<div  style={{height:'100%', width:'100%'}}>
+					<div  style={{height:'100%', width:'100%'}} hidden>
 
 						<DataTableExtensions
 							columns={columns}

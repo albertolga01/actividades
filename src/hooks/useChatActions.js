@@ -11,12 +11,12 @@ const useChatActions = () => {
         socket.emit('leave-room', roomID);
     }
 
-    const sendMessage = (text, roomID, userName) => {
+    const sendMessage = (text, roomID, userName, userid) => {
         if(! text) {
             return;
         }
                 
-        socket.emit('send-message', { text, roomID, userName });
+        socket.emit('send-message', { text, roomID, userName, userid });
     }
 
     return {

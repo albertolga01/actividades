@@ -26,6 +26,7 @@
     "react-data-table-component": "^7.5.3",
     "react-data-table-component-extensions": "^1.6.0",
     "react-dom": "^17.0.2",
+    "react-floating-action-button": "^1.0.5",
     "react-https-redirect": "^1.1.0",
     "react-icons": "^4.4.0",
     "react-loader-spinner": "^5.1.5",
@@ -35,12 +36,12 @@
     "react-select": "^4.3.1",
     "react-toastify": "^9.0.3",
     "react-web-notification": "^0.8.0",
+    "socket.io": "^4.6.0",
+    "socket.io-client": "^4.6.0",
     "styled-components": "^5.3.11",
     "swiper": "^9.4.1",
-    "web-vitals": "^1.1.2", 
-    "socket.io": "^4.6.0",
-    "uuid": "^9.0.0", 
-    "socket.io-client": "^4.6.0"
+    "uuid": "^9.0.0",
+    "web-vitals": "^1.1.2"
   },
   "scripts": {
     "start": "react-scripts  start",

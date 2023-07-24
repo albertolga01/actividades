@@ -38,6 +38,7 @@ const Navigation = ({ openRoomNav }) => {
 
     return (
         <Nav>
+            {/*
             <ButtonContainer active={ true }>
                     <a href="#">
                         <AiFillHome size='100%' />
@@ -57,7 +58,7 @@ const Navigation = ({ openRoomNav }) => {
                         <GiExitDoor size='100%' />
                     </a>
             </ButtonContainer>
-
+*/}
         </Nav>
     );
 };

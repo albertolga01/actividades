@@ -10,12 +10,9 @@ import Modal from 'react-modal';
 import './App.css'; 
 import { FaBeer, FaReact, Farefr } from 'react-icons/fa';
 import { AiFillAlert } from "react-icons/ai";
-import { BsArrowRepeat, BsFillCheckCircleFill, BsXCircleFill, BsEyeFil, BsEyeSlashFill, BsFillFileEarmarkPlusFill, BsUpload, BsChat } from "react-icons/bs";
+import { BsArrowRepeat, BsFillCheckCircleFill, BsXCircleFill, BsEyeFil, BsEyeSlashFill, BsFillFileEarmarkPlusFill, BsUpload } from "react-icons/bs";
 import { FaEye } from "react-icons/fa";
-import ChatContainer from './component/ChatContainer';
-import { useChat } from './context/ChatProvider';
-import styled from 'styled-components';
-import { Container, Button, Link } from 'react-floating-action-button'
+
 import moment from 'moment';
  
 import { ToastContainer, toast } from 'react-toastify';
@@ -28,18 +25,21 @@ import {ThreeDots } from  'react-loader-spinner'
 import Pusher from 'pusher-js'; 
 import { wait } from '@testing-library/react';
 
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, EffectCube } from 'swiper'; 
+import '../node_modules/swiper/swiper.css';
+import '../node_modules/swiper/swiper.min.css'
+import '../node_modules/swiper/modules/pagination/pagination.min.css'
+import '../node_modules/swiper/modules/navigation/navigation.min.css'; 
+
+import '../node_modules/swiper/modules/effect-cube/effect-cube.min.css';
+import { NonceProvider } from 'react-select/dist/react-select.cjs.prod';
+
+ 
 import DataTableExtensions from "react-data-table-component-extensions";
 import 'react-data-table-component-extensions/dist/index.css';
 import DataTable from 'react-data-table-component';
-import Login from './component/LoginChat';
-import useChatActions from './hooks/useChatActions';
 
-
-const WrapperContainer = styled.div`
-  display: grid;
-  height: 100vh;
-  place-items: center;
-`;
 
 const customStyles = {
 	content: {
@@ -71,19 +71,11 @@ const customStyles = {
 
 
 
-function ActividadesDtpo(props) {
+function ActProyectoSeleccionado(props) {
 
-    const { userName } = useChat();
-    const { joinRoom } = useChatActions();
-
-    const { setUserName } = useChat();
-    const { currentRoom, setCurrentRoom } = useChat();
-
-
-	const [HideDescripcion, setHideDescripcion] = React.useState(false);
+	console.log(props.dptoid);
 	const [showDesc, setShowDesc] = React.useState(false);
-	const [showChat, setShowChat] = React.useState(false);
-
+	
 	const columns = [
 		{
 			name: 'Folio',  
@@ -103,7 +95,7 @@ function ActividadesDtpo(props) {
 			cell: (row) => {
 				return (
 					<td align='left'>
-						<div align='left' style={{marginLeft:'20px'}}>
+						<div align='left' style={{marginLeft:'0px'}}>
 							<label onClick={() => Notificar(row.name, row.actividad)}>{(row.name).split(" ")[0]}</label>
 					 	</div>
 					 
@@ -233,7 +225,7 @@ function ActividadesDtpo(props) {
 				return (
 					<td style={{width: '80px'}}>
 						<button  className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(row.folio)}><BsArrowRepeat /></button>
-						<button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(row.folio)}><FaEye /></button>
+						{/*<button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(row.folio)}><FaEye /></button>*/}
 						<button style={{width:'64px'}} className='btn btn-outline-primary btn-sm' onClick={() => agregarDoc(row.folio)}><BsUpload /></button>
 					</td>)
 			},
@@ -281,8 +273,33 @@ function ActividadesDtpo(props) {
 			},
 		},
 	  }
- 
-	
+
+
+/*
+	const columns = [
+		{
+			name: 'Folio',  
+			cell: (row) => {
+				return (
+					<td  onClick={() => MostrarDetalle(item.folio)} align='center' className='id-orden'>{item.folio}</td>
+				)
+			},
+			sortable: true,
+			maxWidth: "5px", 
+			width: "60px"  
+		},
+		{
+			name: 'Responsable',  
+			cell: (row) => {
+				return (
+					<td  onClick={() => MostrarDetalle(item.folio)} align='center' className='id-orden'>{item.folio}</td>
+				)
+			},
+			sortable: true,
+			maxWidth: "5px", 
+			width: "60px"  
+		},
+	];*/
 
 
 	let defaultDate = new Date()
@@ -302,6 +319,12 @@ function ActividadesDtpo(props) {
 		return date;
 	}
 
+
+	function seleccionar(){
+        
+        props.unmount("Proyectos", "", "");   
+	}
+
 	const [colaboradores, setColaboradores] =  useState([]);  
 	const [esAdmin, setEsAdmin] = useState([]);
 	const [listap, setListaP] = useState([]);
@@ -316,6 +339,17 @@ function ActividadesDtpo(props) {
 	
 
 	const [registros, setRegistros] = useState([]);
+	const [NProyecto, setNProyecto] = useState(props.nombreProyectoSeleccionado);
+	const [IdProyecto, setIdProyecto] = useState([]);
+
+
+	
+	const pagination = { 
+		clickable: true, 
+		renderBullet: function (index, className) { 
+		return '<span class="' + className + '">' + (index + 1) + '</span>'; 
+		}, 
+	};
 	
 	const handleEventClick = ({ event, el }) => { 
 		//var fecha = new Date(event.start);
@@ -340,7 +374,7 @@ function ActividadesDtpo(props) {
 			 }
 		
 	useEffect(() => {
-		setUserName(props.name);
+		setNProyecto(props.nombreProyectoSeleccionado);
 		getAllProyectos();
 		// eslint-disable-next-line
 	},[])
@@ -352,8 +386,8 @@ function ActividadesDtpo(props) {
 	
 	 
 	async 	function   mostrarOcultas(){
-		//let ocultas = document.getElementById("ocultas").checked;
-		 /*
+		let ocultas = document.getElementById("ocultas").checked;
+		 
 		setLista([]);
 		await new Promise(resolve => setTimeout(resolve, 1000)); // 3 sec
 		if(ocultas == true){
@@ -362,13 +396,13 @@ function ActividadesDtpo(props) {
 		}else if(ocultas == false){
 			var result = listados.filter((x) => (x.oculta === "0")); 
 			setLista(result);
-		} */
+		} 
 		 
 	}
 
-	function filterProyecto() {
-		var proyectos = document.getElementById('filtrarproyecto').value;  
-		var result = listados.filter((x) => (x.proyecto === proyectos)); 
+	function filterProyecto(proyecto) {
+		//var proyectos = document.getElementById('filtrarproyecto').value;  
+		var result = listados.filter((x) => (x.proyecto === proyecto)); 
 		setLista(result);
 	}
 	
@@ -381,7 +415,7 @@ function ActividadesDtpo(props) {
   
   
 	async function getAllProyectos() {
-	  var id = "getTodosProyectosGrupo";
+	  var id = "getTodosProyectosUsuario";
 	  const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&userid='+props.userid+'&admin='+props.admin);  
 	  
 	  
@@ -405,14 +439,15 @@ function ActividadesDtpo(props) {
 } 
 
 
-async function getAllColaboradoresdelDepartamento(){    
+async function getAllColaboradoresdelProyecto(proyecto){    
 	//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
-	setEsAdmin("0"); 
-
-	var id = "getColabEnGrupodos";
-	var idGrupo = idGrupo;  
-	const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&idGrupo='+props.iddepartamento);
-	console.log(res.data); 
+	setEsAdmin("0");
+	var id = "getColabEnProyecto"; 
+	var rol = document.getElementById('rol');
+	openModalLoad(); 
+	const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&folio='+proyecto);
+	closeModalLoad();
+	console.log(res.data);
 
 	setcolaboradoresRes(res.data);
 	//setColaboradoresEP(res.data);
@@ -424,10 +459,9 @@ async function getAllColaboradoresdelDepartamento(){
 
 
 	function myFunction(item) {
-		console.log(item);
-		if((props.userid == item.userid) && item.rol == "2"){
+	if((props.userid == item.userid) && item.rol == "2"){
 		setEsAdmin("1");
-		}
+	}
 	}
 
 	const [modalIsOpenArchivo, setIsOpenArchivo] = React.useState(false);
@@ -435,12 +469,14 @@ async function getAllColaboradoresdelDepartamento(){
 	const [modalIsOpenC, setIsOpenC] = React.useState(false);
 	let subtitle; 
 	const [lista, setLista] =  useState([]);  
-	const [lista1, setLista1] =  useState([]);  
+	const [listaEnProceso, setListaEnProceso] =  useState([]);  
+	const [listaTerminado, setListaTerminado] =  useState([]);  
 	const [listados, setListaDos] =  useState([]);  
 	const [value, setValue] = useState([]); 
 	const [folioActividad1, setFolioActividad1] = useState([]); 
 	const [folioActividad, setFolioActividad] = useState([]); 
 
+	const [lista1, setLista1] =  useState([]);  
 
 
 	let id = 0; 
@@ -482,10 +518,8 @@ async function getAllColaboradoresdelDepartamento(){
 
 
 	useEffect(() => {
-		getActividades(); 
-		getAllColaboradoresdelDepartamento();
+		//getActividades(); 
 	},[])
-	
 
 	
 
@@ -493,6 +527,7 @@ async function getAllColaboradoresdelDepartamento(){
 		getUsuarios();
 		notificaciones();
 		dateToday();
+		getActividadesProyecto(props.proyectoSeleccionado);
 	}, [])
 
 
@@ -506,7 +541,7 @@ async function getAllColaboradoresdelDepartamento(){
 				//	alert(data.mensaje + " " + data.userid + " " + JSON.stringify(data)); 
 				//console.log(usuario);
 				if(data.userid === props.userid && data.tipo === "act"){   
-					getActividades();
+					getActividadesProyecto(props.proyectoSeleccionado, props.nombreProyectoSeleccionado);
 					
 				}
 			 
@@ -601,10 +636,10 @@ async function getAllColaboradoresdelDepartamento(){
 		var folioresponsable = document.getElementById("folioresponsable").value;
 		var observaciones = document.getElementById("observaciones").value; 
 		 
-		if((props.iddepartamento != "") && (actividad.length > 1)){
+		if((props.proyectoSeleccionado != "Seleccione") && (actividad.length > 1)){
 		let fd = new FormData() 
 		fd.append("id","addActividad") 
-		fd.append("foliogrupo",props.iddepartamento) 
+		fd.append("folioproyecto",props.proyectoSeleccionado) 
 		fd.append("actividad",actividad.replaceAll("'", "´").replaceAll('"', "´´")) 
 		fd.append("descripcion",descripcion.replaceAll("'", "´").replaceAll('"', "´´")) 
 		fd.append("fechatermino", fechatermino)   
@@ -620,7 +655,7 @@ async function getAllColaboradoresdelDepartamento(){
 		} else {
 			notify("No se puede agregar actividad, favor de seleccionar un proyecto y agregar el nombre de la actividad");
 		}
-		getActividades();
+		getActividadesProyecto(props.proyectoSeleccionado, props.nombreProyectoSeleccionado);
 		//verRequisicion(folio);
 	 
 	}
@@ -641,30 +676,22 @@ async function getAllColaboradoresdelDepartamento(){
 		notify(res.data.trim());
 		
 	}
-
+/*
 	async function getActividades(){    
 		//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
-		setLista([]);
-		setListaDos([]);
+		 
 		openModalLoad(); 
-		//document.getElementById("ocultas").checked = false;
-		var id = "getActividadesDepartamento";
+		var id = "getActividades";
 		var date = document.getElementById("input-fecha").value; 
 		var termino = document.getElementById("input-fecha-termino").value; 
-		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&date='+date+'&userid='+props.userid+'&termino='+termino+'&iddepartamento='+props.iddepartamento);
-		closeModalLoad(); 
-		var table = document.getElementById('productstable');
-		var result = res.data.filter((x) => (x.oculta === "0")); 
-			setLista(result); 
-			setLista1(result);
-		setListaDos(res.data);  
+		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&date='+date+'&userid='+props.userid+'&termino='+termino);
+		closeModalLoad();  
 		var lista = res.data;
 		var listadeproyectos = lista.filter( (ele, ind) => ind === lista.findIndex( elem => elem.proyecto === ele.proyecto))
-		setRegistros(res.data.length);
-		setListaProyectos(listadeproyectos);
-		console.log(res.data);
+		//setRegistros(res.data.length);
+		//setListaProyectos(listadeproyectos); 
 	}
-
+*/
 
 
 
@@ -685,7 +712,7 @@ async function getAllColaboradoresdelDepartamento(){
 			const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
 			console.log(res.data);
 			notify(res.data.trim());
-			getActividades();
+			getActividadesProyecto(props.proyectoSeleccionado, props.nombreProyectoSeleccionado);
 		}
 	}
 
@@ -703,7 +730,7 @@ async function getAllColaboradoresdelDepartamento(){
 			const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
 			console.log(res.data);
 			notify(res.data.trim());
-			getActividades();
+			getActividadesProyecto(props.proyectoSeleccionado, props.nombreProyectoSeleccionado);
 		}
 	}
 
@@ -792,7 +819,7 @@ async function getAllColaboradoresdelDepartamento(){
 			.then((data)=> {
 				if(data){
 					notify("Actividad eliminada");
-					getActividades();
+					getActividadesProyecto(props.proyectoSeleccionado, props.nombreProyectoSeleccionado);
 					//cleanForm();
 				}
 			})
@@ -818,7 +845,7 @@ async function actualizarComentarios(folio){
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
 		console.log("Actualizarcomentarios: " +res.data);
 		notify(res.data.trim());
-		getActividades();
+		getActividadesProyecto(props.proyectoSeleccionado, props.nombreProyectoSeleccionado);
 	}
 
 }
@@ -833,7 +860,7 @@ async function actualizarProyectoActividad(){
 		fd.append("folioactividad", folioactproyecto)
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd);  
 		notify(res.data.trim());
-		getActividades();
+		getActividadesProyecto(props.proyectoSeleccionado, props.nombreProyectoSeleccionado);
 	}
 
 }
@@ -846,7 +873,7 @@ async function ocultarActividad(folio){
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
 		console.log(res.data);
 		notify(res.data.trim());
-		getActividades();
+		getActividadesProyecto(props.proyectoSeleccionado, props.nombreProyectoSeleccionado);
 	}
 
 }
@@ -862,26 +889,13 @@ async function actualizarFecha(folio) {
 		const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
 		console.log(res.data); 
 		notify(res.data.trim());
-		getActividades();
+		getActividadesProyecto(props.proyectoSeleccionado, props.nombreProyectoSeleccionado);
 	}    
 	
 
 
   }
-
   
-  async function actualizarFechaCalendario(info, fecha) { 
-	if(window.confirm('Actualizar fecha de actividad con folio: ' + info.extendedProps.folio + ' al día: ' + fecha.toISOString().split('T')[0])){ 
-		let fd = new FormData() 
-		fd.append("id", "actualizarFechaActividad")
-		fd.append("folio", info.extendedProps.folio)
-		fd.append("fecha", fecha.toISOString().split('T')[0])
-		const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
-		console.log(res.data); 
-		notify(res.data.trim());
-		getActividades();
-	}    
-  }
 	async function getUsuarios(){
 		var id = "getUsuarios";
 		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id); 
@@ -921,7 +935,7 @@ async function actualizarFecha(folio) {
 			const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
 			console.log(res.data); 
 			notify(res.data.trim());
-			getActividades();
+			getActividadesProyecto(props.proyectoSeleccionado, props.nombreProyectoSeleccionado);
 			setIsOpen1(false);
 		}    
 
@@ -937,6 +951,59 @@ async function actualizarFecha(folio) {
 
 	}
 
+	function selTipoActividad(e){
+
+		if(e.target.value == "1"){
+			var res =  lista1; 
+		}else{
+			var res =  lista1.filter((x) => (x.est == e.target.value && x.activo == "1")); 
+		}
+		console.log(res);
+		setLista(res); 
+	}
+
+	function regresar(){
+        props.unmount("ActProyectos", "", "");   
+
+	}
+
+	async function getActividadesProyecto(proyecto, nproyecto){    
+		//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
+		console.log(proyecto);
+		if(proyecto == "" || proyecto == null){
+			return;
+		}
+		document.getElementById("1").checked = true;
+		setLista([]);
+		//alert(proyecto);
+		setListaEnProceso([]);
+		setListaTerminado([]);
+		setListaDos([]);
+		setNProyecto(nproyecto);
+		setIdProyecto(proyecto);
+		getAllColaboradoresdelProyecto(proyecto);
+		openModalLoad(); 
+		//document.getElementById("ocultas").checked = false;
+		var id = "getActividadesProyecto";
+		var date = document.getElementById("input-fecha").value; 
+		var termino = document.getElementById("input-fecha-termino").value; 
+		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&date='+date+'&userid='+props.userid+'&termino='+termino+'&proyecto='+proyecto);
+		closeModalLoad();
+		setLista(res.data); 
+		setLista1(res.data);
+		/*
+		var creado =  res.data.filter((x) => (x.est == "Creado"  && x.finalizado != "1")); 
+		setLista(creado); 
+		console.log(creado);
+		var proceso =  res.data.filter((x) => (x.est == "En Proceso" && x.finalizado != "1")); 
+		setListaEnProceso(proceso);
+		var terminado =  res.data.filter((x) => (x.est == "Terminado"  || x.finalizado == "1")); 
+		setListaTerminado(terminado);
+		*/
+		setListaDos(res.data);   
+		setRegistros(res.data.length); 
+		console.log(nproyecto);
+	}
 
 	function mostrarDesc(){
 		if(showDesc){
@@ -947,21 +1014,8 @@ async function actualizarFecha(folio) {
 	}
 
 
-	function selTipoActividad(e){
-		if(e.target.value == "1"){
-			var res =  lista1; 
-		}else{
-			var res =  lista1.filter((x) => (x.est == e.target.value  && x.activo == "1")); 
-		}
-		setLista(res); 
-	}
+	
 
-
-	function mostrarChat(){
-		setCurrentRoom(props.nombredepartamento);
-        joinRoom( props.dptoid, props.name );
-		setShowChat(!showChat)
-	}
 
 	
    
@@ -969,39 +1023,18 @@ async function actualizarFecha(folio) {
   		// Dynamically create select list
 	let options = [];
 
-	const WrapperContainer = styled.div`
-	display: grid;
-	height: 100vh;
-	place-items: center;
-  `;
-  
 	return (
 		<div className="container ">
 			 
-			{(showChat) ?
-				<WrapperContainer>
-            {
-                ! userName
-                ?
-                <Login />
-                :
-                <ChatContainer rooms={props.rooms} userid={props.userid} />
-            }
-        </WrapperContainer>
-			:
-			<></>
-			
-			}
-			
-
 			<div style={{width:'100%'}} align="center">
-			<Nabvar titulo={props.nombredepartamento} departamento={props.rzonsocial} dptoid={props.dptoid}/>    
+			<Nabvar titulo={props.nombreProyectoSeleccionado} departamento={props.rzonsocial} dptoid={props.dptoid}/> 
 			</div>
 			<div style={{width:'100%'}} align="right">
-			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-primary btn-sm">Nueva Actividad {props.nombredepartamento}</button><br></br>
+			<button style={{marginRight:'10px'}} onClick={() => regresar()} class="btn btn-outline-success btn-sm">Regresar</button>
+
+			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-success btn-sm">Nueva Actividad</button><br></br>
 			
 			<button onClick={openModalC} class="btn btn-outline-success btn-sm" hidden="hidden">Calendario</button> 
-			<button onClick={mostrarChat} class="btn btn-outline-success btn-sm" >Chat</button> 
 
       
 	  <Modal
@@ -1011,24 +1044,16 @@ async function actualizarFecha(folio) {
 	style={customStyles}
 	contentLabel="Example Modal"
   >
-	<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'black'}}>Nueva Actividad</h2>
-	{/* 
-	<div>Proyecto:</div> 
-	<select id="folioproyecto" style={{width:'100%', marginTop:'5px'}}  onChange={()=> getAllColaboradoresdelProyecto()}>
-		 <option>Seleccione</option>
-		  {listap.map(item => ( 
-                     <option value={item.folio}>{item.proyecto}</option>
-
-  		  ))}
-		  </select>
-		  */} 
+	<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'black'}}>Nueva Actividad {props.nombreProyectoSeleccionado}</h2>
+	
+	 
 	<div>Responsable:</div>
 
 		  { 
 		  (esAdmin == "1") ?  
 		  <select id="folioresponsable" style={{ width: '100%', marginTop: '5px' }}>
 		  {colaboradoresRes.map(item => (
-			<option value={item.userid}>{item.nombre}</option>
+			<option value={item.userid}>{item.name}</option>
 
 			))}
 			 </select> 
@@ -1085,35 +1110,34 @@ async function actualizarFecha(folio) {
   </Modal>
   </div> 
 			<div className="row p-3">
-				<div>
-					<span>Filtrar por fecha: </span>
-					<input id='input-fecha' type='date' style={{width:'96px',fontSize:'12px', cursor:'pointer'}} onChange={() => getActividades()}></input>
-					<span>&nbsp; </span>
-					<input id='input-fecha-termino' type='date' style={{width:'97px',fontSize:'12px', cursor:'pointer'}} onChange={() => getActividades()}></input>
-					<span>&nbsp; </span>
-					<button  onClick={() => getActividades()} class="btn btn-outline-success btn-sm">Filtrar</button>
+				<div> 
+					<span hidden>Filtrar por fecha: </span>
+					<input hidden id='input-fecha' type='date' style={{width:'96px',fontSize:'12px', cursor:'pointer'}} ></input>
+					<span hidden>&nbsp; </span>
+					<input hidden id='input-fecha-termino' type='date' style={{width:'97px',fontSize:'12px', cursor:'pointer'}} ></input>
+					<span hidden >&nbsp; </span> 
+					<button hidden style={{margin:'5px'}}  class="btn btn-outline-success btn-sm">Actualizar</button>
 				</div>
-				{/**
-						{ (props.admin == 1 ) ? 
-						<div>
-						<select id="filtrarproyecto" style={{width:'320px', marginTop:'5px'}}   onChange={() => filterProyecto()}>
-						{listap.map(item => ( 
-									<option value={item.proyecto}>{item.proyecto}</option>
+				{/** { (props.admin == 1 ) ? 
+				<div>
+				<select id="filtrarproyecto" style={{width:'320px', marginTop:'5px'}}   onChange={() => filterProyecto()}>
+				{listap.map(item => ( 
+							<option value={item.proyecto}>{item.proyecto}</option>
 
-						))}
-						</select>
-						</div>
-						: 
-						<div> 
-							<select id="filtrarproyecto" style={{width:'320px', marginTop:'5px'}}   onChange={() => filterProyecto()}>
-						{listaproyectos.map(item => ( 
-									<option value={item.proyecto}>{item.proyecto}</option>
+				))}
+				</select>
+				</div>
+				: 
+				<div> 
+					<select id="filtrarproyecto" style={{width:'320px', marginTop:'5px'}}   onChange={() => filterProyecto()}>
+				{listaproyectos.map(item => ( 
+							<option value={item.proyecto}>{item.proyecto}</option>
 
-						))}
-						</select>
-						</div>			
-						}
-				**/}
+				))}
+				</select>
+				</div>			
+				}
+				
 				{ (props.admin == 1) ? 
 				<div>
 				<select id="filtrarporcolab" style={{width:'320px', marginTop:'5px'}}  onChange={() => filterName()}>
@@ -1127,30 +1151,46 @@ async function actualizarFecha(folio) {
 				<div> 
 				</div>
 				}
-				<div hidden>
+				*/}
+
+				{/*Botones por proyecto */}
+				<div>
+			 
+
+				<br></br>
+				<br></br>
+
+				<button id="Proyectos" onClick={() => seleccionar()} style={{ width:'15%', marginTop:'5px', margin:'5px' }}  class="btn btn-outline-primary btn-sm" hidden> Proyectos</button>
+
+				</div>
+
+					{/**
+				<div>
 					<span>Mostrar ocultas</span>&nbsp;&nbsp;&nbsp;
 				<input type="checkbox" id="ocultas" onChange={() => mostrarOcultas()}></input>
 
 				</div>
-
+			
 				<div>
 					<span>Mostrar descripción</span>&nbsp;&nbsp;&nbsp;
 				<input type="checkbox" id="ocultas" onChange={() => mostrarDesc()}></input>
 
 				</div>
+				**/} 
 				<div>
-				 <input type="radio" id="1" name="fav_language" value="1" style={{marginLeft: '15px'}} onChange={(e) => selTipoActividad(e)}/>
-				 <label style={{padding:'5px'}}>Todas</label> 
+				 <input type="radio" id="1" name="fav_language" value="1" onChange={(e) => selTipoActividad(e)}/>
+				 <label style={{padding:'5px'}}>Todas</label>
 				 <input type="radio" id="2" name="fav_language" value="Creado" style={{marginLeft: '15px'}} onChange={(e) => selTipoActividad(e)}/>
-				 <label style={{padding:'5px'}}>Creadas</label> 
+				 <label style={{padding:'5px'}}>Creadas</label>
 				 <input type="radio" id="3" name="fav_language" value="En Proceso" style={{marginLeft: '15px'}} onChange={(e) => selTipoActividad(e)}/>
 				 <label style={{padding:'5px'}}>En proceso</label>
 				 <input type="radio" id="4" name="fav_language" value="Terminado" style={{marginLeft: '15px'}} onChange={(e) => selTipoActividad(e)}/>
 				 <label style={{padding:'5px'}}for="Finalizadas">Finalizadas</label>
-				</div>				
-				<div  style={{height:'100%', overflowX: 'scroll', width:'100%'}}>
+				</div>	
+				 
+					<div  style={{height:'100%', width:'100%'}}>
 
-				<DataTableExtensions
+						<DataTableExtensions
 							columns={columns}
 							data={lista} 
 							print={false}
@@ -1169,17 +1209,16 @@ async function actualizarFecha(folio) {
 											
 											/>
 						</DataTableExtensions>
-
 					<table id="productstable" style={{width:'100%'}} hidden>
 						<tr > 
 							<th style={{width:'35px'}}>Folio</th>
 							<th style={{width:'95px'}}> Responsable</th> 
 							<th style={{width:'35px'}}></th>
-							
-							 {/**<th style={{width:'100px'}}>Proyecto</th>**/}
+							{/** 
+							<th style={{width:'100px'}}>Proyecto</th>*/} 
 							<th style={{width: '250px'}}>Actividad</th>
 							{showDesc && <th style={{minWidth: '250px'}}>Descripción</th>}
-							<th style={{width: '95px'}}>Inicio /<br></br> termino</th>  
+							<th style={{width: '95px'}}>Inicio /<br></br> termino</th>
 							<th style={{width:'100px'}}>Estado</th> 
 							<th style={{width:'250px'}}>Observaciones</th> 
 							<th></th> 
@@ -1201,13 +1240,13 @@ async function actualizarFecha(folio) {
 							<td><button  className='btn btn-outline-success btn-sm' onClick={() => actualizarResponsable(item.proyecto, item.folioproyecto, item.folio)}><BsArrowRepeat /></button></td>
 							:<td></td>
 							}
-							{/**
+							{/** 
 							{(item.rol == 2)?
 							<td onClick={()=> MostrarDetalleProyecto(item.folio, item.folioresponsable, item.name)} style={{  boxShadow:'0px 0px 0px 5px '+item.backgroundColor+' inset'}} align='center' ><label>{item.proyecto}</label></td>
 							:
 							<td  style={{  boxShadow:'0px 0px 0px 5px '+item.backgroundColor+' inset'}} align='center' ><label>{item.proyecto}</label></td>
 							}
-							**/}
+							*/}
 							
 							{ (item.rol == 2) ? 
 							<>
@@ -1216,6 +1255,7 @@ async function actualizarFecha(folio) {
 								<textarea id={"actividad1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'250px', marginTop:'5px'}} rows="2" cols="50"/>
   
 						 	</td>
+							
 							 {(showDesc) ?  
 							 	<td align='center'> 
 										<textarea id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text"  style={{width:'100%', marginTop:'5px'}}/>
@@ -1226,25 +1266,25 @@ async function actualizarFecha(folio) {
 						 
 						 
 						 }
-							
+							 
 						 </>
                          : 
 						 <>
 						<td style={{width:'250px'}}>{item.actividad}<input id={"actividad1"+item.folio} defaultValue={item.actividad} type="text"  style={{width:'100%', marginTop:'5px'}} hidden/> </td>
 						 
-
-							{(showDesc) ?  
-									<td align='center'> 
-											<textarea id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text" style={{width:'100%', marginTop:'5px'}} rows="2" cols="50"/>
-									</td> : 
-									<td align='center' hidden> 
-										<textarea id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text" style={{width:'100%', marginTop:'5px'}} rows="2" cols="50"/>
-									</td>
-							
-							
-							}
+						 {/**
+						{(showDesc) ?  
+							 	<td align='center'> 
+										<textarea id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text" style={{width:'100%', marginTop:'5px'}} rows="4" cols="50"/>
+						 		</td> : 
+								<td align='center' hidden> 
+									<textarea id={"descripcion1"+item.folio} defaultValue={item.descripcion} type="text" style={{width:'100%', marginTop:'5px'}} rows="4" cols="50"/>
+						 		</td>
 						 
 						 
+						 }
+						 
+						 **/}
 						 </>
 							}
 							<td>{formatDate(item.fechainicio)}<input  style={{width:'95px', height:'31px', backgroundColor: getColor(item.fechatermino)}} type="date" id={item.folio} onChange={() => actualizarFecha(item.folio)} value={(item.fechatermino).substring(0,10)}/></td> 
@@ -1259,7 +1299,7 @@ async function actualizarFecha(folio) {
 							</td>
 							<td align='center'><textarea defaultValue={item.comentarios} id={"observacionesActividades"+item.folio} style={{width:'250px'}} rows="2" cols="50"></textarea></td>
 							<td style={{width: '80px'}}><button  className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(item.folio)}><BsArrowRepeat /></button>
-							<button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(item.folio)}><FaEye /></button>
+							{/*<button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(item.folio)}><FaEye /></button>*/}
 							<button style={{width:'64px'}} className='btn btn-outline-primary btn-sm' onClick={() => agregarDoc(item.folio)}><BsUpload /></button></td>
 							{ (item.rol == 2) ? 
 							<td align='center' style={{width:'35px'}}>
@@ -1277,11 +1317,13 @@ async function actualizarFecha(folio) {
 						</tr> 
 						))}	
 						<tr>
-							<td colSpan={2}>Registros: {registros}</td>
+							{/* <td colSpan={2}>Registros: {registros}</td>*/}
 						</tr>
 					</table> 
+					<br></br>
+					<br></br>
+					<br></br>
 				</div>
-
 
 				<ToastContainer 
 				progressClassName="toastProgress"
@@ -1305,17 +1347,18 @@ async function actualizarFecha(folio) {
 				style={customStyles}
 				contentLabel="Example Modal"
 			>
-				<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'blue'}}>Actualizar responsable </h2>
+				<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'blue'}}>Proyecto </h2>
 				<b><label>{nombreproyecto}</label></b>
 				
+				<div>Actualizar response</div> 
 				 
 				
 			<br></br> 
 
 
 			<select id="foliocolab" style={{ marginTop:'5px', width:'100%'}}>
-					{colaboradoresRes.map(item => ( 
-								<option value={item.userid}>{item.nombre}</option>
+					{colaboradoresEP.map(item => ( 
+								<option value={item.userid}>{item.name}</option>
 
 					))}
 					</select>
@@ -1449,45 +1492,12 @@ async function actualizarFecha(folio) {
 		</Modal>
 
 
-
-							<h2>Calendario de actividades</h2>
-				<FullCalendar
-				plugins={[ dayGridPlugin, interactionPlugin ]}
-				initialView="dayGridMonth"
-				weekends={true}
-				locale={esLocale}
-				events={lista}
-				eventClick={handleEventClick}
-				editable={true}
-				droppable={true}
-				eventDrop={info => {
-				  const { start, end } = info.oldEvent._instance.range;
-				  console.log(start, end);
-				  const {
-					start: newStart,
-					end: newEnd
-				  } = info.event._instance.range;
-				  actualizarFechaCalendario(info.event, newStart)
-				  console.log(newStart, newEnd);
-				  if (new Date(start).getDate() === new Date(newStart).getDate()) {
-					info.revert();
-				  }
-				}}
-				/>
+ 
 			</div>
-
-			<Container style={{right: '-3vw'}}> 
-            
-            <Button
-                tooltip="Chat"
-                rotate={false}
-				styles={{backgroundColor: '#0071ce', color: 'white'}}
-				onClick={mostrarChat}  ><BsChat></BsChat></Button>
-        </Container>
 
 			
 		</div>
 	);   
 }
 
-export default ActividadesDtpo;
+export default ActProyectoSeleccionado;

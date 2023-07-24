@@ -127,7 +127,7 @@ const rooms = [
     }
 ];*/
 
-const RoomList = ({ query, isNavOpen, setIsNavOpen, rooms }) => {
+const RoomList = ({ query, isNavOpen, setIsNavOpen, rooms, getMensajesGrupo }) => {
     const debouncedSearch = useDebounce(query, 350);
     const { joinRoom } = useChatActions();
     const { currentRoom, setCurrentRoom, userName } = useChat();
@@ -152,7 +152,6 @@ const RoomList = ({ query, isNavOpen, setIsNavOpen, rooms }) => {
         if(currentRoom?.id === roomID) {
             return;
         }
-        
 
         const selectedRoom = rooms.find(room => room.id === roomID);
         setCurrentRoom(selectedRoom);
@@ -160,6 +159,8 @@ const RoomList = ({ query, isNavOpen, setIsNavOpen, rooms }) => {
         joinRoom({ roomID, userName });
 
         setIsNavOpen(false);
+
+        
     }
     
 
@@ -167,7 +168,7 @@ const RoomList = ({ query, isNavOpen, setIsNavOpen, rooms }) => {
         <RoomListContainer open={ isNavOpen }>
             <h3>Chats</h3>
              
-            <ul>
+            <ul style={{marginLeft: '-10%', width: '110%'}}>
                 {   
                     
                     filteredRooms.map(room => {

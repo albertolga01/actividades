@@ -7,6 +7,9 @@ import Navigation from './Navigation';
 import SearchRooms from './SearchRooms';
 import { useChat } from '../context/ChatProvider';
 import { Description } from '../styled/Description';
+import axios from '../../node_modules/axios'; 
+import { getFirstLetter } from '../helpers';
+
 
 const ChatAppContainer = styled.div`
     --vertical-padding: 3vh;
@@ -88,12 +91,55 @@ const WelcomeMessage = styled.p`
     color: rgba(0, 0, 0, 0.5);
 `;
 
+
+const MessageContent = styled.div`
+    display: flex;
+    font-size: 0.8em;
+    font-weight: 300;
+    padding: 0.8em 1em;
+    width: fit-content;
+    height: fit-content;
+`;
+
+const MessageContainer = styled.div`
+    display: flex;
+    gap: 20px;
+    color: #fff;
+    font-size: 1rem;
+    flex-direction: ${ props => props.incomingMessage ? 'row' : 'row-reverse' };
+
+    ${ MessageContent } {
+        background: ${ props => props.incomingMessage ? 'var(--blue-gradient)' : '#fff' };
+        border: ${ props => props.incomingMessage ? 'none' : '1px solid rgba(0, 0, 0, 0.1)' };
+        color: ${ props => props.incomingMessage ? '#fff' : '#000' };
+        box-shadow:  ${ props => props.incomingMessage ? 'rgba(32, 112, 198, 0.4)' : 'rgba(0, 0, 0, 0.15)'} 2px 3px 15px;
+        border-radius: ${ props => props.incomingMessage ? '0 8px 8px 8px' : '8px 0 8px 8px' };
+    }
+`;
+
+const UserProfile = styled.div`
+    display: flex;
+    position: relative;
+    height: 100%;
+
+    &::before {
+        content: '${props => getFirstLetter(props.content) }';
+        display: grid;
+        place-content: center;
+        padding: 0.5em;
+        width: 1.3em;
+        height: 1.3em;
+        border-radius: 50%;
+        background: var(--secondry-color-dark-palette);
+    }
+`
+
+
 const ChatContainer = (props) => {
+    const { currentRoom } = useChat();
     const [query, setQuery] = useState('');
     const [isNavOpen, setIsNavOpen] = useState(true);
-    const { currentRoom } = useChat();
     
-
     return (
         <ChatAppContainer>
             <Navigation openRoomNav={ () => setIsNavOpen(true) } /> 
@@ -116,10 +162,10 @@ const ChatContainer = (props) => {
                                     <Description color='#000' size='0.75em'>{ currentRoom.description }</Description>
                                 </div>
                             </Header>
-                            
-                            <Conversation />
+
+                            <Conversation currentRoom={currentRoom.id} userid={props.userid}/>
             
-                            <ChatForm />
+                            <ChatForm userid={props.userid}/>
                         </>
 
                     }
