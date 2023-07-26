@@ -83,6 +83,7 @@ function ActividadesDtpo(props) {
 	const [HideDescripcion, setHideDescripcion] = React.useState(false);
 	const [showDesc, setShowDesc] = React.useState(false);
 	const [showChat, setShowChat] = React.useState(false);
+	const [colaboradoresG, setColaboradoresG] = useState([]);
 
 	const columns = [
 		{
@@ -310,10 +311,12 @@ function ActividadesDtpo(props) {
 	const [modalIsOpen1, setIsOpen1] = React.useState(false);
 	const [colaboradoresEP, setColaboradoresEP] = useState([]);
 	const [colaboradoresRes, setcolaboradoresRes] = useState([]);
-	const [nombreproyecto, setNombreproyecto] = useState([]);
 	const [folioProyecto, setfolioProyecto] = useState([]); 
 	const [fecha, setFecha] = useState([]);
-	
+	const [listaut, setListaUT] = useState([]);
+	const [nombreproyecto, setNombreProyecto] =  useState([]);  
+
+	 
 
 	const [registros, setRegistros] = useState([]);
 	
@@ -342,8 +345,18 @@ function ActividadesDtpo(props) {
 	useEffect(() => {
 		setUserName(props.name);
 		getAllProyectos();
+		getTodosColaboradores();
+		//getAllColaboradoresdelGrupo(props.iddepartamento);
 		// eslint-disable-next-line
 	},[])
+
+	async function getTodosColaboradores() {
+		var id = "getTodosColaboradores";
+		
+		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id);  
+		setListaUT(rese.data); 
+		console.log(rese.data); 
+	}
 	
 	useEffect(() => {
 		getAllColaboradores();
@@ -364,6 +377,87 @@ function ActividadesDtpo(props) {
 			setLista(result);
 		} */
 		 
+	}
+
+	function formatRol(rolid){
+		if(rolid == "1"){
+			return "Colaborador";
+		}else if(rolid == "2"){
+			return "Administrador";
+		}
+	
+	}
+
+	async function cambiarRol(foliocolab, foliogrupo){
+		var rol = document.getElementById("rol"+foliocolab).value;
+		 
+		var id = "cambiarRolColaboradorDto"; 
+			var foliogrupo = proyecto; 
+			 let fd = new FormData() 
+			fd.append("id",id) 
+			//fd.append("idProyecto",idProyecto)
+			fd.append("foliogrupo", foliogrupo)
+			fd.append("foliocolab",foliocolab)    
+			fd.append("rol",rol)    
+			const res = await axios.post(process.env.REACT_APP_API_URL, fd);
+			notify(res.data); 
+			//getAllColaboradoresdelProyecto(proyecto);
+			getAllColaboradoresdelGrupo(foliogrupo);
+			console.log(res.data);
+			console.log(rol);
+	
+	  }
+
+	  async function getAllColaboradoresdelGrupo(idGrupo){    
+		//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
+		 
+		var id = "getColabEnGrupodos";
+		var idGrupo = props.iddepartamento;  
+		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&idGrupo='+idGrupo);
+		console.log(res.data); 
+		setColaboradoresG(res.data);
+		 
+	}
+
+	
+
+	async function eliminarUsuarioProyecto(foliogrupo, userid, grupo, usuario, folio){
+
+		//var userid = document.getElementById("idColaborador").value;
+	
+		if(window.confirm('Desea eliminar a ' + usuario + ' del depatamento ' + grupo)){ 
+			openModalLoad();
+			let fd = new FormData() 
+			fd.append("id", "eliminarUsuarioDepartamento")
+			fd.append("foliogrupo", foliogrupo)
+			fd.append("foliocolab", userid) 
+			fd.append("folio", folio)  
+			const res = await axios.post(process.env.REACT_APP_API_URL, fd);  
+			closeModalLoad();
+			notify(res.data.trim()); 
+			console.log(foliogrupo);
+			props.getDptos();
+
+			getAllColaboradoresdelGrupo(foliogrupo);
+		}
+	}
+
+	
+	async function AggColabProyecto(){  
+		var idColaborador = document.getElementById("idColaborador").value;
+	 
+		let fd = new FormData() 
+		fd.append("id","AggColabProyecto") 
+		fd.append("idColaborador",idColaborador) 
+		fd.append("idProyecto",proyecto) 
+		const res = await axios.post(process.env.REACT_APP_API_URL, fd);
+		notify(res.data.trim());
+		props.getDptos();
+
+		//getActividades();
+		//verRequisicion(folio);
+		getAllColaboradoresdelGrupo(proyecto);
+	 
 	}
 
 	function filterProyecto() {
@@ -440,6 +534,7 @@ async function getAllColaboradoresdelDepartamento(){
 	const [value, setValue] = useState([]); 
 	const [folioActividad1, setFolioActividad1] = useState([]); 
 	const [folioActividad, setFolioActividad] = useState([]); 
+	const [proyecto, setProyecto] =  useState([]);  
 
 
 
@@ -901,7 +996,7 @@ async function actualizarFecha(folio) {
 
 	async function actualizarResponsable(proyecto, folioproyecto, folioactividad){
 		setIsOpen1(true);	
-		setNombreproyecto(proyecto); 
+		setNombreProyecto(proyecto); 
 		setfolioProyecto(folioProyecto); 
 		setFolioActividad(folioactividad);
 		setColaboradoresEP([]);
@@ -963,6 +1058,17 @@ async function actualizarFecha(folio) {
 		setShowChat(!showChat)
 	}
 
+	function ver(id, proyecto){
+		setProyecto(id);
+		setNombreProyecto(proyecto);
+		openModal1();	 
+		getAllColaboradoresdelGrupo(id);
+	}
+
+	function openModal1() {
+		setIsOpen1(true);
+	  }
+
 	
    
 	
@@ -1001,7 +1107,8 @@ async function actualizarFecha(folio) {
 			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-primary btn-sm">Nueva Actividad {props.nombredepartamento}</button><br></br>
 			
 			<button onClick={openModalC} class="btn btn-outline-success btn-sm" hidden="hidden">Calendario</button> 
-			<button onClick={mostrarChat} class="btn btn-outline-success btn-sm" >Chat</button> 
+			<button onClick={mostrarChat} class="btn btn-outline-success btn-sm" hidden>Chat</button> 
+			<button style={{marginRight:'10px'}} onClick={() => ver(props.iddepartamento, props.nombredepartamento)} className='btn btn-outline-success btn-sm'>Participantes</button>
 
       
 	  <Modal
@@ -1092,6 +1199,7 @@ async function actualizarFecha(folio) {
 					<input id='input-fecha-termino' type='date' style={{width:'97px',fontSize:'12px', cursor:'pointer'}} onChange={() => getActividades()}></input>
 					<span>&nbsp; </span>
 					<button  onClick={() => getActividades()} class="btn btn-outline-success btn-sm">Filtrar</button>
+					
 				</div>
 				{/**
 						{ (props.admin == 1 ) ? 
@@ -1484,7 +1592,61 @@ async function actualizarFecha(folio) {
 				styles={{backgroundColor: '#0071ce', color: 'white'}}
 				onClick={mostrarChat}  ><BsChat></BsChat></Button>
         </Container>
+		<Modal
+				isOpen={modalIsOpen1}
+				onAfterOpen={afterOpenModal}
+				onRequestClose={closeModal1}
+				style={customStyles}
+				contentLabel="Example Modal">
+				<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'blue'}}>Colaboradores </h2>
+				<b><label>{nombreproyecto}</label></b>
+					
+										<br></br> 
+										<br></br> 
+										
+				<div>Personas en este grupo:</div>
+				<tr>
+					 
+					<th class="header">Folio</th>   
+					<th class="header">Colaborador</th>   
+					<th class="header">Rol</th>   
+					<th class="header">Eliminar</th>   
+				</tr> 
 
+				{ colaboradoresG.map(item => ( 
+									<tr> 
+										
+										<td>{item.folio}</td>
+										<td>{item.nombre}</td>
+										<td>
+											<select style={{width:'135px'}}  id={'rol'+item.foliocolab} onChange={()=> cambiarRol(item.foliocolab, item.foliogrupo,)}>
+												<option selected>{formatRol(item.rol)}</option>
+												<option value="1">Colaborador</option>
+												<option value="2">Administrador</option>
+											</select>
+										</td>
+										<td><button id="bttn-eliminar-usuario" style={{width:'100%'}} className='btn btn-outline-danger btn-sm' onClick={() => eliminarUsuarioProyecto(item.foliogrupo, item.foliocolab, item.grupo, item.nombre, item.folio)}><BsXCircleFill /></button> </td>
+
+									</tr> 
+									))
+									}	
+				
+										<br></br> 
+
+
+					<select id="idColaborador" style={{width:'100%', marginTop:'5px'}}   >
+										{listaut.map(item => ( 
+												<option value={item.foliocolab}>{item.nombre}</option>
+							
+										))}
+										</select>
+												
+										<br></br>
+										<br></br>
+
+					<button onClick={closeModal1} class="btn btn-outline-danger btn-sm ">Cancelar</button> 
+					<button  onClick={()=> AggColabProyecto()}  class="btn btn-outline-success btn-sm" style={{marginLeft:'180px'}}>Agregar</button>
+						</Modal>
 			
 		</div>
 	);   
