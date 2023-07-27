@@ -233,8 +233,8 @@ function ActividadesDtpo(props) {
 			cell: (row) => {
 				return (
 					<td style={{width: '80px'}}>
-						<button  className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(row.folio)}><BsArrowRepeat /></button>
-						<button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(row.folio)}><FaEye /></button>
+						<button style={{width:'64px'}} className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(row.folio)}><BsArrowRepeat /></button>
+						{/*<button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(row.folio)}><FaEye /></button>*/}
 						<button style={{width:'64px'}} className='btn btn-outline-primary btn-sm' onClick={() => agregarDoc(row.folio)}><BsUpload /></button>
 					</td>)
 			},
@@ -249,7 +249,9 @@ function ActividadesDtpo(props) {
 					<td>
 					{ (row.rol == 2) ? 
 						<td align='center' style={{width:'35px'}}>
-						<button className='btn btn-outline-success btn-sm' onClick={ () => finalizado(row.folio, row.folioresponsable, row.actividad) }><BsFillCheckCircleFill /></button>
+							{(row.finalizado != '1')?
+								<button className='btn btn-outline-success btn-sm' onClick={ () => finalizado(row.folio, row.folioresponsable, row.actividad) }><BsFillCheckCircleFill /></button>
+							: 	<></>}
 						<button className='btn btn-outline-danger btn-sm' onClick={ () => eliminarActividad(row.folio) }><BsXCircleFill /></button>
 					</td>
 					 : 
@@ -740,6 +742,7 @@ async function getAllColaboradoresdelDepartamento(){
 	async function getActividades(){    
 		//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
 		setLista([]);
+		setLista1([]);
 		setListaDos([]);
 		openModalLoad(); 
 		//document.getElementById("ocultas").checked = false;
@@ -1367,7 +1370,7 @@ async function actualizarFecha(folio) {
 							</td>
 							<td align='center'><textarea defaultValue={item.comentarios} id={"observacionesActividades"+item.folio} style={{width:'250px'}} rows="2" cols="50"></textarea></td>
 							<td style={{width: '80px'}}><button  className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(item.folio)}><BsArrowRepeat /></button>
-							<button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(item.folio)}><FaEye /></button>
+							{/*<button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(item.folio)}><FaEye /></button>*/}
 							<button style={{width:'64px'}} className='btn btn-outline-primary btn-sm' onClick={() => agregarDoc(item.folio)}><BsUpload /></button></td>
 							{ (item.rol == 2) ? 
 							<td align='center' style={{width:'35px'}}>

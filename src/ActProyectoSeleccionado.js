@@ -342,6 +342,8 @@ function ActProyectoSeleccionado(props) {
 	const [NProyecto, setNProyecto] = useState(props.nombreProyectoSeleccionado);
 	const [IdProyecto, setIdProyecto] = useState([]);
 
+	const [colaboradoresG, setColaboradoresG] = useState([]);
+	const [listaut, setListaUT] = useState([]);
 
 	
 	const pagination = { 
@@ -376,6 +378,8 @@ function ActProyectoSeleccionado(props) {
 	useEffect(() => {
 		setNProyecto(props.nombreProyectoSeleccionado);
 		getAllProyectos();
+		getTodosColaboradores();
+		getAllColaboradoresdelGrupo();
 		// eslint-disable-next-line
 	},[])
 	
@@ -1013,13 +1017,93 @@ async function actualizarFecha(folio) {
 		}
 	}
 
-
+	function ver(id, proyecto){
+		 
+		setNombreproyecto(proyecto);
+		openModal1();	 
+		getAllColaboradoresdelGrupo();
+	}
 	
-
-
+	async function getAllColaboradoresdelGrupo(){    
+		//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
+		 
+		var id = "getColabEnProyecto";
+		var idGrupo = props.proyectoSeleccionado;  
+		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&folio='+idGrupo);
+		console.log(res.data); 
+		setColaboradoresG(res.data);
+		 
+	}
+	function openModal1() {
+		setIsOpen1(true);
+	  }
+	  async function insertColabEnProyecto(){    
+		//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
+		 
+		var id = "insertColabEnProyecto";
+		var foliocolab = document.getElementById("idColaborador").value; 
+		var folioproyecto = props.proyectoSeleccionado; 
+	 	let fd = new FormData() 
+		fd.append("id",id) 
+		fd.append("folioproyecto",folioproyecto) 
+		fd.append("foliocolab",foliocolab)    
+		const res = await axios.post(process.env.REACT_APP_API_URL, fd);
+		notify(res.data.trim()); 
+		getAllColaboradoresdelGrupo();
+	}
+	function formatRol(rolid){
+		if(rolid == "1"){
+			return "Colaborador";
+		}else if(rolid == "2"){
+			return "Administrador";
+		}
 	
-   
+	}
+
+	async function cambiarRol(userid){
+		var rol = document.getElementById("rol"+userid).value;
+		 
+		var id = "cambiarRolColaboradorProyecto"; 
+			var folioproyecto = props.proyectoSeleccionado; 
+			 let fd = new FormData() 
+			fd.append("id",id) 
+			fd.append("folioproyecto",folioproyecto) 
+			fd.append("foliocolab",userid)    
+			fd.append("rol",rol)    
+			const res = await axios.post(process.env.REACT_APP_API_URL, fd);
+			notify(res.data); 
+			getAllColaboradoresdelGrupo();
+			console.log(res.data);
 	
+	  }
+	
+	  async function BajaUsuarioProyecto(idd, userid, usuario, folio){
+
+		//var userid = document.getElementById("idColaborador").value;
+	
+		if(window.confirm('Desea eliminar a ' + usuario + ' del proyecto ' )){ 
+			openModalLoad();
+			let fd = new FormData() 
+			fd.append("id", "bajaUsuarioDepartamento") 
+			fd.append("folioproyecto",idd) 
+			fd.append("foliocolab",userid)    
+			fd.append("folio",folio)    
+			const res = await axios.post(process.env.REACT_APP_API_URL, fd);  
+			closeModalLoad();
+			notify(res.data.trim()); 
+			console.log(idd);
+			getAllColaboradoresdelGrupo();
+			//getAllColaboradoresdelGrupo(foliogrupo);
+		}
+	}
+
+	async function getTodosColaboradores() {
+		var id = "getTodosColaboradores";
+		
+		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id);  
+		setListaUT(rese.data); 
+		console.log(rese.data); 
+	}
   		// Dynamically create select list
 	let options = [];
 
@@ -1117,6 +1201,10 @@ async function actualizarFecha(folio) {
 					<input hidden id='input-fecha-termino' type='date' style={{width:'97px',fontSize:'12px', cursor:'pointer'}} ></input>
 					<span hidden >&nbsp; </span> 
 					<button hidden style={{margin:'5px'}}  class="btn btn-outline-success btn-sm">Actualizar</button>
+				</div>
+
+				<div>
+				<button style={{marginRight:'10px'}} onClick={() => ver(props.iddepartamento, props.nombredepartamento)} className='btn btn-outline-success btn-sm'>Participantes</button>
 				</div>
 				{/** { (props.admin == 1 ) ? 
 				<div>
@@ -1347,27 +1435,56 @@ async function actualizarFecha(folio) {
 				style={customStyles}
 				contentLabel="Example Modal"
 			>
-				<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'blue'}}>Proyecto </h2>
-				<b><label>{nombreproyecto}</label></b>
+				<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'blue'}}><b><label>{nombreproyecto}</label></b></h2>
+				<b><label>{props.nombreProyectoSeleccionado}</label></b>
 				
-				<div>Actualizar response</div> 
-				 
+				<div>Personas en este proyecto:</div>
+				<tr> 
+					<th class="header">Folio</th>   
+					<th class="header">Colaborador</th>   
+					<th class="header">Rol</th>   
+					<th class="header">Eliminar</th>   
+				</tr> 
+
+
+			{ colaboradoresG.map(item => ( 
+									<tr> 
+										
+										<td>{item.userid}</td>
+										<td>{item.name}</td>
+										<td>
+											<select style={{width:'135px'}}  id={'rol'+item.userid} onChange={()=> cambiarRol(item.userid)}>
+												<option selected>{formatRol(item.rol)}</option>
+												<option value="1">Colaborador</option>
+												<option value="2">Administrador</option>
+											</select>
+										</td>
+										<td>
+										<button id="bttn-eliminar-usuario" style={{width:'100%'}} className='btn btn-outline-danger btn-sm' onClick={() => BajaUsuarioProyecto(item.folioproyecto, item.userid, item.name, item.folio)}><BsXCircleFill /></button>
+
+											</td>
+
+									</tr> 
+									))
+									}	
 				
-			<br></br> 
+										<br></br> 
 
 
-			<select id="foliocolab" style={{ marginTop:'5px', width:'100%'}}>
-					{colaboradoresEP.map(item => ( 
-								<option value={item.userid}>{item.name}</option>
+					<select id="idColaborador" style={{width:'100%', marginTop:'5px'}}   >
+										{listaut.map(item => ( 
+												<option value={item.foliocolab}>{item.nombre}</option>
+							
+										))}
+										</select>
+												
+										<br></br>
+										<br></br>
 
-					))}
-					</select>
-			<br></br>
-			<br></br>
-
-				<button onClick={closeModal1} class="btn btn-outline-danger btn-sm ">Cancelar</button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<button  class="btn btn-outline-success btn-sm" onClick={() => actualizarResponsable1()}>Actualizar</button>
-			</Modal>
+					<button onClick={closeModal1} class="btn btn-outline-danger btn-sm ">Cancelar</button> 
+					
+					<button onClick={() => insertColabEnProyecto()} class="btn btn-outline-success btn-sm" >Agregar</button>
+					</Modal>
 
 
 					<Modal

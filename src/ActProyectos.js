@@ -336,6 +336,7 @@ function ActProyectos(props) {
 	const [listau, setListaU] = useState([]);
 	const [modalIsOpenLoad, setIsOpenLoad] = React.useState(false);
 	const [modalIsOpen1, setIsOpen1] = React.useState(false);
+	const [modalIsOpenNuevoProyecto, setIsOpenNuevoProyecto] = React.useState(false);
 	const [colaboradoresEP, setColaboradoresEP] = useState([]);
 	const [colaboradoresRes, setcolaboradoresRes] = useState([]);
 	const [nombreproyecto, setNombreproyecto] = useState([]);
@@ -377,6 +378,19 @@ function ActProyectos(props) {
 			 function closeModalLoad() { 
 			setIsOpenLoad(false); 
 			 }
+
+			 function openModalNuevoProyecto() {
+				setIsOpenNuevoProyecto(true);
+			  }
+			  function closeModalNuevoProyecto() {
+				setIsOpenNuevoProyecto(false);
+			  }
+	
+			  function afterOpenModalNuevoProyecto() {
+				// references are now sync'd and can be accessed.
+				subtitle.style.color = 'black';
+			  }
+			
 		
 	useEffect(() => {
 		getAllProyectos();
@@ -1012,7 +1026,24 @@ async function actualizarFecha(folio) {
 	}
 
 
-	
+	async function addProyecto(){  
+		var administrador = document.getElementById("administrador").value;
+		var proyecto = document.getElementById("proyecto").value;
+		var descripcion = document.getElementById("descripcion").value;
+		var fechatermino = document.getElementById("fechatermino").value;
+		let fd = new FormData() 
+		fd.append("id","addProyecto") 
+		fd.append("administrador",administrador) 
+		fd.append("proyecto",proyecto) 
+		fd.append("descripcion",descripcion) 
+		fd.append("fechatermino", fechatermino)   
+		fd.append("userid", props.userid)   
+		const res = await axios.post(process.env.REACT_APP_API_URL, fd);
+		notify(res.data.trim());
+		getAllProyectos();
+		//verRequisicion(folio);
+	 
+	}
 
 
 	
@@ -1028,6 +1059,8 @@ async function actualizarFecha(folio) {
 			<Nabvar titulo={NProyecto} departamento={props.rzonsocial} dptoid={props.dptoid}/> 
 			</div>
 			<div style={{width:'100%'}} align="right">
+			<button style={{width:'15%', marginRight:'10px'}} onClick={openModalNuevoProyecto}  class="btn btn-outline-warning btn-sm">Nuevo Proyecto</button>
+
 			<button id="Proyectos" onClick={() => seleccionar()} style={{ width:'15%', marginTop:'5px', margin:'5px' }}  class="btn btn-outline-primary btn-sm" > Proyectos</button>
 
 			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-success btn-sm" hidden>Nueva Actividad</button><br></br>
@@ -1353,7 +1386,7 @@ async function actualizarFecha(folio) {
 				<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'blue'}}>Proyecto </h2>
 				<b><label>{nombreproyecto}</label></b>
 				
-				<div>Actualizar response</div> 
+				<div>Actualizar responsable</div> 
 				 
 				
 			<br></br> 
@@ -1494,6 +1527,35 @@ async function actualizarFecha(folio) {
 			<button onClick={actualizarProyectoActividad} class="btn btn-outline-success btn-sm " style={{ width:'100%'}}>Actualizar</button> 
 		</Modal>
 
+		<Modal
+			isOpen={modalIsOpenNuevoProyecto}
+			onAfterOpen={afterOpenModalNuevoProyecto}
+			onRequestClose={closeModalNuevoProyecto}
+			style={customStyles}
+			contentLabel="Example Modal"
+		>
+			<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'blue'}}>Nuevo Proyecto</h2>
+			
+			<div>Administrador:</div>
+			<input id="nombre" type="text" value={props.name} style={{width:'100%', marginTop:'5px'}}/>
+			<input id="administrador" type="text" value={props.userid} style={{width:'100%', marginTop:'5px'}} hidden />
+			
+			
+			<div>Proyecto:</div>
+			<input id="proyecto" type="text"  style={{width:'100%', marginTop:'5px'}}/>
+
+			<div>Descripción:</div>
+			<input id="descripcion" type="text"  style={{width:'100%', marginTop:'5px'}}/>
+			
+			<div>Fecha de termino estimada:</div>
+			<input id="fechatermino" style={{width:'100%', marginTop:'5px'}} type="date"/>
+			
+			
+		<br></br>
+		<br></br>
+			<button onClick={closeModalNuevoProyecto} class="btn btn-outline-danger btn-sm " style={{ height:'45px'}}>Cancelar</button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<button onClick={() => addProyecto()} class="btn btn-outline-success btn-sm" style={{ height:'45px'}}>Guardar</button>
+		</Modal>
 
  
 			</div>
