@@ -1095,7 +1095,8 @@ async function actualizarFecha(folio) {
 							</select>
 				</div>
 				:
-				<div> 
+				<div>
+					<></> 
 				</div>
 				}
 				<div>

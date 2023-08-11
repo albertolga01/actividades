@@ -494,10 +494,10 @@ function ActividadesDtpo(props) {
 	openModalLoad();
 	const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&userid='+props.userid);  
 	closeModalLoad();
-	if(rese.data != ""){
+	/*if(rese.data != ""){
 		setListaU(rese.data); 
 	}
-	
+	*/ 
 } 
 
 
@@ -512,7 +512,7 @@ async function getAllColaboradoresdelDepartamento(){
 
 	setcolaboradoresRes(res.data);
 	//setColaboradoresEP(res.data);
-
+	setListaU(res.data); 
 	(res.data).forEach(myFunction);
 	 
 }
@@ -760,7 +760,8 @@ async function getAllColaboradoresdelDepartamento(){
 		var listadeproyectos = lista.filter( (ele, ind) => ind === lista.findIndex( elem => elem.proyecto === ele.proyecto))
 		setRegistros(res.data.length);
 		setListaProyectos(listadeproyectos);
-		console.log(res.data);
+		//console.log(res.data);
+		selTipoActividad();
 	}
 
 
@@ -1045,16 +1046,47 @@ async function actualizarFecha(folio) {
 	}
 
 
-	function selTipoActividad(e){
-		if(e.target.value == "1"){
-			var res =  lista1; 
+	function selTipoActividad(){
+		setLista([]);
+		var name = document.getElementById('filtrarporestado').value; 
+		/*var result = listados.filter((x) => (x.est === name && x.activo == "1")); 
+		setLista(result);
+		console.log(result);
+		*/
+		if(name == "1"){
+			setLista(listados);
 		}else{
-			var res =  lista1.filter((x) => (x.est == e.target.value  && x.activo == "1")); 
+			var result =  listados.filter((x) => (x.est === name ));
+			setLista(result); 
 		}
-		setLista(res); 
+		//console.log(result); 
+	}
+/*
+	function filterDictamenTipo() {
+		var tipo = document.getElementById('dictamenf').value;  
+		if(tipo == "0"){ 
+			setListaS(listasd);
+		}else{ 
+		var result = listasd.filter((x) => (x.nombre == tipo));  
+		setListaS(result);  
+		}
 	}
 
-
+	function filterTipoActividad() {
+		var name = document.getElementById('filtrarporestado').value;  
+		var result = listados.filter((x) => (x.est === name)); 
+		setLista(result);
+	}
+*/
+/*
+	var creado =  res.data.filter((x) => (x.est == "Creado"  && x.finalizado != "1")); 
+	setLista(creado); 
+	console.log(creado);
+	var proceso =  res.data.filter((x) => (x.est == "En Proceso" && x.finalizado != "1")); 
+	setListaEnProceso(proceso);
+	var terminado =  res.data.filter((x) => (x.est == "Terminado"  || x.finalizado == "1")); 
+	setListaTerminado(terminado);
+*/
 	function mostrarChat(){
 		setCurrentRoom(props.nombredepartamento);
         joinRoom( props.dptoid, props.name );
@@ -1104,14 +1136,14 @@ async function actualizarFecha(folio) {
 			
 
 			<div style={{width:'100%'}} align="center">
-			<Nabvar titulo={props.nombredepartamento} departamento={props.rzonsocial} dptoid={props.dptoid}/>    
+			<Nabvar titulo={props.nombredepartamento} departamento={props.rzonsocial} dptoid={props.dptoid}/>   
 			</div>
 			<div style={{width:'100%'}} align="right">
 			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-primary btn-sm">Nueva Actividad {props.nombredepartamento}</button><br></br>
 			
 			<button onClick={openModalC} class="btn btn-outline-success btn-sm" hidden="hidden">Calendario</button> 
 			<button onClick={mostrarChat} class="btn btn-outline-success btn-sm" hidden>Chat</button> 
-			<button style={{marginRight:'10px'}} onClick={() => ver(props.iddepartamento, props.nombredepartamento)} className='btn btn-outline-success btn-sm'>Participantes</button>
+			<button style={{marginRight:'10px', marginTop:'10px'}} onClick={() => ver(props.iddepartamento, props.nombredepartamento)} className='btn btn-outline-success btn-sm'>Participantes</button>
 
       
 	  <Modal
@@ -1229,7 +1261,7 @@ async function actualizarFecha(folio) {
 				<div>
 				<select id="filtrarporcolab" style={{width:'320px', marginTop:'5px'}}  onChange={() => filterName()}>
 							{listau.map(item => ( 
-									   <option value={item.name}>{item.name}</option>
+									   <option value={item.nombre}>{item.nombre}</option>
 				  
 							  ))}
 							</select>
@@ -1250,15 +1282,25 @@ async function actualizarFecha(folio) {
 
 				</div>
 				<div>
-				 <input type="radio" id="1" name="fav_language" value="1" style={{marginLeft: '15px'}} onChange={(e) => selTipoActividad(e)}/>
-				 <label style={{padding:'5px'}}>Todas</label> 
+				<label style={{marginRight: '5px'}}>Estado: </label>
+				<select id="filtrarporestado" style={{height:'31px'}}  onChange={() => selTipoActividad()}>
+					
+						<option value="1">Todos</option>
+						<option value="Creado">Creado</option>
+						<option value="En Proceso">En Proceso</option>
+						<option value="Terminado">Terminado</option>
+					 </select>  
+					 {/*
+				 <input type="radio" id="1" name="fav_language" value="1" onChange={(e) => selTipoActividad(e)}/>
+				 <label style={{padding:'5px'}}>Todas</label>
 				 <input type="radio" id="2" name="fav_language" value="Creado" style={{marginLeft: '15px'}} onChange={(e) => selTipoActividad(e)}/>
-				 <label style={{padding:'5px'}}>Creadas</label> 
+				 <label style={{padding:'5px'}}>Creadas</label>
 				 <input type="radio" id="3" name="fav_language" value="En Proceso" style={{marginLeft: '15px'}} onChange={(e) => selTipoActividad(e)}/>
 				 <label style={{padding:'5px'}}>En proceso</label>
 				 <input type="radio" id="4" name="fav_language" value="Terminado" style={{marginLeft: '15px'}} onChange={(e) => selTipoActividad(e)}/>
 				 <label style={{padding:'5px'}}for="Finalizadas">Finalizadas</label>
-				</div>				
+				**/}
+				</div>					
 				<div  style={{height:'100%', overflowX: 'scroll', width:'100%'}}>
 
 				<DataTableExtensions
