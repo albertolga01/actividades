@@ -330,10 +330,18 @@ function Actividades(props) {
 			setIsOpenLoad(true); 
 			 }  
 		   
-			 function closeModalLoad() { 
+		function closeModalLoad() { 
 			setIsOpenLoad(false); 
-			 }
-		
+		}
+		function openNuevaActividad() {
+			dateToday();
+			openModal(true);
+		}
+		function agregarActividadCalendario(info){
+			setFecha(info); 
+			openModal();
+		  }
+
 	useEffect(() => {
 		getAllProyectos();
 		// eslint-disable-next-line
@@ -652,7 +660,7 @@ async function getAllColaboradoresdelProyecto(){
 		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&date='+date+'&userid='+props.userid+'&termino='+termino);
 		closeModalLoad(); 
 		var table = document.getElementById('productstable');
-		var result = res.data.filter((x) => (x.oculta === "0")); 
+		var result = res.data.filter((x) => (x.oculta == "0")); 
 			setLista(result); 
 		setListaDos(res.data);  
 		var lista = res.data;
@@ -957,7 +965,7 @@ async function actualizarFecha(folio) {
 			<Nabvar titulo="Actividades" departamento={props.rzonsocial} dptoid={props.dptoid}/>    
 			</div>
 			<div style={{width:'100%'}} align="right">
-			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-primary btn-sm">Nueva Actividad</button><br></br>
+			<button style={{marginRight:'10px'}} onClick={openNuevaActividad} class="btn btn-outline-primary btn-sm">Nueva Actividad</button><br></br>
 			
 			<button onClick={openModalC} class="btn btn-outline-success btn-sm" hidden="hidden">Calendario</button> 
 
@@ -1420,6 +1428,9 @@ async function actualizarFecha(folio) {
 				weekends={true}
 				locale={esLocale}
 				events={lista}
+				dateClick={ info => {
+					agregarActividadCalendario(info.dateStr)}
+				}
 				eventClick={handleEventClick}
 				editable={true}
 				droppable={true}

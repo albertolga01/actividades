@@ -73,6 +73,20 @@ const customStyles = {
 
 function ActividadesDtpo(props) {
 
+	useEffect(() => {
+		setUserName(props.name);
+		getAllProyectos();
+		getTodosColaboradores();
+		getAllColaboradores();
+		getActividades(); 
+		getAllColaboradoresdelDepartamento();
+		getUsuarios();
+		notificaciones();
+		dateToday();
+		//getAllColaboradoresdelGrupo(props.iddepartamento);
+		// eslint-disable-next-line
+	},[])
+	
     const { userName } = useChat();
     const { joinRoom } = useChatActions();
 
@@ -311,6 +325,7 @@ function ActividadesDtpo(props) {
 	const [listau, setListaU] = useState([]);
 	const [modalIsOpenLoad, setIsOpenLoad] = React.useState(false);
 	const [modalIsOpen1, setIsOpen1] = React.useState(false);
+	const [modalIsOpen2, setIsOpen2] = React.useState(false);//actualizar responsable
 	const [colaboradoresEP, setColaboradoresEP] = useState([]);
 	const [colaboradoresRes, setcolaboradoresRes] = useState([]);
 	const [folioProyecto, setfolioProyecto] = useState([]); 
@@ -335,6 +350,9 @@ function ActividadesDtpo(props) {
 		function closeModal1() {
 			setIsOpen1(false);
 		  }
+		  function closeModal2() {
+			setIsOpen2(false);
+		  }
 		
 		function openModalLoad() { 
 			setIsOpenLoad(true); 
@@ -344,13 +362,7 @@ function ActividadesDtpo(props) {
 			setIsOpenLoad(false); 
 			 }
 		
-	useEffect(() => {
-		setUserName(props.name);
-		getAllProyectos();
-		getTodosColaboradores();
-		//getAllColaboradoresdelGrupo(props.iddepartamento);
-		// eslint-disable-next-line
-	},[])
+	
 
 	async function getTodosColaboradores() {
 		var id = "getTodosColaboradores";
@@ -359,12 +371,12 @@ function ActividadesDtpo(props) {
 		setListaUT(rese.data); 
 		console.log(rese.data); 
 	}
-	
+	/*
 	useEffect(() => {
-		getAllColaboradores();
+		
 		// eslint-disable-next-line
 	},[])
-	
+	*/
 	 
 	async 	function   mostrarOcultas(){
 		//let ocultas = document.getElementById("ocultas").checked;
@@ -464,13 +476,13 @@ function ActividadesDtpo(props) {
 
 	function filterProyecto() {
 		var proyectos = document.getElementById('filtrarproyecto').value;  
-		var result = listados.filter((x) => (x.proyecto === proyectos)); 
+		var result = listados.filter((x) => (x.proyecto == proyectos)); 
 		setLista(result);
 	}
 	
 	function filterName() {
 		var name = document.getElementById('filtrarporcolab').value;  
-		var result = listados.filter((x) => (x.name === name)); 
+		var result = listados.filter((x) => (x.name == name)); 
 		setLista(result);
 	}
 	
@@ -578,21 +590,7 @@ async function getAllColaboradoresdelDepartamento(){
 
 
 
-	useEffect(() => {
-		getActividades(); 
-		getAllColaboradoresdelDepartamento();
-	},[])
-	
-
-	
-
-	useEffect(()=> {
-		getUsuarios();
-		notificaciones();
-		dateToday();
-	}, [])
-
-
+ 
 	function notificaciones(){
 
 		var pusher = new Pusher('5238df05729a28dcfb1a', { 
@@ -622,6 +620,10 @@ async function getAllColaboradoresdelDepartamento(){
 		  function afterOpenModalA() {
 			// references are now sync'd and can be accessed.
 			subtitle.style.color = 'black';
+		  }
+		  function openNuevaActividad() {
+			dateToday();
+			openModal(true);
 		  }
 	function openModal() {
 		setIsOpen(true);
@@ -750,18 +752,19 @@ async function getAllColaboradoresdelDepartamento(){
 		var date = document.getElementById("input-fecha").value; 
 		var termino = document.getElementById("input-fecha-termino").value; 
 		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&date='+date+'&userid='+props.userid+'&termino='+termino+'&iddepartamento='+props.iddepartamento);
-		closeModalLoad(); 
+		 
 		var table = document.getElementById('productstable');
-		var result = res.data.filter((x) => (x.oculta === "0")); 
+		var result = res.data.filter((x) => (x.oculta == "0")); 
 			setLista(result); 
 			setLista1(result);
-		setListaDos(res.data);  
+		setListaDos(res.data);
+		closeModalLoad();  
 		var lista = res.data;
-		var listadeproyectos = lista.filter( (ele, ind) => ind === lista.findIndex( elem => elem.proyecto === ele.proyecto))
+		var listadeproyectos = lista.filter( (ele, ind) => ind == lista.findIndex( elem => elem.proyecto == ele.proyecto))
 		setRegistros(res.data.length);
 		setListaProyectos(listadeproyectos);
 		//console.log(res.data);
-		selTipoActividad();
+		//selTipoActividad();
 	}
 
 
@@ -999,7 +1002,7 @@ async function actualizarFecha(folio) {
 	
 
 	async function actualizarResponsable(proyecto, folioproyecto, folioactividad){
-		setIsOpen1(true);	
+		setIsOpen2(true);	 
 		setNombreProyecto(proyecto); 
 		setfolioProyecto(folioProyecto); 
 		setFolioActividad(folioactividad);
@@ -1021,7 +1024,7 @@ async function actualizarFecha(folio) {
 			console.log(res.data); 
 			notify(res.data.trim());
 			getActividades();
-			setIsOpen1(false);
+			setIsOpen2(false);
 		}    
 
 	}
@@ -1056,7 +1059,7 @@ async function actualizarFecha(folio) {
 		if(name == "1"){
 			setLista(listados);
 		}else{
-			var result =  listados.filter((x) => (x.est === name ));
+			var result =  listados.filter((x) => (x.est == name ));
 			setLista(result); 
 		}
 		//console.log(result); 
@@ -1104,6 +1107,11 @@ async function actualizarFecha(folio) {
 		setIsOpen1(true);
 	  }
 
+	  function agregarActividadCalendario(info){
+		setFecha(info); 
+		openModal();
+	  }
+
 	
    
 	
@@ -1139,7 +1147,7 @@ async function actualizarFecha(folio) {
 			<Nabvar titulo={props.nombredepartamento} departamento={props.rzonsocial} dptoid={props.dptoid}/>   
 			</div>
 			<div style={{width:'100%'}} align="right">
-			<button style={{marginRight:'10px'}} onClick={openModal} class="btn btn-outline-primary btn-sm">Nueva Actividad {props.nombredepartamento}</button><br></br>
+			<button style={{marginRight:'10px'}} onClick={openNuevaActividad} class="btn btn-outline-primary btn-sm">Nueva Actividad {props.nombredepartamento}</button><br></br>
 			
 			<button onClick={openModalC} class="btn btn-outline-success btn-sm" hidden="hidden">Calendario</button> 
 			<button onClick={mostrarChat} class="btn btn-outline-success btn-sm" hidden>Chat</button> 
@@ -1453,8 +1461,8 @@ async function actualizarFecha(folio) {
 
 
 				<Modal
-				isOpen={modalIsOpen1} 
-				onRequestClose={closeModal1}
+				isOpen={modalIsOpen2} 
+				onRequestClose={closeModal2}
 				style={customStyles}
 				contentLabel="Example Modal"
 			>
@@ -1468,14 +1476,14 @@ async function actualizarFecha(folio) {
 
 			<select id="foliocolab" style={{ marginTop:'5px', width:'100%'}}>
 					{colaboradoresRes.map(item => ( 
-								<option value={item.userid}>{item.nombre}</option>
+								<option value={item.userid}>{item.nombre} </option>
 
 					))}
 					</select>
 			<br></br>
 			<br></br>
 
-				<button onClick={closeModal1} class="btn btn-outline-danger btn-sm ">Cancelar</button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<button onClick={closeModal2} class="btn btn-outline-danger btn-sm ">Cancelar</button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 				<button  class="btn btn-outline-success btn-sm" onClick={() => actualizarResponsable1()}>Actualizar</button>
 			</Modal>
 
@@ -1610,6 +1618,9 @@ async function actualizarFecha(folio) {
 				weekends={true}
 				locale={esLocale}
 				events={lista}
+				dateClick={ info => {
+					agregarActividadCalendario(info.dateStr)}
+				}
 				eventClick={handleEventClick}
 				editable={true}
 				droppable={true}
@@ -1680,6 +1691,7 @@ async function actualizarFecha(folio) {
 
 
 					<select id="idColaborador" style={{width:'100%', marginTop:'5px'}}   >
+						
 										{listaut.map(item => ( 
 												<option value={item.foliocolab}>{item.nombre}</option>
 							
