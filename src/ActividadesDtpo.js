@@ -13,7 +13,7 @@ import { AiFillAlert } from "react-icons/ai";
 import { BsArrowRepeat, BsFillCheckCircleFill, BsXCircleFill, BsEyeFil, BsEyeSlashFill, BsFillFileEarmarkPlusFill, BsUpload, BsChat } from "react-icons/bs";
 import { FaEye } from "react-icons/fa";
 import ChatContainer from './component/ChatContainer';
-import { useChat } from './context/ChatProvider';
+//import { useChat } from './context/ChatProvider';
 import styled from 'styled-components';
 import { Container, Button, Link } from 'react-floating-action-button'
 import moment from 'moment';
@@ -74,7 +74,7 @@ const customStyles = {
 function ActividadesDtpo(props) {
 
 	useEffect(() => {
-		setUserName(props.name);
+		//setUserName(props.name);
 		getAllProyectos();
 		getTodosColaboradores();
 		getAllColaboradores();
@@ -87,12 +87,12 @@ function ActividadesDtpo(props) {
 		// eslint-disable-next-line
 	},[])
 	
-    const { userName } = useChat();
+    /*const { userName } = useChat();
     const { joinRoom } = useChatActions();
 
     const { setUserName } = useChat();
     const { currentRoom, setCurrentRoom } = useChat();
-
+*/
 
 	const [HideDescripcion, setHideDescripcion] = React.useState(false);
 	const [showDesc, setShowDesc] = React.useState(false);
@@ -1089,13 +1089,13 @@ async function actualizarFecha(folio) {
 	setListaEnProceso(proceso);
 	var terminado =  res.data.filter((x) => (x.est == "Terminado"  || x.finalizado == "1")); 
 	setListaTerminado(terminado);
-*/
+
 	function mostrarChat(){
 		setCurrentRoom(props.nombredepartamento);
         joinRoom( props.dptoid, props.name );
 		setShowChat(!showChat)
 	}
-
+*/
 	function ver(id, proyecto){
 		setProyecto(id);
 		setNombreProyecto(proyecto);
@@ -1127,7 +1127,7 @@ async function actualizarFecha(folio) {
 	return (
 		<div className="container ">
 			 
-			{(showChat) ?
+			{/*(showChat) ?
 				<WrapperContainer>
             {
                 ! userName
@@ -1140,7 +1140,7 @@ async function actualizarFecha(folio) {
 			:
 			<></>
 			
-			}
+		*/}
 			
 
 			<div style={{width:'100%'}} align="center">
@@ -1150,7 +1150,7 @@ async function actualizarFecha(folio) {
 			<button style={{marginRight:'10px'}} onClick={openNuevaActividad} class="btn btn-outline-primary btn-sm">Nueva Actividad {props.nombredepartamento}</button><br></br>
 			
 			<button onClick={openModalC} class="btn btn-outline-success btn-sm" hidden="hidden">Calendario</button> 
-			<button onClick={mostrarChat} class="btn btn-outline-success btn-sm" hidden>Chat</button> 
+			{/*<button onClick={mostrarChat} class="btn btn-outline-success btn-sm" hidden>Chat</button> */}
 			<button style={{marginRight:'10px', marginTop:'10px'}} onClick={() => ver(props.iddepartamento, props.nombredepartamento)} className='btn btn-outline-success btn-sm'>Participantes</button>
 
       
@@ -1639,7 +1639,7 @@ async function actualizarFecha(folio) {
 				}}
 				/>
 			</div>
-
+{/*
 			<Container style={{right: '-3vw'}}> 
             
             <Button
@@ -1647,7 +1647,7 @@ async function actualizarFecha(folio) {
                 rotate={false}
 				styles={{backgroundColor: '#0071ce', color: 'white'}}
 				onClick={mostrarChat}  ><BsChat></BsChat></Button>
-        </Container>
+			</Container>*/}
 		<Modal
 				isOpen={modalIsOpen1}
 				onAfterOpen={afterOpenModal}
