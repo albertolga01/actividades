@@ -5,7 +5,7 @@ import axios from '../node_modules/axios';
 import {Nabvar} from './component/Navbar'; 
 
 import './App.css'; 
-import LinesChart from './LineChart';
+import LineChart from './LineChart';
 
 function App(props) {
 
@@ -23,7 +23,7 @@ function App(props) {
              <div>
                 <p className='m-2'><b>Ejemplo #1: </b> Grafica de lineas basico</p>
                 <div className='bg-light mx-auto px-2 border border-2 border-primary' style={{width:"450px",height:"230px"}}>
-                    <LinesChart/>
+                  <LineChart  />
                 </div>
              </div>
              
