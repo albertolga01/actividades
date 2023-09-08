@@ -14,6 +14,7 @@
     "@testing-library/user-event": "^12.8.3",
     "axios": "^0.21.1",
     "bootstrap": "^5.0.2",
+    "chart.js": "^4.4.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.2",
@@ -23,6 +24,7 @@
     "react": "^17.0.2",
     "react-browser-notifications": "^1.0.14",
     "react-burger-menu": "^3.0.8",
+    "react-chartjs-2": "^5.2.0",
     "react-data-table-component": "^7.5.3",
     "react-data-table-component-extensions": "^1.6.0",
     "react-dom": "^17.0.2",
@@ -45,8 +47,8 @@
   },
   "homepage": "https://actividades.grupopetromar.com/",
   "scripts": {
-    "start": "react-scripts --openssl-legacy-provider start",
-    "build": "react-scripts --openssl-legacy-provider build",
+    "start": "react-scripts  start",
+    "build": "react-scripts  build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

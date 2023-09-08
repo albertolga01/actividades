@@ -13,6 +13,7 @@ import Push from 'push.js';
 import ActProyectos from '../ActProyectos';
 import ActProyectoSeleccionado from '../ActProyectoSeleccionado';
 import ActividadesDtpo from '../ActividadesDtpo';
+import ResumenActividades from '../ResumenActividades';
 
 import OpcionesMenu from './OpcionesMenu'; 
 import Pusher from 'pusher-js'; 
@@ -117,7 +118,10 @@ export default function SideMenu(props) {
             return <ActProyectoSeleccionado nombreProyectoSeleccionado={nombreProyectoSeleccionado} proyectoSeleccionado={proyectoSeleccionado} tipo={props.tipo} unmount={cambiar}  admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
         }else if (selected === 'ActividadesDtpo') {
             return <ActividadesDtpo getDptos={obtenerDepartamentosUsuario} rooms={listaDepartamentos} iddepartamento={IdProyecto} nombredepartamento={NProyecto} tipo={props.tipo} admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
-        }else {
+        }else if (selected === 'ResumenActividades') {
+            return <ResumenActividades getDptos={obtenerDepartamentosUsuario} rooms={listaDepartamentos} iddepartamento={IdProyecto} nombredepartamento={NProyecto} tipo={props.tipo} admin={props.admin} departamento={props.departamento} dptoid={props.dptoid} userid={props.userid} usuario={props.usuario} name={props.name} rzonsocial={props.rzonsocial} />;
+        }
+        else {
             return (<div style={{ width: '100%', textAlign: 'center', backgroundColor: '', margin: 'auto' }}><h1>Error al Cargar</h1></div>);
         } 
     }
