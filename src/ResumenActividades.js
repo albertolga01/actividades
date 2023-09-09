@@ -11,9 +11,10 @@ import BarsChart from './Charts/BarsChart';
 
 function App(props) {
 	const [lista, setLista] =  useState([]);  
-    const [setallProyectos, setAllProyectos] = useState([]);
-    const[setactividadesProyecto,setActividadesProyecto] = useState([]);
-    const midata = [];
+   const [setallProyectos, setAllProyectos] = useState([]);
+   const[setactividadesProyecto,setActividadesProyecto] = useState([]);
+	const [midata, setMiData] =  useState([]);  
+
     useEffect(()=> { 
         getActividades();
         getAllProyectos();
@@ -59,7 +60,6 @@ function App(props) {
         const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&date=&userid='+props.userid+'&termino=&proyecto='+proyecto);  
         setActividadesProyecto(res.data);   
         console.log(res.data);
-        console.log("beneficios: "+ beneficios);
         var finalizadas =  setactividadesProyecto.filter((x) => (x.activo == 1 && x.estado == 3));
         finalizadas = finalizadas.length;        
         var creadas =  setactividadesProyecto.filter((x) => (x.activo == "1" && x.estado == "1"));
@@ -68,9 +68,14 @@ function App(props) {
         proceso = proceso.length;  
 
             
-        var beneficios = [finalizadas, creadas, proceso];
+        let beneficios = [];
+        beneficios.push(finalizadas);
+        beneficios.push(creadas);
+        beneficios.push(proceso);
+        console.log("beneficios: "+ beneficios);
+
         var meses = ["Creadas","Proceso","Finalizadas"];
-         midata = {
+        let mdata = {
             labels: meses,
             datasets: [ // Cada una de las líneas del gráfico
                 {
@@ -90,6 +95,11 @@ function App(props) {
                 },
             ],
         };
+
+        
+
+        setMiData(mdata);
+        console.log(midata.length);
    }
     
 
@@ -110,7 +120,7 @@ function App(props) {
              <div>
                 <p className='m-2'><b>Ejemplo #1: </b> Grafica de lineas basico</p>
                 <div className='bg-light mx-auto px-2 border border-2 border-primary' style={{width:"450px",height:"230px"}}>
-                 {(midata != null)?
+                 {(String(midata) != "")?
                   <LineChart actividades={midata} />                 
                     :
                     <></>
