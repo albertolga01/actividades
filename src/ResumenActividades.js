@@ -7,8 +7,10 @@ import Modal from 'react-modal';
 import './App.css'; 
 import LineChart from './Charts/LineChart';
 import PiesChart from './Charts/PiesChart';
-import BarsChart from './Charts/BarsChart';
-
+import BarsChart from './Charts/BarsChart';  
+import GanttChart from './Charts/GanttChart';  
+import GanttC from './Charts/Gantt';  
+import Draggable, {DraggableCore} from "react-draggable";
 function App(props) {
 	const [lista, setLista] =  useState([]);  
     const [setallProyectos, setAllProyectos] = useState([]);
@@ -18,6 +20,7 @@ function App(props) {
     const [proceso, setProceso] =  useState([]);
     const [finalizadas, setFinalizadas] =  useState([]);  
     const [detalleAct, setDetalleact] =  useState([]);
+    const [ganttData, setGanttData] =  useState([]);
 
 
     const [isOpen, setIsOpen] =  useState(false);  
@@ -106,7 +109,56 @@ function App(props) {
             ],
         };
         
-        setMiData(mdata);        
+        setMiData(mdata);   
+        let gantt = [
+            {
+              key: "task-1",
+              title: "Some task without data",
+              children: [
+                {
+                  key: "task-1-1",
+                  title: "Some non repeating task",
+                  data: {
+                    startDate: "2023-09-11T08:00:00.000Z",
+                    endDate: "2023-09-20T08:00:00.000Z",
+                  },
+                  children: [
+                    {
+                      key: "task-1-1-1",
+                      title: "Some weekly repeating task",
+                      data: {
+                        repeatType: "WEEK",
+                        fromTime: 28800,
+                        endDate: 64800,
+                        weekdays: [1, 3, 6],
+                      },
+                    },
+                  ],
+                },
+                {
+                  key: "task-1-2",
+                  title: "Some daily repeating task",
+                  data: {
+                    repeatType: "DAY",
+                    fromTime: 28800,
+                    endDate: 64800,
+                  },
+                },
+              ],
+            },
+            {
+              key: "task-2",
+              title: "Some monthly repeating task",
+              data: {
+                repeatType: "MONTH",
+                fromTime: 28800,
+                endDate: 64800,
+                monthdays: [1, 3, 5, 9, 11, 14, 21, 31],
+              },
+            },
+          ];    
+          
+          setGanttData(gantt);
     }
 
 
@@ -189,20 +241,27 @@ function App(props) {
                                 Creadas
                             </h3>
                         </div>
+                       
+       
+    
                         <div className='card-body' style={{overflowY:"scroll", height:'300px'}}>
-                            {creadas.map(item => ( 
-                                <div className='card card-primary card-outline' style={{cursor:"pointer"}} onClick={() => modalActividad(item.folio, item.actividad)}>
-                                    <div className='card-header'>
-                                        <h5 className='card-title'>{item.actividad}</h5>                            
-                                    </div>
-                                    <div className='card-body'>
-                                        <p>
-                                            {item.comentarios}
-                                        </p>
-                                    </div>
-                                </div>                            
-                            ))}	
-                  
+                            
+                                {creadas.map(item => ( 
+                                    <Draggable>
+                                    <div className='card card-primary card-outline' style={{cursor:"pointer"}} onClick={() => modalActividad(item.folio, item.actividad)}>
+                                        <div className='card-header'>
+                                            <h5 className='card-title'>{item.actividad}</h5>                            
+                                        </div>
+                                        <div className='card-body'>
+                                            <p>
+                                                {item.comentarios}
+                                            </p>
+                                        </div>
+                                    </div>      
+                            </Draggable>
+
+                                ))}	
+                    
 
                         </div>
                     </div>
@@ -255,6 +314,16 @@ function App(props) {
                 </div>
             </section>
 
+            <div>
+                {/* <GanttChart actividades={setactividadesProyecto}/>*/}
+                {(String(setactividadesProyecto) != "")?
+                <GanttC actividades={setactividadesProyecto} />
+
+                :
+                <></>
+                }
+            </div>
+
 
 
             <Modal
@@ -263,7 +332,7 @@ function App(props) {
 			contentLabel="Example Modal"
             style={customStyles}
 		    >
-			    <h1>Actualizar proyecto</h1> 
+			    <h1>Detalles de la actividad</h1> 
                 { detalleAct.map(item => ( 							 
                     <div style={{  fontSize:'13.5px'}}>                              
                         <label style={{fontSize:'16px', fontWeight:'bold'}}>Creado por:</label><br></br>

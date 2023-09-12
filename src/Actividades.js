@@ -601,6 +601,12 @@ async function getAllColaboradoresdelProyecto(){
 		var folioencargado = document.getElementById("folioencargado").value;
 		var folioresponsable = document.getElementById("folioresponsable").value;
 		var observaciones = document.getElementById("observaciones").value; 
+/*
+		if(fechatermino == ""){
+			toast("Seleccione una fecha de termino estimada");
+			return;
+		}
+		*/
 		// console.log(actividad);
 		if((folioproyecto != "Seleccione") && (actividad.length >= 1)){
 		let fd = new FormData() 
