@@ -117,7 +117,7 @@ function App(props) {
             labels:meses,
             datasets:[
                 {
-                    labels: 'Actividades',
+                    label:'Actividades',                    
                     data: beneficios,
                     backgroundColor:'rgba(0,220,195,0.5)'
                 }
@@ -128,6 +128,7 @@ function App(props) {
             labels:titulos,
             datasets:[
                 {
+                   
                     labels:'Resumen Actividades',
                     data:actividades,
                     backgroundColor:[
@@ -148,7 +149,7 @@ function App(props) {
         setMiData(mdata);
         console.log(bdata);   
         setMiPData(pdata);  
-      //  setMiBData(bdata);   
+        setMiBData(bdata);   
 
         let gantt = [
             {
@@ -275,7 +276,7 @@ function App(props) {
                 <div style={{margin:"0 0.5rem"}}>
                     <p className='m-2'><b>Ejemplo #2: </b> Grafica de barras</p>
                     <div className='bg-light mx-auto px-2 border border-2 border-primary' style={{width:"450px",height:"230px"}}>
-                    {(String(mipdata) != "")?
+                    {(String(mibdata) != "")?
                         <BarsChart actividades={mibdata}/>
                         :
                         <></>
@@ -300,17 +301,15 @@ function App(props) {
 
     
             
-            <section className='content pb-3'>
-                <div className='container-fluid h-100'>
-                    <div className='card card-row card-primary' style={{width:"340px",display:"inline-block",margin:"0 0.5rem",}}>
+           
+                <div style={{display:"flex"}}> 
+                    <div className='card card-row card-primary' style={{width:"500px",margin:"0 0.5rem",}}>
                         <div className='card-header' style={{ background:"#007bff",color:"white"}}>
                             <h3 className='card-title'>
                                 Creadas
                             </h3>
                         </div>
-                       
-       
-    
+                                  
                         <div className='card-body' style={{overflowY:"scroll", height:'300px'}}>
                             
                                 {creadas.map(item => ( 
@@ -333,7 +332,7 @@ function App(props) {
                         </div>
                     </div>
 
-                    <div className='card card-row card-primary' style={{width:"340px",display:"inline-block",margin:"0 0.5rem"}}>
+                    <div className='card card-row card-primary' style={{width:"500px",margin:"0 0.5rem"}}>
                         <div className='card-header' style={{ background:"#17a2b8",color:"white"}}>
                             <h3 className='card-title'>
                                 En Proceso
@@ -341,7 +340,7 @@ function App(props) {
                         </div>
                         <div className='card-body' style={{overflowY:"scroll", height:'300px'}}>
                             {proceso.map(item => ( 
-                                <div className='card card-primary card-outline'>
+                                <div className='card card-primary card-outline' style={{cursor:"pointer"}} onClick={() => modalActividad(item.folio, item.actividad)}>
                                     <div className='card-header'>
                                         <h5 className='card-title'>{item.actividad}</h5>                            
                                     </div>
@@ -356,7 +355,7 @@ function App(props) {
                         </div>
                     </div>
 
-                    <div className='card card-row card-primary' style={{width:"340px",display:"inline-block",margin:"0 0.5rem"}}>
+                    <div className='card card-row card-primary' style={{width:"500px",margin:"0 0.5rem"}}>
                         <div className='card-header'  style={{ background:"#28a745",color:"white"}}>
                             <h3 className='card-title'>
                                 Terminadas
@@ -364,7 +363,7 @@ function App(props) {
                         </div>
                         <div className='card-body' style={{overflowY:"scroll", height:'300px'}}>
                             {finalizadas.map(item => ( 
-                                <div className='card card-primary card-outline' >
+                                <div className='card card-primary card-outline' style={{cursor:"pointer"}} onClick={() => modalActividad(item.folio, item.actividad)}>
                                     <div className='card-header'>
                                         <h5 className='card-title'>{item.actividad}</h5>                            
                                     </div>
@@ -379,9 +378,9 @@ function App(props) {
                         </div>
                     </div>
                 </div>
-            </section>
+           
 
-            <div>
+            <div style={{marginTop:"20px"}}>
                 {/* <GanttChart actividades={setactividadesProyecto}/>*/}
                 {(String(setactividadesProyecto) != "")?
                 <GanttC actividades={setactividadesProyecto} />
@@ -391,6 +390,10 @@ function App(props) {
                 }
             </div>
 
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
 
 
             <Modal
