@@ -16,6 +16,8 @@ function App(props) {
     const [setallProyectos, setAllProyectos] = useState([]);
     const[setactividadesProyecto,setActividadesProyecto] = useState([]);
     const [midata, setMiData] =  useState([]);  
+    const [mipdata, setMiPData] =  useState([]);  
+    const [mibdata, setMiBData] =  useState([]); 
     const [creadas, setCreadas] =  useState([]);
     const [proceso, setProceso] =  useState([]);
     const [finalizadas, setFinalizadas] =  useState([]);  
@@ -86,8 +88,10 @@ function App(props) {
 
       
         let actividades = [creadas.length,proceso.length,finalizadas.length];                         
-
+        var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
         var titulos = ["Creadas","Proceso","Finalizadas"];
+        var beneficios = makeDateArray(res.data);
+
         let mdata = {
             labels: titulos,
             datasets: [ // Cada una de las líneas del gráfico
@@ -108,8 +112,44 @@ function App(props) {
                 },
             ],
         };
+
+        let bdata={
+            labels:meses,
+            datasets:[
+                {
+                    labels: 'Actividades',
+                    data: beneficios,
+                    backgroundColor:'rgba(0,220,195,0.5)'
+                }
+            ]
+        }
+
+        let pdata ={
+            labels:titulos,
+            datasets:[
+                {
+                    labels:'Resumen Actividades',
+                    data:actividades,
+                    backgroundColor:[
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(54, 162, 235, 0.2)'
+                    ],
+                    borderColor:[
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(54, 162, 235, 1)'
+                    ],
+                    borderWidth:1,
+                },
+            ],
+        };
         
-        setMiData(mdata);   
+        setMiData(mdata);
+        console.log(bdata);   
+        setMiPData(pdata);  
+      //  setMiBData(bdata);   
+
         let gantt = [
             {
               key: "task-1",
@@ -156,10 +196,29 @@ function App(props) {
                 monthdays: [1, 3, 5, 9, 11, 14, 21, 31],
               },
             },
-          ];    
+        ];    
           
           setGanttData(gantt);
     }
+
+    
+    const findMonth = (datestring) => { 
+        let date = new Date(datestring); 
+        return date.getMonth(); 
+    }; 
+    
+    const makeDateArray = (orders) => { 
+        let monthFreq = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];  
+        for (const order of orders) { 
+            let year = new Date(order.fechatermino).getFullYear(); 
+            let currentYeat = new Date().getFullYear();  
+            if(currentYeat == year){ 
+                const month = parseInt(findMonth(order.fechatermino)); 
+                monthFreq[month] = monthFreq[month] + 1; 
+            } 
+        } 
+        return monthFreq; 
+    };
 
 
     async function modalActividad(folio,actividad){
@@ -216,14 +275,22 @@ function App(props) {
                 <div style={{margin:"0 0.5rem"}}>
                     <p className='m-2'><b>Ejemplo #2: </b> Grafica de barras</p>
                     <div className='bg-light mx-auto px-2 border border-2 border-primary' style={{width:"450px",height:"230px"}}>
-                        <BarsChart/>
+                    {(String(mipdata) != "")?
+                        <BarsChart actividades={mibdata}/>
+                        :
+                        <></>
+                    }
                     </div>
                 </div>
 
                 <div style={{margin:"0 0.5rem"}}>
                     <p className='m-2'><b>Ejemplo #3: </b> Grafica circular</p>
                     <div className='bg-light mx-auto px-2 border border-2 border-primary' style={{width:"450px",height:"230px"}}>
-                        <PiesChart/>
+                    {(String(mipdata) != "")?
+                        <PiesChart actividades={mipdata}/>
+                        :
+                        <></>
+                    }
                     </div>
                 </div>
                 

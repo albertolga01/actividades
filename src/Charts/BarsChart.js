@@ -24,8 +24,8 @@ ChartJS.register(
 
 
 
-var beneficios = [0, 56, 20, 36, 80, 40, 30, -20, 25, 30, 12, 60];
-var meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+
 
 var misoptions = {
     responsive:true,
@@ -46,16 +46,7 @@ var misoptions = {
     }
 };
 
-var midata={
-    labels:meses,
-    datasets:[
-        {
-            labels: 'Beneficios',
-            data: beneficios,
-            backgroundColor:'rgba(0,220,195,0.5)'
-        }
-    ]
-}
+
 export default function Bars(props) {
-    return <Bar data={midata} options={misoptions}/>
+    return <Bar data={props.actividades}options={misoptions}/>
 }

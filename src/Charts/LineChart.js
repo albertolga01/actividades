@@ -37,5 +37,5 @@ var misoptions = {
 };
 
 export default function LinesChart(props) {
-    return <Line data={props.actividades} options={misoptions}/>
+    return <Line data={props.actividades} options={misoptions} style={{height:"360px !important"}}/>
 }
