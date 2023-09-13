@@ -23,6 +23,7 @@ function App(props) {
     const [finalizadas, setFinalizadas] =  useState([]);  
     const [detalleAct, setDetalleact] =  useState([]);
     const [ganttData, setGanttData] =  useState([]);
+	const [listadocumentos, setListaDocumentos] =  useState([]);
 
 
     const [isOpen, setIsOpen] =  useState(false);  
@@ -232,7 +233,8 @@ function App(props) {
         const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&folio='+folio); 
         //console.log(rese.data);
         setDetalleact(rese.data);  
-        setIsOpen(true);    
+        setIsOpen(true);
+        getDocumentos(folio);   
     }
 
     function formatDate(date){
@@ -247,7 +249,14 @@ function App(props) {
 		setIsOpen(false);
 	}
 
-    
+    async function getDocumentos(folio){
+		var id = "getDocumentos";
+		setListaDocumentos([]);
+		const rese = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&folio='+folio); 
+		//console.log(rese.data);
+		setListaDocumentos(rese.data);    
+	}
+	
 
 	
 
@@ -412,7 +421,9 @@ function App(props) {
             style={customStyles}
 		    >
 			    <h1>Detalles de la actividad</h1> 
-                { detalleAct.map(item => ( 							 
+                <div style={{justifyContent: 'space-between', columnGap:'0.875rem', borderRadius:'5px', width:'100%', display:'flex', flexDirection:'row'}}> 
+                    <div style={{width:'50%',}} > 
+                    { detalleAct.map(item => ( 							 
                     <div style={{  fontSize:'13.5px'}}>                              
                         <label style={{fontSize:'16px', fontWeight:'bold'}}>Creado por:</label><br></br>
                         <label>{item.creadapor}</label> 
@@ -430,9 +441,31 @@ function App(props) {
                         <label>{item.descripcion}</label>
                         <br></br>
                         <label style={{fontSize:'16px', fontWeight:'bold'}}>Fecha de término estimada:</label> <br></br>
-                        <label>{formatDate(item.fechatermino)}</label>                                                                                  
+                        <label>{formatDate(item.fechatermino)}</label>
+                        <br></br>                                                                               
                     </div> 
-                ))}
+                            ))}
+                    </div>
+                    <div style={{width:'70%', height:'400px', overflowY:'scroll'}}> 
+                    <tr >  
+							<th>Descripción</th> 
+							<th>Documento</th> 
+							  
+						</tr>
+                    { listadocumentos.map(item => ( 
+							 
+							 <tr id="tabletr" style={{  fontSize:'13.5px', border: '2px solid #ABB2B9'}}>
+								 <td  align='center' className='id-orden'>{item.descripcion}</td>
+								 <td  align='center' className='id-orden'><a target="_blank" rel="noreferrer" href={"https://actividades.grupopetromar.com/apirest/actividades/" + item.documento}><img src={"https://actividades.grupopetromar.com/apirest/actividades/" + item.documento} style={{width:'180px'}}  onError={({ currentTarget }) => {
+    currentTarget.onerror = null; // prevents looping
+    currentTarget.src="https://www.pngall.com/wp-content/uploads/2018/05/Files-High-Quality-PNG.png";
+  }}></img></a></td>
+							 </tr> 
+							 ))}
+                    <br></br>
+                    </div>
+                </div>
+                
                 <br></br>                
                 <button onClick={closeModalDetalleAct} class="btn btn-outline-danger btn-sm " style={{ width:'100%'}}>Cerrar</button> 
 		 
