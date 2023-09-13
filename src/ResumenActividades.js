@@ -256,6 +256,10 @@ function App(props) {
 		//console.log(rese.data);
 		setListaDocumentos(rese.data);    
 	}
+
+    const handleClick = (task) => {
+        modalActividad(task.id);
+      };
 	
 
 	
@@ -400,8 +404,9 @@ function App(props) {
 
             <div style={{marginTop:"20px"}}>
                 {/* <GanttChart actividades={setactividadesProyecto}/>*/}
-                {(String(setactividadesProyecto) != "")?
-                <GanttC actividades={setactividadesProyecto} />
+                {(String(setactividadesProyecto) != "")? 
+                     <GanttC actividades={setactividadesProyecto}  handleClick={handleClick} />
+
 
                 :
                 <></>

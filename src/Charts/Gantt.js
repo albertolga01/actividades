@@ -54,6 +54,6 @@ function GanttC(props) {
      
   }
   console.log(Task);
-    return  <Gantt tasks={Task} />
+    return  <Gantt tasks={Task} onClick={props.handleClick}/>
 }
 export default GanttC;
