@@ -72,19 +72,28 @@ function App(props) {
         
     } 
 
+    async function getActividades(){    
+		//tipo usuario si 1 solo las del dpto si 2 todas las requisiciones 
+		setLista([]);
+		  
+		//document.getElementById("ocultas").checked = false;
+		var id = "getActividadesDepartamento"; 
+		const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&date=&userid='+props.userid+'&termino=&iddepartamento='+props.iddepartamento);
+		  
+	}
     
-    async function getActividadesProyecto(proyecto){     
+    async function getActividadesProyecto(proyecto, consulta, iddepartamento){     
          
         setCreadas([]);
         setProceso([]);
         setFinalizadas([]);
         setActividadesProyecto([]);  
-        var id = "getActividadesProyecto";  
-        const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&date=&userid='+props.userid+'&termino=&proyecto='+proyecto);  
+        var id = consulta;  
+        const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&date=&userid='+props.userid+'&termino=&proyecto='+proyecto+'&iddepartamento='+iddepartamento);  
         setActividadesProyecto(res.data);           
-        setFinalizadas(res.data.filter((x) => (x.activo == 1 && x.estado == 3)));               
-        setCreadas(res.data.filter((x) => (x.activo == "1" && x.estado == "1")));        
-        setProceso(res.data.filter((x) => (x.activo == "1" && x.estado == "2")));        
+        setFinalizadas(res.data.filter((x) => (x.activo == 1 && x.estado == 3 && x.activo == "1" && x.finalizado == "1")));               
+        setCreadas(res.data.filter((x) => (x.activo == "1" && x.estado == "1" && x.activo == "1" && x.finalizado == "0")));        
+        setProceso(res.data.filter((x) => (x.activo == "1" && x.estado == "2" && x.activo == "1" && x.finalizado == "0")));        
 
       
         let actividades = [creadas.length,proceso.length,finalizadas.length];                         
@@ -105,11 +114,7 @@ function App(props) {
                     pointRadius: 5,
                     pointBorderColor: 'rgba(255, 99, 132)',
                     pointBackgroundColor: 'rgba(255, 99, 132)',
-                },
-                {
-                    label: 'Otra línea',
-                    data: [20, 25, 60, 65, 45, 10, 0, 25, 35, 7, 20, 25]
-                },
+                } 
             ],
         };
 
@@ -146,8 +151,7 @@ function App(props) {
             ],
         };
         
-        setMiData(mdata);
-        console.log(bdata);   
+        setMiData(mdata);   
         setMiPData(pdata);  
         setMiBData(bdata);   
 
@@ -251,14 +255,19 @@ function App(props) {
 
   	return (
 		<div className="container ">
-			<h1 className='bg-info text-center font-monospace fw-bold lh-base'>Graficas</h1>
-
+			{/*<h1 className='bg-info text-center font-monospace fw-bold lh-base'>Graficas</h1>*/}
+            <Nabvar titulo="Resumen de actividades" departamento={props.rzonsocial} dptoid={props.dptoid}/>    
             {setallProyectos.map(item => ( 
-					<button id="filtrarproyeco" style={{width:'24%', marginTop:'0.5%', marginLeft:'1%'}}  class="btn btn-outline-success btn-sm" onClick={() => getActividadesProyecto(item.folio, item.proyecto)}  >
+					<button id="filtrarproyeco" style={{width:'24%', marginTop:'0.5%', marginLeft:'1%'}}  class="btn btn-outline-success btn-sm" onClick={() => getActividadesProyecto(item.folio, "getActividadesProyecto", "")}  >
 					{item.proyecto}
 					</button>
 
-			))}	
+			))}
+             { props.rooms.map(item => ( 
+							<button id="filtrarproyeco" style={{width:'24%', marginTop:'0.5%', marginLeft:'1%'}}  class="btn btn-outline-success btn-sm" onClick={() => getActividadesProyecto(item.folio, "getActividadesDepartamento", item.folio)}  >
+                            {item.nombre}
+                            </button>
+                ))}	
 
 
              <div style={{display:"flex"}}>
@@ -310,11 +319,11 @@ function App(props) {
                             </h3>
                         </div>
                                   
-                        <div className='card-body' style={{overflowY:"scroll", height:'300px'}}>
+                        <div className='card-body' style={{overflowY:"scroll", height:'600px'}}>
                             
                                 {creadas.map(item => ( 
-                                    <Draggable>
-                                    <div className='card card-primary card-outline' style={{cursor:"pointer"}} onClick={() => modalActividad(item.folio, item.actividad)}>
+                                    /* <Draggable> */
+                                    <div className='card card-primary card-outline' style={{cursor:"pointer", marginBottom: "8px"}} onClick={() => modalActividad(item.folio, item.actividad)} >
                                         <div className='card-header'>
                                             <h5 className='card-title'>{item.actividad}</h5>                            
                                         </div>
@@ -324,7 +333,7 @@ function App(props) {
                                             </p>
                                         </div>
                                     </div>      
-                            </Draggable>
+                                /* </Draggable>*/
 
                                 ))}	
                     
@@ -338,9 +347,9 @@ function App(props) {
                                 En Proceso
                             </h3>
                         </div>
-                        <div className='card-body' style={{overflowY:"scroll", height:'300px'}}>
+                        <div className='card-body' style={{overflowY:"scroll", height:'600px'}}>
                             {proceso.map(item => ( 
-                                <div className='card card-primary card-outline' style={{cursor:"pointer"}} onClick={() => modalActividad(item.folio, item.actividad)}>
+                                <div className='card card-primary card-outline' style={{cursor:"pointer", marginBottom: "8px"}} onClick={() => modalActividad(item.folio, item.actividad)}>
                                     <div className='card-header'>
                                         <h5 className='card-title'>{item.actividad}</h5>                            
                                     </div>
@@ -361,9 +370,9 @@ function App(props) {
                                 Terminadas
                             </h3>
                         </div>
-                        <div className='card-body' style={{overflowY:"scroll", height:'300px'}}>
+                        <div className='card-body' style={{overflowY:"scroll", height:'600px'}}>
                             {finalizadas.map(item => ( 
-                                <div className='card card-primary card-outline' style={{cursor:"pointer"}} onClick={() => modalActividad(item.folio, item.actividad)}>
+                                <div className='card card-primary card-outline' style={{cursor:"pointer", marginBottom: "8px"}} onClick={() => modalActividad(item.folio, item.actividad)}>
                                     <div className='card-header'>
                                         <h5 className='card-title'>{item.actividad}</h5>                            
                                     </div>
@@ -407,23 +416,18 @@ function App(props) {
                     <div style={{  fontSize:'13.5px'}}>                              
                         <label style={{fontSize:'16px', fontWeight:'bold'}}>Creado por:</label><br></br>
                         <label>{item.creadapor}</label> 
-                        <br></br>
-                        <br></br>
+                        <br></br> 
                         <label style={{fontSize:'16px', fontWeight:'bold'}}>Proyecto:</label><br></br>
                         <label>{item.proyecto}</label>
-                        <br></br>
-                        <br></br>
+                        <br></br> 
                         <label style={{fontSize:'16px', fontWeight:'bold'}}>Responsable:</label><br></br>
                         <label>{item.name}</label> 
-                        <br></br>
-                        <br></br>
+                        <br></br> 
                         <label style={{fontSize:'16px', fontWeight:'bold'}}>Actividad:</label><br></br>
                         <label>{item.actividad}</label> 
-                        <br></br>
-                        <br></br>
+                        <br></br> 
                         <label style={{fontSize:'16px', fontWeight:'bold'}}>Descripción:</label><br></br>
                         <label>{item.descripcion}</label>
-                        <br></br>
                         <br></br>
                         <label style={{fontSize:'16px', fontWeight:'bold'}}>Fecha de término estimada:</label> <br></br>
                         <label>{formatDate(item.fechatermino)}</label>                                                                                  
