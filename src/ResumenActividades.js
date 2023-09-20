@@ -9,9 +9,12 @@ import LineChart from './Charts/LineChart';
 import PiesChart from './Charts/PiesChart';
 import BarsChart from './Charts/BarsChart';  
 import GanttChart from './Charts/GanttChart';  
-import GanttC from './Charts/Gantt';  
+import GanttC from './Charts/Gantt'; 
 import Draggable, {DraggableCore} from "react-draggable";
 function App(props) {
+ 
+   
+
 	const [lista, setLista] =  useState([]);  
     const [setallProyectos, setAllProyectos] = useState([]);
     const[setactividadesProyecto,setActividadesProyecto] = useState([]);
@@ -24,7 +27,6 @@ function App(props) {
     const [detalleAct, setDetalleact] =  useState([]);
     const [ganttData, setGanttData] =  useState([]);
 	const [listadocumentos, setListaDocumentos] =  useState([]);
-
 
     const [isOpen, setIsOpen] =  useState(false);  
     const customStyles = {
@@ -262,8 +264,52 @@ function App(props) {
       };
 	
 
-	
+      function mostrarDesc(){
+        
+	}
 
+
+    
+	function diff (start, end) {
+		var date1 = new Date(start);
+		var date2 = new Date(end);
+		// One day in milliseconds
+		var oneDay = 1000 * 60 * 60 * 24;
+
+		// Calculating the time difference between two dates
+		var diffInTime = date2.getTime() - date1.getTime();
+	
+		// Calculating the no. of days between two dates
+		var diffInDays = Math.round(diffInTime / oneDay);
+	
+		return diffInDays;
+	 }
+
+
+	function getColor(date){
+		var color = "";  
+	    var dateActividad = date.slice(0, 10);
+		var dateToday = new Date().toISOString().slice(0, 10); 
+		var diffs = diff(dateActividad, dateToday);
+		//var diffs = 0;
+		//notify(diffs);
+		if (diffs >= 0) {
+			//rojo    
+			 color = "rgba(255, 62, 62, 1)";
+			 
+		 }else if(diffs >= -3) {  
+			 //naranja 
+	     	 color = "rgba(255, 122, 5, 0.71)";
+				
+		 } else if(diffs >= -7){
+			 // verde
+			 color = "rgba(18, 255, 5, 0.71)";
+		 }else{
+			 color = "";
+		 }
+ 			   
+		 return color;
+	}
 	 
 
   	return (
@@ -282,12 +328,13 @@ function App(props) {
                             </button>
                 ))}	
 
+              
 
-             <div style={{display:"flex"}}>
+             <div style={{display:"flex", justifyContent: 'space-between'}}>
 
-                <div>
+                <div style={{width:'33%'}}>
                     <p className='m-2'><b>Ejemplo #1: </b> Grafica de lineas basico</p>                    
-                    <div className='bg-light mx-auto px-2 border border-2 border-primary' style={{width:"450px",height:"230px"}}>
+                    <div className='bg-light mx-auto px-2 border border-2 border-primary' style={{width:"100%",height:"230px"}}>
                     {(String(midata) != "")?
                     <LineChart actividades={midata} />                 
                         :
@@ -295,9 +342,10 @@ function App(props) {
                     }
                     </div>
                 </div>
-                <div style={{margin:"0 0.5rem"}}>
+                <div style={{width:'33%'}}>
+
                     <p className='m-2'><b>Ejemplo #2: </b> Grafica de barras</p>
-                    <div className='bg-light mx-auto px-2 border border-2 border-primary' style={{width:"450px",height:"230px"}}>
+                    <div className='bg-light mx-auto px-2 border border-2 border-primary' style={{width:"100%",height:"230px"}}>
                     {(String(mibdata) != "")?
                         <BarsChart actividades={mibdata}/>
                         :
@@ -306,9 +354,10 @@ function App(props) {
                     </div>
                 </div>
 
-                <div style={{margin:"0 0.5rem"}}>
+                <div style={{width:'33%'}}>
+
                     <p className='m-2'><b>Ejemplo #3: </b> Grafica circular</p>
-                    <div className='bg-light mx-auto px-2 border border-2 border-primary' style={{width:"450px",height:"230px"}}>
+                    <div className='bg-light mx-auto px-2 border border-2 border-primary' style={{width:"100%",height:"230px"}}>
                     {(String(mipdata) != "")?
                         <PiesChart actividades={mipdata}/>
                         :
@@ -337,12 +386,15 @@ function App(props) {
                                 {creadas.map(item => ( 
                                     /* <Draggable> */
                                     <div className='card card-primary card-outline' style={{cursor:"pointer", marginBottom: "8px"}} onClick={() => modalActividad(item.folio, item.actividad)} >
-                                        <div className='card-header'>
-                                            <h5 className='card-title'>{item.actividad}</h5>                            
+                                        <div className='card-header' style={{backgroundColor: getColor(item.fechatermino)}} >
+                                            <label style={{fontSize: '15px', fontWeight:'bold'}} className='card-title'>{item.actividad}</label>                            
                                         </div>
                                         <div className='card-body'>
                                             <p>
                                                 {item.comentarios}
+                                                <br></br>
+                                                <label style={{fontSize: '12px', fontWeight:'bold'}} >{item.name}</label>
+                                                <label style={{fontSize: '12px', fontWeight:'bold'}} >DÍAS VENCIDOS: { diff(item.fechatermino, new Date().toISOString().slice(0, 10))}</label>
                                             </p>
                                         </div>
                                     </div>      
@@ -363,12 +415,16 @@ function App(props) {
                         <div className='card-body' style={{overflowY:"scroll", height:'600px'}}>
                             {proceso.map(item => ( 
                                 <div className='card card-primary card-outline' style={{cursor:"pointer", marginBottom: "8px"}} onClick={() => modalActividad(item.folio, item.actividad)}>
-                                    <div className='card-header'>
-                                        <h5 className='card-title'>{item.actividad}</h5>                            
+                                    <div className='card-header' style={{backgroundColor: getColor(item.fechatermino)}}>
+                                        <label style={{fontSize: '15px', fontWeight:'bold'}} className='card-title'>{item.actividad}</label>                            
+                          
                                     </div>
                                     <div className='card-body'>
                                         <p>
                                             {item.comentarios}
+                                            <br></br>
+                                            <label style={{fontSize: '12px', fontWeight:'bold'}} >{item.name}</label>
+                                            <label style={{fontSize: '12px', fontWeight:'bold'}} >DÍAS VENCIDOS: { diff(item.fechatermino, new Date().toISOString().slice(0, 10))}</label>
                                         </p>
                                     </div>
                                 </div>
@@ -386,12 +442,16 @@ function App(props) {
                         <div className='card-body' style={{overflowY:"scroll", height:'600px'}}>
                             {finalizadas.map(item => ( 
                                 <div className='card card-primary card-outline' style={{cursor:"pointer", marginBottom: "8px"}} onClick={() => modalActividad(item.folio, item.actividad)}>
-                                    <div className='card-header'>
-                                        <h5 className='card-title'>{item.actividad}</h5>                            
+                                    <div className='card-header' >
+                                        <label style={{fontSize: '15px', fontWeight:'bold'}} className='card-title'>{item.actividad}</label>                            
+                          
                                     </div>
                                     <div className='card-body'>
                                         <p>
                                             {item.comentarios}
+                                            <br></br>
+                                            <label style={{fontSize: '12px', fontWeight:'bold'}} >{item.name}</label>
+                                            <label style={{fontSize: '12px', fontWeight:'bold'}} >DÍAS VENCIDOS: { diff(item.fechainicio, item.fechafinalizado)}</label>
                                         </p>
                                     </div>
                                 </div>
@@ -403,9 +463,13 @@ function App(props) {
            
 
             <div style={{marginTop:"20px"}}>
+               
+
                 {/* <GanttChart actividades={setactividadesProyecto}/>*/}
                 {(String(setactividadesProyecto) != "")? 
-                     <GanttC actividades={setactividadesProyecto}  handleClick={handleClick} />
+                     <GanttC actividades={setactividadesProyecto}   
+                     handleClick={handleClick}  
+                     />
 
 
                 :
@@ -425,8 +489,9 @@ function App(props) {
 			contentLabel="Example Modal"
             style={customStyles}
 		    >
+                <div style={{width:'100%'}}>
 			    <h1>Detalles de la actividad</h1> 
-                <div style={{justifyContent: 'space-between', columnGap:'0.875rem', borderRadius:'5px', width:'100%', display:'flex', flexDirection:'row'}}> 
+                <div style={{justifyContent: 'space-between', columnGap:'0.875rem', borderRadius:'5px', width:'800px', display:'flex', flexDirection:'row'}}> 
                     <div style={{width:'50%',}} > 
                     { detalleAct.map(item => ( 							 
                     <div style={{  fontSize:'13.5px'}}>                              
@@ -443,11 +508,16 @@ function App(props) {
                         <label>{item.actividad}</label> 
                         <br></br> 
                         <label style={{fontSize:'16px', fontWeight:'bold'}}>Descripción:</label><br></br>
-                        <label>{item.descripcion}</label>
+                        <label>{item.comentarios}</label>
                         <br></br>
                         <label style={{fontSize:'16px', fontWeight:'bold'}}>Fecha de término estimada:</label> <br></br>
                         <label>{formatDate(item.fechatermino)}</label>
-                        <br></br>                                                                               
+                        <br></br>
+                        <br></br>
+                        <label style={{fontSize: '12px', fontWeight:'bold'}} >DÍAS VENCIDOS: { diff(item.fechatermino, new Date().toISOString().slice(0, 10))}</label>
+                        <br></br>
+                        <br></br>
+                        <span class="dot" style={{backgroundColor: getColor(item.fechatermino)}}></span>
                     </div> 
                             ))}
                     </div>
@@ -473,7 +543,7 @@ function App(props) {
                 
                 <br></br>                
                 <button onClick={closeModalDetalleAct} class="btn btn-outline-danger btn-sm " style={{ width:'100%'}}>Cerrar</button> 
-		 
+                </div>
 		    </Modal>
 
         </div>

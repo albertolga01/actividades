@@ -1,8 +1,12 @@
 import { Gantt,  EventOption, StylingOption, ViewMode, DisplayOption } from 'gantt-task-react';
+import React,{useState, useEffect} from 'react'; 
+
 import "gantt-task-react/dist/index.css";
 
 function GanttC(props) {
-  let Task = [];
+  const [isChecked, setIsChecked] = React.useState(true);
+
+  var Task = [];
   let progress;
   let termino;
   let timestamp;
@@ -54,6 +58,16 @@ function GanttC(props) {
      
   }
   console.log(Task);
-    return  <Gantt tasks={Task} onClick={props.handleClick}/>
+  
+
+    return  <div>
+                <div>
+                <label>Mostrar descripción </label>
+                          <input type="checkbox" defaultChecked={isChecked}  onClick={() => setIsChecked(!isChecked)}/>
+                </div>
+                 <Gantt tasks={Task} 
+                 listCellWidth={isChecked ? "155px" : ""} 
+                 onExpanderClick={false}/>
+            </div>
 }
 export default GanttC;
