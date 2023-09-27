@@ -8,7 +8,7 @@ import { useChat } from '../context/ChatProvider';
 
 
 import styled, { createGlobalStyle } from 'styled-components';
-import { ChatProvider } from '../context/ChatProvider';
+//import { ChatProvider } from '../context/ChatProvider';
 import Wrapper from './Wrapper';
 
 const GlobalStyle = createGlobalStyle`
@@ -85,13 +85,14 @@ class Login extends React.Component {
 			);
 		} else {
 			return (
-				<>
+				<>{/**
 					<GlobalStyle />
 					<Background />
 
 					<ChatProvider name="name"> 
 				     	<App />
-					</ChatProvider>
+					</ChatProvider> 
+          */}
 				</>
 			)
 		}

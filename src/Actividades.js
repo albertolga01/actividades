@@ -416,13 +416,13 @@ async function getAllColaboradoresdelProyecto(){
 	openModalLoad(); 
 	const res = await axios.get(process.env.REACT_APP_API_URL+'?id='+id+'&folio='+folio);
 	closeModalLoad();
-	console.log(res.data);
+	console.log("getAllColaboradoresdelProyecto"+res.data);
 
 	setcolaboradoresRes(res.data);
 	//setColaboradoresEP(res.data);
 
 	(res.data).forEach(myFunction);
-	 
+	console.log(setcolaboradoresRes(res.data));
 }
 
 

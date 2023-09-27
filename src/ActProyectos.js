@@ -1059,7 +1059,15 @@ async function actualizarFecha(folio) {
 			<Nabvar titulo={NProyecto} departamento={props.rzonsocial} dptoid={props.dptoid}/> 
 			</div>
 			<div style={{width:'100%'}} align="right">
-			<button style={{width:'15%', marginRight:'10px'}} onClick={openModalNuevoProyecto}  class="btn btn-outline-primary btn-sm">Nuevo Proyecto</button>
+			{ (props.admin == 1) ? 
+				<div>
+					<button style={{width:'15%', marginRight:'10px'}} onClick={openModalNuevoProyecto}  class="btn btn-outline-primary btn-sm">Nuevo Proyecto</button>
+				</div>
+				:
+				<div> 
+				</div>
+				}
+			{/*<button style={{width:'15%', marginRight:'10px'}} onClick={openModalNuevoProyecto}  class="btn btn-outline-primary btn-sm">Nuevo Proyecto</button>*/}
 			
 			<button hidden id="Proyectos" onClick={() => seleccionar()} style={{ width:'15%', marginTop:'5px', margin:'5px' }}  class="btn btn-outline-primary btn-sm" > Proyectos</button>
 

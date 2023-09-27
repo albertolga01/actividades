@@ -1150,9 +1150,16 @@ async function actualizarFecha(folio) {
 			<button style={{marginRight:'10px'}} onClick={openNuevaActividad} class="btn btn-outline-primary btn-sm">Nueva Actividad {props.nombredepartamento}</button><br></br>
 			
 			<button onClick={openModalC} class="btn btn-outline-success btn-sm" hidden="hidden">Calendario</button> 
-			{/*<button onClick={mostrarChat} class="btn btn-outline-success btn-sm" hidden>Chat</button> */}
-			<button style={{marginRight:'10px', marginTop:'10px'}} onClick={() => ver(props.iddepartamento, props.nombredepartamento)} className='btn btn-outline-success btn-sm'>Participantes</button>
-
+			{/*<button onClick={mostrarChat} class="btn btn-outline-success btn-sm" hidden>Chat</button> 
+			<button style={{marginRight:'10px', marginTop:'10px'}} onClick={() => ver(props.iddepartamento, props.nombredepartamento)} className='btn btn-outline-success btn-sm'>Participantes</button>*/}
+			{ (props.admin == 1) ? 
+				<div>
+					<button style={{marginRight:'10px', marginTop:'10px'}} onClick={() => ver(props.iddepartamento, props.nombredepartamento)} className='btn btn-outline-success btn-sm'>Participantes</button>
+				</div>
+				:
+				<div> 
+				</div>
+				}
       
 	  <Modal
 	isOpen={modalIsOpen}

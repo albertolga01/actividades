@@ -132,12 +132,13 @@ export default function OpcionesMenu(props) {
                             <span>Actividades por departamento</span>
                         </div>
 
-                        <div  id="sidebtn" onClick={() => { Seleccionar("ResumenActividades"); }}>
-                            <img id="sideimg3" alt="" />
-                            <span>RESUMEN DE ACTIVIDADES</span>
-                        </div>
-                
-                
+                        { (props.admin == 1) ? 
+						 <div  id="sidebtn" onClick={() => { Seleccionar("ResumenActividades"); }}>
+                         <img id="sideimg3" alt="" />
+                         <span>RESUMEN DE ACTIVIDADES</span>
+                     </div>
+                         : <></>
+							} 
                
                 <div id="sidebtn" onClick={() => logOut()}>
                     <img id="sideimg5" alt="" />

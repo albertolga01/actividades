@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import io from 'socket.io-client';
 
-const socket = io.connect("http://162.214.97.39:5000" || window.location.host);
+//const socket = io.connect("http://162.214.97.39:5000" || window.location.host);
 
 const ChatContext = createContext();
 
@@ -14,7 +14,7 @@ export const ChatProvider = ({ children }) => {
     const [currentRoom, setCurrentRoom] = useState(null);
     
     const value = {
-        socket,
+        //socket,
         userName,
         setUserName,
         setCurrentRoom,

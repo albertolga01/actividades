@@ -224,9 +224,9 @@ function ActProyectoSeleccionado(props) {
 			cell: (row) => {
 				return (
 					<td style={{width: '80px'}}>
-						<button  className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(row.folio)}><BsArrowRepeat /></button>
+						<button style={{width:'80%'}} className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(row.folio)}><BsArrowRepeat /></button>
 						{/*<button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(row.folio)}><FaEye /></button>*/}
-						<button style={{width:'64px'}} className='btn btn-outline-primary btn-sm' onClick={() => agregarDoc(row.folio)}><BsUpload /></button>
+						<button style={{width:'80%'}} className='btn btn-outline-primary btn-sm' onClick={() => agregarDoc(row.folio)}><BsUpload /></button>
 					</td>)
 			},
 			width: "10%",
@@ -1204,7 +1204,15 @@ async function actualizarFecha(folio) {
 				</div>
 
 				<div>
+				{ (props.admin == 1) ? 
+				<div>
 				<button style={{marginRight:'10px'}} onClick={() => ver(props.iddepartamento, props.nombredepartamento)} className='btn btn-outline-success btn-sm'>Participantes</button>
+				</div>
+				:
+				<div> 
+				</div>
+				}
+				{/*<button style={{marginRight:'10px'}} onClick={() => ver(props.iddepartamento, props.nombredepartamento)} className='btn btn-outline-success btn-sm'>Participantes</button>*/}
 				</div>
 				{/** { (props.admin == 1 ) ? 
 				<div>
