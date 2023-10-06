@@ -5,9 +5,11 @@ import "gantt-task-react/dist/index.css";
 
 function GanttC(props) {
   const [isChecked, setIsChecked] = React.useState(true);
+  const [tasks1, setTasks1] = React.useState(true);
 
   var Task = [];
   let progress;
+  let progressSub;
   let termino;
   let timestamp;
   let timestamp1;
@@ -40,6 +42,11 @@ function GanttC(props) {
     }
     */
     
+    let tipo = "task";
+    if(props.actividades[i].subactividades != null){
+      tipo = "project";
+    } 
+
         Task.push({
             
               
@@ -47,17 +54,65 @@ function GanttC(props) {
                 end:  new Date(fechatermino),
                 name: props.actividades[i].actividad,
                 id: props.actividades[i].folio,
-                type:'task',
-                progress: progress,
-                isDisabled: true,
+                type:tipo,
+                progress: progress, 
+                hideChildren: true, 
                 styles: { progressColor: '#00e23f', progressSelectedColor: '#0071ce' }
               
             }   ); 
+
+
+
+            if(props.actividades[i].subactividades != null){
+              for (let x = 0; x < props.actividades[i].subactividades.length; x++) {
+               // console.log(props.actividades[i].subactividades[x][0].fechainiciosub);
+
+               let fechaterminoSub;
+               console.log(isNaN(Date.parse(props.actividades[i].subactividades[x][0].fechafinalizado)));
+                if(isNaN(Date.parse(props.actividades[i].subactividades[x][0].fechafinalizado)) == false){
+                  
+                   fechaterminoSub = props.actividades[i].subactividades[x][0].fechafinalizado;
+                }else{
+                   fechaterminoSub = props.actividades[i].subactividades[x][0].fechainiciosub;
+                }
+                if(props.actividades[i].subactividades[x][0].finalizado == 1){
+                  progressSub = 100;
+                }else{
+                  progressSub = 0;
+                } 
+                
+                     Task.push({
+                  
+                    
+                        start:  new Date(props.actividades[i].subactividades[x][0].fechainiciosub),
+                        end:  new Date(fechaterminoSub),
+                        name: props.actividades[i].subactividades[x][0].subactividad,
+                        id: props.actividades[i].subactividades[x][0].folio,
+                        type:'task',
+                        project: props.actividades[i].folio, 
+                        progress: progressSub,  
+                        dependencies: [props.actividades[i].folio],
+                        styles: { progressColor: '#00e23f', progressSelectedColor: '#0071ce' }
+                      
+                    }); 
+              }
+             
+             /* */
+            }
     }
 
-     
+    
   }
-  console.log(Task);
+ 
+  const handleExpanderClick = (task) => { 
+    task.hideChildren = false;
+    console.log(task.hideChildren);
+    
+     Task = task; 
+   // console.log(Task1);
+  //    console.log("On expander click Id:" + task.id); 
+  };
+  
   
 
     return  <div>
@@ -67,7 +122,8 @@ function GanttC(props) {
                 </div>
                  <Gantt tasks={Task} 
                  listCellWidth={isChecked ? "155px" : ""} 
-                 onExpanderClick={false}/>
+                  
+                />
             </div>
 }
 export default GanttC;

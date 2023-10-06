@@ -10,8 +10,9 @@ import Modal from 'react-modal';
 import './App.css'; 
 import { FaBeer, FaReact, Farefr } from 'react-icons/fa';
 import { AiFillAlert } from "react-icons/ai";
-import { BsArrowRepeat, BsFillCheckCircleFill, BsXCircleFill, BsEyeFil, BsEyeSlashFill, BsFillFileEarmarkPlusFill, BsUpload } from "react-icons/bs";
+import { BsArrowRepeat, BsFillCheckCircleFill, BsXCircleFill, BsEyeFil, BsEyeSlashFill, BsFillFileEarmarkPlusFill, BsUpload, BsCheck } from "react-icons/bs";
 import { FaEye } from "react-icons/fa";
+import {SiAddthis} from "react-icons/si"
 
 import moment from 'moment';
  
@@ -65,6 +66,38 @@ function Actividades(props) {
 	console.log(props.dptoid);
 	const [showDesc, setShowDesc] = React.useState(false);
 	
+	const ExpandableRowComponent = ({ data }) => {
+		 
+		return (
+
+			data.subactividades.map(item => ( 
+				<tr>
+				<td style={{minWidth:'50px'}}></td>
+				<td style={{minWidth:'50px'}}>{item[0].folio}</td> 
+				<td style={{minWidth:'280px'}}></td> 
+
+
+				<td style={{minWidth:'150px'}}>{item[0].subactividad}</td> 
+				<td style={{minWidth:'90px'}}></td> 
+
+				<td style={{minWidth:'50px'}}>{formatDate(item[0].fechainiciosub)}</td> 
+				{/*<td style={{width:'50px'}}>{item[0].estado}</td> */}
+				<td style={{minWidth:'180px'}}></td> 
+
+				<td style={{minWidth:'50px', }}>{item[0].observaciones}</td> 
+				<td style={{minWidth:'180px'}}></td> 
+
+				{(item[0].finalizado == "1")?
+				<td style={{width:'50px'}}><BsCheck/></td>
+					:
+				<td style={{width:'50px'}}><input type="checkbox" onClick={ () => finalizadoSubACT(item[0].folio) } id={"finalizarSubAct"+item[0].folio} ></input></td>
+				}
+			  </tr>
+
+	   			))
+		 
+		);
+	};
 
 	const columns = [
 		{
@@ -242,6 +275,19 @@ function Actividades(props) {
 			//selector: row => row.actividad,
 			cell: (row) => {
 				return (
+					<td style={{width: '80px'}}> 
+						<button style={{width:'45px'}} className='btn btn-outline-success btn-sm' onClick={ () => openModalSubActividad(row.folio) }><SiAddthis /></button>
+					</td>)
+			},
+			maxWidth: "10px",
+			width: "4%",
+			sortable: true,
+		},
+		{
+			name: '',  
+			//selector: row => row.actividad,
+			cell: (row) => {
+				return (
 					<td>
 					{ (row.rol == 2) ? 
 						<td align='center' style={{width:'35px'}}>
@@ -311,6 +357,8 @@ function Actividades(props) {
 	
 
 	const [registros, setRegistros] = useState([]);
+	const [folioActividadSeleccionada, setFolioActividadSeleccionada] =  useState([]);  
+	const [modalIsOpenSubActividad, setIsOpenSubActividad] = React.useState(false);//nueva SubActividad
 	
 	const handleEventClick = ({ event, el }) => { 
 		//var fecha = new Date(event.start);
@@ -351,6 +399,21 @@ function Actividades(props) {
 		getAllColaboradores();
 		// eslint-disable-next-line
 	},[])
+
+	function openModalSubActividad(folio) { 
+		setFolioActividadSeleccionada(folio);
+		setIsOpenSubActividad(true); 
+  }
+
+  function afterOpenModalSubActividad() {
+	// references are now sync'd and can be accessed.
+	subtitle.style.color = 'black';
+  }
+
+  function closeModalSubActividad() {
+	setIsOpenSubActividad(false);
+  }
+
 	
 	 
 	async 	function   mostrarOcultas(){
@@ -378,9 +441,36 @@ function Actividades(props) {
 		var name = document.getElementById('filtrarporcolab').value;  
 		var result = listados.filter((x) => (x.name === name)); 
 		setLista(result);
+		
 	}
 	
-  
+	async function addSubActividad(){  
+		openModalLoad();
+		 
+		var subactividad = document.getElementById("SUBactividad").value; 
+	//	var subfechatermino = document.getElementById("SUBfechatermino").value; 
+		var subobservaciones = document.getElementById("SUBobservaciones").value;  
+		 
+		if((props.iddepartamento != "") && (subactividad.length > 1)){
+		let fd = new FormData() 
+		fd.append("id","addSubActividad")  
+		fd.append("actividad",subactividad.replaceAll("'", "´").replaceAll('"', "´´")) 
+		  
+		fd.append("observaciones", subobservaciones) 
+		fd.append("folioactividad", folioActividadSeleccionada)   
+		const res = await axios.post(process.env.REACT_APP_API_URL, fd);
+		closeModalLoad();
+		notify(res.data.trim());
+		closeModal();
+		
+		} else {
+			notify("No se puede agregar actividad, favor de agregar el nombre de la actividad");
+		}
+		getActividades();
+		closeModalSubActividad();
+		//verRequisicion(folio);
+	 
+	}
   
 	async function getAllProyectos() {
 	  var id = "getTodosProyectosGrupo";
@@ -700,6 +790,24 @@ async function getAllColaboradoresdelProyecto(){
 		}
 	}
 
+	async function finalizadoSubACT(id){
+		  
+		let finalizarSubACT = 0;
+		if(document.getElementById("finalizarSubAct"+id).checked){
+			finalizarSubACT = 1; 
+		} 
+
+		if(window.confirm('Marcar subactividad con folio: ' + id + ' como finalizada')){
+			let fd = new FormData() 
+			fd.append("id", "finalizadoSubACTIVIDAD")
+			fd.append("folio", id)
+			fd.append("finalizado", finalizarSubACT)
+			const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
+			console.log(res.data);
+			notify(res.data.trim());
+			getActividades();
+		}
+	}
 
 	async function finalizado(id, folioresponsable,actividad){
 		  
@@ -956,7 +1064,7 @@ async function actualizarFecha(folio) {
 			setShowDesc(true);
 		}
 	}
-
+ 
 
 	
    
@@ -1143,6 +1251,8 @@ async function actualizarFecha(folio) {
 												highlightOnHover={true}
 												noDataComponent={"No se encontró información"}
 												noHeader
+												expandableRows
+												expandableRowsComponent={ExpandableRowComponent}
 											
 											/>
 						</DataTableExtensions>
@@ -1424,6 +1534,41 @@ async function actualizarFecha(folio) {
 		<br></br>
 			<button onClick={actualizarProyectoActividad} class="btn btn-outline-success btn-sm " style={{ width:'100%'}}>Actualizar</button> 
 		</Modal>
+
+		<Modal
+						isOpen={modalIsOpenSubActividad}
+						onAfterOpen={afterOpenModalSubActividad}
+						onRequestClose={closeModalSubActividad}
+						style={customStyles}
+						contentLabel="Example Modal"
+					>
+						<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'black'}}>Nueva Actividad {folioActividadSeleccionada}</h2>
+						{/* 
+						<div>Proyecto:</div> 
+						<select id="folioproyecto" style={{width:'100%', marginTop:'5px'}}  onChange={()=> getAllColaboradoresdelProyecto()}>
+							<option>Seleccione</option>
+							{listap.map(item => ( 
+										<option value={item.folio}>{item.proyecto}</option>
+
+							))}
+							</select>
+							*/} 
+					 
+						<div>Actividad:</div>
+						<input id="SUBactividad" type="text"  style={{width:'100%', marginTop:'5px'}}/>
+						<br></br>
+						
+						<div>Observaciones:</div>
+						<textarea id="SUBobservaciones" type="text" style={{width:'100%', marginTop:'5px'}} rows="2" cols="25" />
+						
+						 
+						
+						
+					<br></br>
+					<br></br>
+						<button onClick={closeModalSubActividad} class="btn btn-outline-danger btn-sm " style={{ height:'45px'}}>Cancelar</button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<button onClick={() => addSubActividad(folioActividadSeleccionada)} class="btn btn-outline-success btn-sm"  style={{ height:'45px'}}>Guardar</button>
+					</Modal>
 
 
 

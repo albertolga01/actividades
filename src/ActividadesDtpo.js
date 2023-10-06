@@ -34,6 +34,7 @@ import 'react-data-table-component-extensions/dist/index.css';
 import DataTable from 'react-data-table-component';
 import Login from './component/LoginChat';
 import useChatActions from './hooks/useChatActions';
+import { BsCheck } from "react-icons/bs";
 
 
 const WrapperContainer = styled.div`
@@ -109,13 +110,26 @@ function ActividadesDtpo(props) {
 
 			data.subactividades.map(item => ( 
 				<tr>
-					<td style={{width:'50px'}}></td>
-					<td style={{width:'50px', paddingLeft:'20px'}}>{item[0].folio}</td> 
-					<td style={{width:'50px', paddingLeft:'280px'}}>{item[0].subactividad}</td> 
-					<td style={{width:'50px', paddingLeft:'170px'}}>{formatDate(item[0].fechainiciosub)}</td> 
+					<td style={{minWidth:'50px'}}></td>
+					<td style={{minWidth:'50px'}}>{item[0].folio}</td> 
+					<td style={{minWidth:'280px'}}></td> 
+
+
+					<td style={{minWidth:'150px'}}>{item[0].subactividad}</td> 
+					<td style={{minWidth:'90px'}}></td> 
+
+					<td style={{minWidth:'50px'}}>{formatDate(item[0].fechainiciosub)}</td> 
 					{/*<td style={{width:'50px'}}>{item[0].estado}</td> */}
-					<td style={{width:'50px', paddingLeft:'180px'}}>{item[0].observaciones}</td> 
-					<td style={{width:'50px', paddingLeft:'227px'}}><input type="checkbox" id="finalizarSubAct"></input></td>
+					<td style={{minWidth:'180px'}}></td> 
+
+					<td style={{minWidth:'50px', }}>{item[0].observaciones}</td> 
+					<td style={{minWidth:'180px'}}></td> 
+
+					{(item[0].finalizado == "1")?
+					<td style={{width:'50px'}}><BsCheck/></td>
+						:
+					<td style={{width:'50px'}}><input type="checkbox" onClick={ () => finalizadoSubACT(item[0].folio) } id={"finalizarSubAct"+item[0].folio} ></input></td>
+					}
 		      	</tr>
 
 	   			))
@@ -809,6 +823,7 @@ async function getAllColaboradoresdelDepartamento(){
 			notify("No se puede agregar actividad, favor de agregar el nombre de la actividad");
 		}
 		getActividades();
+		closeModalSubActividad();
 		//verRequisicion(folio);
 	 
 	}
@@ -1202,7 +1217,24 @@ async function actualizarFecha(folio) {
 	  }
 
 	
-   
+	  async function finalizadoSubACT(id){
+		  
+		let finalizarSubACT = 0;
+		if(document.getElementById("finalizarSubAct"+id).checked){
+			finalizarSubACT = 1; 
+		} 
+
+		if(window.confirm('Marcar subactividad con folio: ' + id + ' como finalizada')){
+			let fd = new FormData() 
+			fd.append("id", "finalizadoSubACTIVIDAD")
+			fd.append("folio", id)
+			fd.append("finalizado", finalizarSubACT)
+			const res = await axios.post(process.env.REACT_APP_API_URL, fd); 
+			console.log(res.data);
+			notify(res.data.trim());
+			getActividades();
+		}
+	}
 	
   		// Dynamically create select list
 	let options = [];
@@ -1827,17 +1859,10 @@ async function actualizarFecha(folio) {
 							))}
 							</select>
 							*/} 
-						<div>Responsable:</div>
-
-						<input id="SUBnombreresponsable" type="text" value={props.name} style={{ width: '100%', marginTop: '5px' }} />
-						<input id="SUBfolioresponsable" type="text" value={props.userid} style={{ width: '100%', marginTop: '5px' }} hidden="hidden" />
-							 
-								
-						<input id="SUBfolioencargado" type="text" value={props.userid} style={{width:'100%', marginTop:'5px'}} hidden="hidden" />
-						
+					 
 						<div>Actividad:</div>
 						<input id="SUBactividad" type="text"  style={{width:'100%', marginTop:'5px'}}/>
- 
+						<br></br>
 						
 						<div>Observaciones:</div>
 						<textarea id="SUBobservaciones" type="text" style={{width:'100%', marginTop:'5px'}} rows="2" cols="25" />
