@@ -11,6 +11,7 @@ import './App.css';
 import { FaBeer, FaReact, Farefr } from 'react-icons/fa';
 import { AiFillAlert } from "react-icons/ai";
 import { BsArrowRepeat, BsFillCheckCircleFill, BsXCircleFill, BsEyeFil, BsEyeSlashFill, BsFillFileEarmarkPlusFill, BsUpload, BsChat } from "react-icons/bs";
+import {SiAddthis} from "react-icons/si"
 import { FaEye } from "react-icons/fa";
 import ChatContainer from './component/ChatContainer';
 //import { useChat } from './context/ChatProvider';
@@ -99,7 +100,31 @@ function ActividadesDtpo(props) {
 	const [showChat, setShowChat] = React.useState(false);
 	const [colaboradoresG, setColaboradoresG] = useState([]);
 
+	//const ExpandedComponent = ({ data }) => <pre>{JSON.stringify(data.subactividad, null, 2)}</pre>;
+	//const ExpandedComponent = ({ data }) => <pre>{JSON.stringify(data.subactividades, null, 2)}</pre>;
+
+	const ExpandableRowComponent = ({ data }) => {
+		 
+		return (
+
+			data.subactividades.map(item => ( 
+				<tr>
+					<td style={{width:'50px'}}></td>
+					<td style={{width:'50px', paddingLeft:'20px'}}>{item[0].folio}</td> 
+					<td style={{width:'50px', paddingLeft:'280px'}}>{item[0].subactividad}</td> 
+					<td style={{width:'50px', paddingLeft:'170px'}}>{formatDate(item[0].fechainiciosub)}</td> 
+					{/*<td style={{width:'50px'}}>{item[0].estado}</td> */}
+					<td style={{width:'50px', paddingLeft:'180px'}}>{item[0].observaciones}</td> 
+					<td style={{width:'50px', paddingLeft:'227px'}}><input type="checkbox" id="finalizarSubAct"></input></td>
+		      	</tr>
+
+	   			))
+		 
+		);
+	};
+
 	const columns = [
+	 
 		{
 			name: 'Folio',  
 			//selector: row => row.folio,
@@ -247,14 +272,30 @@ function ActividadesDtpo(props) {
 			cell: (row) => {
 				return (
 					<td style={{width: '80px'}}>
-						<button style={{width:'64px'}} className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(row.folio)}><BsArrowRepeat /></button>
+						<button className='btn btn-outline-success btn-sm' onClick={() => actualizarComentarios(row.folio)}><BsArrowRepeat /></button>
 						{/*<button  className='btn btn-outline-success btn-sm' onClick={() => ocultarActividad(row.folio)}><FaEye /></button>*/}
-						<button style={{width:'64px'}} className='btn btn-outline-primary btn-sm' onClick={() => agregarDoc(row.folio)}><BsUpload /></button>
+						<button className='btn btn-outline-primary btn-sm' onClick={() => agregarDoc(row.folio)}><BsUpload /></button>
+						{/*<button style={{width:'64px'}}className='btn btn-outline-danger btn-sm' onClick={ () => eliminarActividad(row.folio) }><BsUpload /></button>*/}
 					</td>)
 			},
-			width: "10%",
+			maxWidth: "5px",
+			width: "4%",
 			sortable: true,
 		},
+		{
+			name: '',  
+			//selector: row => row.actividad,
+			cell: (row) => {
+				return (
+					<td style={{width: '80px'}}> 
+						<button style={{width:'45px'}} className='btn btn-outline-success btn-sm' onClick={ () => openModalSubActividad(row.folio) }><SiAddthis /></button>
+					</td>)
+			},
+			maxWidth: "10px",
+			width: "4%",
+			sortable: true,
+		},
+		 
 		{
 			name: '',  
 			//selector: row => row.actividad,
@@ -326,12 +367,15 @@ function ActividadesDtpo(props) {
 	const [modalIsOpenLoad, setIsOpenLoad] = React.useState(false);
 	const [modalIsOpen1, setIsOpen1] = React.useState(false);
 	const [modalIsOpen2, setIsOpen2] = React.useState(false);//actualizar responsable
+	const [modalIsOpenSubActividad, setIsOpenSubActividad] = React.useState(false);//nueva SubActividad
 	const [colaboradoresEP, setColaboradoresEP] = useState([]);
 	const [colaboradoresRes, setcolaboradoresRes] = useState([]);
 	const [folioProyecto, setfolioProyecto] = useState([]); 
 	const [fecha, setFecha] = useState([]);
 	const [listaut, setListaUT] = useState([]);
 	const [nombreproyecto, setNombreProyecto] =  useState([]);  
+	const [folioActividadSeleccionada, setFolioActividadSeleccionada] =  useState([]);  
+	const [listaSUBACT, setListaSUBACT] = useState([]);
 
 	 
 
@@ -358,11 +402,15 @@ function ActividadesDtpo(props) {
 			setIsOpenLoad(true); 
 			 }  
 		   
-			 function closeModalLoad() { 
+		function closeModalLoad() { 
 			setIsOpenLoad(false); 
-			 }
+		}
 		
-	
+		  
+		function closeModalSubActividad() { 
+			setIsOpenSubActividad(false); 
+		}
+			
 
 	async function getTodosColaboradores() {
 		var id = "getTodosColaboradores";
@@ -653,6 +701,20 @@ async function getAllColaboradoresdelDepartamento(){
 		setIsOpenC(false);
 	  }
 
+	  function openModalSubActividad(folio) { 
+			setFolioActividadSeleccionada(folio);
+			setIsOpenSubActividad(true); 
+	  }
+	
+	  function afterOpenModalSubActividad() {
+		// references are now sync'd and can be accessed.
+		subtitle.style.color = 'black';
+	  }
+	
+	  function closeModalSubActividad() {
+		setIsOpenSubActividad(false);
+	  }
+
 
 	  async function Notificar(name, actividad){
           
@@ -717,7 +779,34 @@ async function getAllColaboradoresdelDepartamento(){
 		closeModal();
 		
 		} else {
-			notify("No se puede agregar actividad, favor de seleccionar un proyecto y agregar el nombre de la actividad");
+			notify("No se puede agregar actividad, favor de agregar el nombre de la actividad");
+		}
+		getActividades();
+		//verRequisicion(folio);
+	 
+	}
+
+	async function addSubActividad(){  
+		openModalLoad();
+		 
+		var subactividad = document.getElementById("SUBactividad").value; 
+	//	var subfechatermino = document.getElementById("SUBfechatermino").value; 
+		var subobservaciones = document.getElementById("SUBobservaciones").value;  
+		 
+		if((props.iddepartamento != "") && (subactividad.length > 1)){
+		let fd = new FormData() 
+		fd.append("id","addSubActividad")  
+		fd.append("actividad",subactividad.replaceAll("'", "´").replaceAll('"', "´´")) 
+		  
+		fd.append("observaciones", subobservaciones) 
+		fd.append("folioactividad", folioActividadSeleccionada)   
+		const res = await axios.post(process.env.REACT_APP_API_URL, fd);
+		closeModalLoad();
+		notify(res.data.trim());
+		closeModal();
+		
+		} else {
+			notify("No se puede agregar actividad, favor de agregar el nombre de la actividad");
 		}
 		getActividades();
 		//verRequisicion(folio);
@@ -1325,6 +1414,7 @@ async function actualizarFecha(folio) {
 							export={false}
 							filter={false} 
 							>
+								
 									<DataTable
 												columns={columns}
 												data={lista}
@@ -1334,8 +1424,14 @@ async function actualizarFecha(folio) {
 												highlightOnHover={true}
 												noDataComponent={"No se encontró información"}
 												noHeader
+												expandableRows
+												expandableRowsComponent={ExpandableRowComponent}
+												 
+												
 											
 											/>
+								
+
 						</DataTableExtensions>
 
 					<table id="productstable" style={{width:'100%'}} hidden>
@@ -1711,6 +1807,49 @@ async function actualizarFecha(folio) {
 					<button onClick={closeModal1} class="btn btn-outline-danger btn-sm ">Cancelar</button> 
 					<button  onClick={()=> AggColabProyecto()}  class="btn btn-outline-success btn-sm" style={{marginLeft:'180px'}}>Agregar</button>
 						</Modal>
+
+
+						<Modal
+						isOpen={modalIsOpenSubActividad}
+						onAfterOpen={afterOpenModalSubActividad}
+						onRequestClose={closeModalSubActividad}
+						style={customStyles}
+						contentLabel="Example Modal"
+					>
+						<h2 ref={(_subtitle) => (subtitle = _subtitle)} style={{color:'black'}}>Nueva Actividad {folioActividadSeleccionada}</h2>
+						{/* 
+						<div>Proyecto:</div> 
+						<select id="folioproyecto" style={{width:'100%', marginTop:'5px'}}  onChange={()=> getAllColaboradoresdelProyecto()}>
+							<option>Seleccione</option>
+							{listap.map(item => ( 
+										<option value={item.folio}>{item.proyecto}</option>
+
+							))}
+							</select>
+							*/} 
+						<div>Responsable:</div>
+
+						<input id="SUBnombreresponsable" type="text" value={props.name} style={{ width: '100%', marginTop: '5px' }} />
+						<input id="SUBfolioresponsable" type="text" value={props.userid} style={{ width: '100%', marginTop: '5px' }} hidden="hidden" />
+							 
+								
+						<input id="SUBfolioencargado" type="text" value={props.userid} style={{width:'100%', marginTop:'5px'}} hidden="hidden" />
+						
+						<div>Actividad:</div>
+						<input id="SUBactividad" type="text"  style={{width:'100%', marginTop:'5px'}}/>
+ 
+						
+						<div>Observaciones:</div>
+						<textarea id="SUBobservaciones" type="text" style={{width:'100%', marginTop:'5px'}} rows="2" cols="25" />
+						
+						 
+						
+						
+					<br></br>
+					<br></br>
+						<button onClick={closeModalSubActividad} class="btn btn-outline-danger btn-sm " style={{ height:'45px'}}>Cancelar</button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<button onClick={() => addSubActividad(folioActividadSeleccionada)} class="btn btn-outline-success btn-sm"  style={{ height:'45px'}}>Guardar</button>
+					</Modal>
 			
 		</div>
 	);   
